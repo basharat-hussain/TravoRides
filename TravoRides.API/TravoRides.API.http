@@ -1,0 +1,6 @@
+@TravoRides.API_HostAddress = http://localhost:5198
+
+GET {{TravoRides.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

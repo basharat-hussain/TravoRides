@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="TravoRides.API/TravoRides.API.csproj" Id="01c1a87c-aa68-4c7a-be64-50689e9f8a1e" />
+  <Project Path="TravoRides.Application/TravoRides.Application.csproj" Id="e3b3b8ae-8ada-4f08-afee-34c4673485a7" />
   <Project Path="TravoRides.Domain/TravoRides.Domain.csproj" />
+  <Project Path="TravoRides.Infrastructure/TravoRides.Infrastructure.csproj" Id="dec44bc5-968f-4d72-b718-9441c6509997" />
 </Solution>
