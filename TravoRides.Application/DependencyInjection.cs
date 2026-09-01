@@ -2,6 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TravoRiders.Application.Interfaces.Services;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Repositories;
+using TravoRides.Application.Services;
 
 namespace TravoRides.Application
 {
@@ -9,10 +13,9 @@ namespace TravoRides.Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            // Add your application services here
-            // For example, you can add your MediatR handlers, validators, etc.
-            // services.AddMediatR(typeof(DependencyInjection).Assembly);
-            // services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
+            services.AddAutoMapper(config => config.AddMaps(typeof(DependencyInjection).Assembly));
+
+            services.AddScoped<ICabService, CabService>();
             return services;
         }
     }
