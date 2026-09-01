@@ -7,9 +7,16 @@ namespace TravoRides.Application.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {
-        ICabRepository Cabs{ get; }
+        IUserRepository User { get; }
 
+        IRefreshTokenRepository RefreshTokens { get; }
+        ICabRepository Cabs{ get; }
+        ISelfDriveRepository SelfDrives { get; }
+        ICabFeaturesRepository CabFeatures { get; }
         IGenericRepository<Category> Categories { get; }
+        IGenericRepository<FeaturesMaster> FeatureMasters { get; }
+        IGenericRepository<Package> Packages { get; }
+        IGenericRepository<CategoryBased> CategoryBased { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     }

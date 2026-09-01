@@ -34,7 +34,7 @@ namespace TravoRides.Application.Services
         // ============================================================
 
         public async Task<PagedResponse<CabDTO>> GetAllAsync(
-            SearchCabRequest request,
+            SearchCategoryRequest request,
             CancellationToken cancellationToken = default)
         {
             // Defensive pagination

@@ -8,7 +8,7 @@ namespace TravoRides.Application.Interfaces
 {
     public interface ICabService
     {
-        Task<PagedResponse<CabDTO>> GetAllAsync(SearchCabRequest request, CancellationToken cancellationToken = default);
+        Task<PagedResponse<CabDTO>> GetAllAsync(SearchCategoryRequest request, CancellationToken cancellationToken = default);
 
         Task<CabDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 

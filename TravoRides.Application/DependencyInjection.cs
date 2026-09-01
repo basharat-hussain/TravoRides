@@ -16,6 +16,15 @@ namespace TravoRides.Application
             services.AddAutoMapper(config => config.AddMaps(typeof(DependencyInjection).Assembly));
 
             services.AddScoped<ICabService, CabService>();
+            services.AddScoped<ICabFeaturesService, CabFeaturesService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryBasedService, CategoryBasedService>();
+            services.AddScoped<IFeaturesMasterService, FeaturesMasterService>();
+            services.AddScoped<IPackageService, PackageService>();
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<ISelfDriveService, SelfDriveService>();
+            services.AddScoped<IUserService, UserService>();
+
             return services;
         }
     }

@@ -1,4 +1,5 @@
-﻿using AlArwaSolutions.Infrastructure.Services;
+﻿using AlArwaSolutions.Infrastructure.Repository;
+using AlArwaSolutions.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,9 @@ namespace TravoRides.Infrastructure
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             services.AddScoped<ICabRepository, CabRepository>();
+
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.Configure<FileStorageOptions>(options => configuration.GetSection("FileStorage").Bind(options));
 

@@ -7,8 +7,13 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddInfrastructureServices(builder.Configuration);
-//builder.Services.AddApplicationServices();
+
+// register infrastructure and application services
+using TravoRides.Infrastructure;
+using TravoRides.Application;
+
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
