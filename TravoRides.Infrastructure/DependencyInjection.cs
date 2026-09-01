@@ -8,17 +8,16 @@ using TravoRiders.Infrastructure.Context;
 
 namespace TravoRides.Infrastructure
 {
-    public class DependencyInjection
+    public static class DependencyInjection
     {
-        public static void AddInfrastructureServices(IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            // Add your infrastructure services here
-            // For example, you can add your DbContext, repositories, etc.
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-            // Add other services as needed
-            return;
+            // Register DbContext, repositories, etc.
+
+            return services;
         }
     }
 
-}
+} 
