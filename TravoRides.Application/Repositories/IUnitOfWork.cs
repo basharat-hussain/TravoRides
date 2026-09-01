@@ -7,7 +7,7 @@ namespace TravoRides.Application.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {
-        IUserRepository User { get; }
+        IUserRepository Users { get; }
 
         IRefreshTokenRepository RefreshTokens { get; }
         ICabRepository Cabs{ get; }

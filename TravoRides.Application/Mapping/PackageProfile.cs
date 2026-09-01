@@ -1,5 +1,5 @@
 using AutoMapper;
-using TravoRides.Application.DTOs.Packages;
+using TravoRides.Application.DTOs.Package;
 using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Mapping
