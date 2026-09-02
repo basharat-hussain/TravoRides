@@ -1,3 +1,5 @@
+using TravoRides.Infrastructure;
+using TravoRides.Application;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,11 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // register infrastructure and application services
-using TravoRides.Infrastructure;
-using TravoRides.Application;
 
-builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddApplicationServices();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

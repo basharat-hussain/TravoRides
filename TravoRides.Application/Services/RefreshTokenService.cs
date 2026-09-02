@@ -1,4 +1,5 @@
 using AutoMapper;
+using TravoRiders.Domain.Entities;
 using TravoRides.Application.DTOs.RefreshTokens;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;

@@ -20,7 +20,7 @@ namespace TravoRides.Application.Services
 
         public async Task<PagedResponse<FeaturesMasterDTO>> GetAllAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken = default)
         {
-            var items = await _unitOfWork.FeaturesMaster.GetAllAsync(cancellationToken);
+            var items = await _unitOfWork.FeatureMasters.GetAllAsync(cancellationToken);
             var dtos = _mapper.Map<IEnumerable<FeaturesMasterDTO>>(items);
             return new PagedResponse<FeaturesMasterDTO>
             {
@@ -34,7 +34,7 @@ namespace TravoRides.Application.Services
 
         public async Task<FeaturesMasterDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var entity = await _unitOfWork.FeaturesMaster.GetByIdAsync(id, cancellationToken);
+            var entity = await _unitOfWork.FeatureMasters.GetByIdAsync(id, cancellationToken);
             if (entity == null) return null;
             return _mapper.Map<FeaturesMasterDTO>(entity);
         }
@@ -42,7 +42,7 @@ namespace TravoRides.Application.Services
         public async Task<Guid> CreateAsync(CreateFeaturesMasterRequest request, CancellationToken cancellationToken = default)
         {
             var entity = _mapper.Map<FeaturesMaster>(request);
-            await _unitOfWork.FeaturesMaster.AddAsync(entity, cancellationToken);
+            await _unitOfWork.FeatureMasters.AddAsync(entity, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return entity.Id;
         }
@@ -50,16 +50,16 @@ namespace TravoRides.Application.Services
         public async Task UpdateAsync(UpdateFeaturesMasterRequest request, CancellationToken cancellationToken = default)
         {
             var entity = _mapper.Map<FeaturesMaster>(request);
-            _unitOfWork.FeaturesMaster.Update(entity);
+            _unitOfWork.FeatureMasters.Update(entity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var entity = await _unitOfWork.FeaturesMaster.GetByIdAsync(id, cancellationToken);
+            var entity = await _unitOfWork.FeatureMasters.GetByIdAsync(id, cancellationToken);
             if (entity == null) return;
             entity.IsDeleted = true;
-            _unitOfWork.FeaturesMaster.Update(entity);
+            _unitOfWork.FeatureMasters.Update(entity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

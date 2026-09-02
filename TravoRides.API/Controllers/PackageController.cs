@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
 using TravoRiders.Application.Common.Responses;
+using TravoRides.Application.DTOs.Package;
 
 namespace TravoRides.API.Controllers
 {

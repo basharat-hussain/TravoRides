@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TravoRides.Application.DTOs.Users;
+using TravoRiders.Application.Common.Responses;
+using TravoRiders.Application.DTOs.Users;
 using TravoRides.Application.Interfaces;
 
 namespace TravoRides.API.Controllers

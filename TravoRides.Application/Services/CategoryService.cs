@@ -18,25 +18,25 @@ namespace TravoRides.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<PagedResponse<CategoryDTO>> GetAllAsync(SearchCategoryRequest request, CancellationToken cancellationToken = default)
-        {
-            if (request.PageNumber < 1) request.PageNumber = 1;
-            if (request.PageSize < 1) request.PageSize = 8;
-            if (request.PageSize > 100) request.PageSize = 100;
+        //public async Task<PagedResponse<CategoryDTO>> GetAllAsync(SearchCategoryRequest request, CancellationToken cancellationToken = default)
+        //{
+        //    if (request.PageNumber < 1) request.PageNumber = 1;
+        //    if (request.PageSize < 1) request.PageSize = 8;
+        //    if (request.PageSize > 100) request.PageSize = 100;
 
-            var paged = await _unitOfWork.Categories.GetAllSearchAsync(request.PageNumber, request.PageSize, request.Keyword, cancellationToken);
+        //    var paged = await _unitOfWork.Categories.GetAllSearchAsync(request.PageNumber, request.PageSize, request.Keyword, cancellationToken);
 
-            var dtos = _mapper.Map<IEnumerable<CategoryDTO>>(paged.Items);
+        //    var dtos = _mapper.Map<IEnumerable<CategoryDTO>>(paged.Items);
 
-            return new PagedResponse<CategoryDTO>
-            {
-                Items = dtos,
-                PageNumber = paged.PageNumber,
-                PageSize = paged.PageSize,
-                TotalCount = paged.TotalCount,
-                TotalPages = paged.TotalPages
-            };
-        }
+        //    return new PagedResponse<CategoryDTO>
+        //    {
+        //        Items = dtos,
+        //        PageNumber = paged.PageNumber,
+        //        PageSize = paged.PageSize,
+        //        TotalCount = paged.TotalCount,
+        //        TotalPages = paged.TotalPages
+        //    };
+        //}
 
         public async Task<IEnumerable<CategoryDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
@@ -73,6 +73,11 @@ namespace TravoRides.Application.Services
             entity.IsDeleted = true;
             _unitOfWork.Categories.Update(entity);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task<PagedResponse<CategoryDTO>> GetAllAsync(SearchCategoryRequest request, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

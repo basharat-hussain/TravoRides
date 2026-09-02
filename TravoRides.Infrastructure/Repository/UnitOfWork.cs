@@ -11,7 +11,7 @@ namespace TravoRides.Infrastructure.Repository
     {
         private readonly ApplicationDbContext _context;
 
-        public IUserRepository User { get; }
+        public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
         public ICabRepository Cabs { get; }
         public ISelfDriveRepository SelfDrives { get; }
@@ -29,7 +29,7 @@ namespace TravoRides.Infrastructure.Repository
             Cabs = cabs;
             SelfDrives = selfDrives;
             CabFeatures = cabFeatures;
-            User = user;
+            Users = user;
             RefreshTokens = refreshTokens;
             Categories = new GenericRepository<Category>(_context);
             FeatureMasters = new GenericRepository<FeaturesMaster>(_context);

@@ -1,11 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TravoRiders.Infrastructure.Context;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TravoRiders.Infrastructure.Context;
-using AlArwaSolutions.Application.Repositories;
 
 namespace TravoRides.Infrastructure.Repository
 {
