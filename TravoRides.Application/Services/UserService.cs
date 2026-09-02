@@ -1,5 +1,7 @@
 using AutoMapper;
+using TravoRiders.Application.Common.Exceptions;
 using TravoRiders.Application.DTOs.Users;
+using TravoRiders.Application.Interfaces.Services;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
@@ -10,48 +12,44 @@ namespace TravoRides.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher passwordHasher)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
         }
 
-        public async Task<IEnumerable<UserOnlyResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<UserOnlyResponse> RegisterUserAsync(CreateUserRequst request)
         {
-            var items = await _unitOfWork.Users.GetAllAsync(cancellationToken);
-            return _mapper.Map<IEnumerable<UserOnlyResponse>>(items);
+            if (await _unitOfWork.Users.EmailExistsAsync(request.Email))
+                throw new ConflictException("Email already exists.");
+          
+
+            var user = new User
+            {
+                Email = request.Email,
+                 Role = request.Role,
+                IsActive = true
+            };
+            user.PasswordHash = _passwordHasher.HashPassword(request.Password);
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<UserOnlyResponse>(user);
         }
 
-        public async Task<UserOnlyResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<UserProfileResponse> GetMyProfileAsync(Guid userId)
         {
-            var entity = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
-            if (entity == null) return null;
-            return _mapper.Map<UserOnlyResponse>(entity);
-        }
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ResourceNotFoundException("User not found.");
+            }
 
-        public async Task<Guid> CreateAsync(CreateUserRequst request, CancellationToken cancellationToken = default)
-        {
-            var entity = _mapper.Map<User>(request);
-            await _unitOfWork.Users.AddAsync(entity, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return entity.Id;
-        }
+            var userProfileResponse = _mapper.Map<UserProfileResponse>(user);
 
-        public async Task UpdateAsync(UserOnlyResponse request, CancellationToken cancellationToken = default)
-        {
-            var entity = _mapper.Map<User>(request);
-            _unitOfWork.Users.Update(entity);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        {
-            var entity = await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
-            if (entity == null) return;
-            entity.IsDeleted = true;
-            _unitOfWork.Users.Update(entity);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return userProfileResponse;
         }
     }
 }

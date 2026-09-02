@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TravoRiders.Application.Repositories;
 using TravoRiders.Infrastructure.Context;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
@@ -13,28 +14,37 @@ namespace TravoRides.Infrastructure.Repository
 
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
+
+        public ICategoryBasedRepository CategoryBased { get; }
+        public IOtpVerificationRepository OtpVerifications { get; }
         public ICabRepository Cabs { get; }
         public ISelfDriveRepository SelfDrives { get; }
-        public ICabFeaturesRepository CabFeatures { get; }
-        public IGenericRepository<Category> Categories { get; }
-        public IGenericRepository<FeaturesMaster> FeatureMasters { get; }
-        public IGenericRepository<Package> Packages { get; }
-        public IGenericRepository<CategoryBased> CategoryBased { get; }
+        public ICategoryRepository Categories { get; }
+
+        public IFeatureMasterRepository FeatureMasters { get; }
+
+        public IPackageRepository Packages { get; }
+         
 
 
 
-        public UnitOfWork(ApplicationDbContext context, ICabRepository cabs, ISelfDriveRepository selfDrives, ICabFeaturesRepository cabFeatures,IUserRepository user ,IRefreshTokenRepository refreshTokens)
+        public UnitOfWork(ApplicationDbContext context, ICabRepository cabs, ISelfDriveRepository selfDrives, 
+           IUserRepository user ,IRefreshTokenRepository refreshTokens,
+            IOtpVerificationRepository otpVerifications,ICategoryBasedRepository categoryBased,
+            ICategoryRepository category, IFeatureMasterRepository featureMasters, IPackageRepository packages
+            )
         {
             _context = context;
             Cabs = cabs;
             SelfDrives = selfDrives;
-            CabFeatures = cabFeatures;
             Users = user;
             RefreshTokens = refreshTokens;
-            Categories = new GenericRepository<Category>(_context);
-            FeatureMasters = new GenericRepository<FeaturesMaster>(_context);
-            Packages = new GenericRepository<Package>(_context);
-            CategoryBased = new GenericRepository<CategoryBased>(_context);
+            OtpVerifications = otpVerifications;
+            CategoryBased = categoryBased;
+            Categories = category;
+            FeatureMasters = featureMasters;
+            Packages = packages;
+
         }
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
            => await _context.SaveChangesAsync();

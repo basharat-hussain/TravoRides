@@ -9,6 +9,6 @@ namespace TravoRides.Application.DTOs.SelfDrive
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 10;
         public string? Keyword { get; set; }
-        public Guid? CategoryId { get; set; }
+        public Guid? CabId { get; set; }
     }
 }

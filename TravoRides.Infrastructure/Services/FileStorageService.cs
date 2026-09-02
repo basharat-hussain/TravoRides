@@ -4,7 +4,7 @@ using TravoRiders.Application.Common.Models;
 using TravoRiders.Application.Common.Options;
 using TravoRiders.Application.Interfaces.Services;
 
-namespace AlArwaSolutions.Infrastructure.Services
+namespace TravoRiders.Infrastructure.Services
 {
     public class FileStorageService : IFileStorageService
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TravoRiders.Application.Repositories;
 using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Repositories
@@ -10,13 +11,14 @@ namespace TravoRides.Application.Repositories
         IUserRepository Users { get; }
 
         IRefreshTokenRepository RefreshTokens { get; }
+
+        ICategoryBasedRepository CategoryBased { get; }
+        IOtpVerificationRepository OtpVerifications { get; }
         ICabRepository Cabs{ get; }
         ISelfDriveRepository SelfDrives { get; }
-        ICabFeaturesRepository CabFeatures { get; }
-        IGenericRepository<Category> Categories { get; }
-        IGenericRepository<FeaturesMaster> FeatureMasters { get; }
-        IGenericRepository<Package> Packages { get; }
-        IGenericRepository<CategoryBased> CategoryBased { get; }
+        ICategoryRepository Categories { get; }
+        IFeatureMasterRepository FeatureMasters { get; }
+        IPackageRepository Packages { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     }

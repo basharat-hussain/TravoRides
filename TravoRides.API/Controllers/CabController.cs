@@ -19,8 +19,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedResponse<CabDTO>>>> GetAll(
-      [FromQuery] SearchCategoryRequest request,
+        public async Task<ActionResult> GetAll(
+      [FromQuery] SearchCabRequest request,
       CancellationToken cancellationToken)
         {
             var response = await _cabService.GetAllAsync(request, cancellationToken);
@@ -56,7 +56,7 @@ namespace TravoRides.API.Controllers
 
         // POST: api/Portfolio
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Create([FromForm] CreateCabRequest request, CancellationToken cancellationToken = default)
         {
             var id = await _cabService.CreateAsync(request, cancellationToken);
@@ -71,7 +71,7 @@ namespace TravoRides.API.Controllers
 
         // PUT: api/Portfolios/{id}
         [HttpPut("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Update(Guid id, [FromForm] UpdateCabRequest request, CancellationToken cancellationToken = default)
         {
             request.Id = id;
@@ -88,7 +88,7 @@ namespace TravoRides.API.Controllers
 
         // DELETE: api/Cab/{id}
         [HttpDelete("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
         {
             await _cabService.DeleteAsync(id, cancellationToken);

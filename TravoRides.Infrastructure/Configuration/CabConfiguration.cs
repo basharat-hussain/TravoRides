@@ -17,11 +17,11 @@ namespace TravoRiders.Infrastructure.Configurations
                 .HasMaxLength(255);
 
             builder.Property(x => x.Description)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(1000);
 
             builder.Property(x => x.LuggageCapacity)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(100);
 
             builder.Property(x => x.SeatingCapacity)
@@ -31,18 +31,26 @@ namespace TravoRiders.Infrastructure.Configurations
                 .IsRequired()
                 .HasColumnType("decimal(18,2)");
 
+            builder.Property(x => x.Discount)
+               .IsRequired()
+               .HasColumnType("decimal(18,2)");
+
             builder.Property(x => x.Fuel)
                 .IsRequired();
 
             builder.Property(x => x.Transmission)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(100);
 
             builder.Property(x => x.ImageUrl)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(1000);
 
             builder.Property(x => x.IsActive)
+                .IsRequired();
+
+
+            builder.Property(x => x.IsDeleted)
                 .IsRequired();
 
             builder.Property(x => x.CreatedAt)

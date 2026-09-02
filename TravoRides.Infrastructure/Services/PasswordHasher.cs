@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using TravoRiders.Application.Interfaces.Services;
 
-namespace AlArwaSolutions.Infrastructure.Services
+namespace TravoRiders.Infrastructure.Services
 {
     public class PasswordHasher:IPasswordHasher
     {

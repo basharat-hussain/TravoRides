@@ -25,7 +25,6 @@ namespace TravoRides.Application.Repositories
 
         void Update(TEntity entity);
         IQueryable<TEntity> AsQueryable();
-
     }
 
 }

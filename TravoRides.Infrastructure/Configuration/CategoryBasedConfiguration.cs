@@ -17,11 +17,11 @@ namespace TravoRiders.Infrastructure.Configurations
                 .HasMaxLength(255);
 
             builder.Property(x => x.Description)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(2000);
 
             builder.Property(x => x.ImageUrl)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(1000);
 
             builder.Property(x => x.IsActive)

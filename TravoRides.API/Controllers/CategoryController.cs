@@ -30,7 +30,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -38,7 +38,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -47,7 +47,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);

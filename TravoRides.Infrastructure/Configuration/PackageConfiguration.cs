@@ -17,23 +17,23 @@ namespace TravoRiders.Infrastructure.Configurations
                 .HasMaxLength(255);
 
             builder.Property(x => x.Itinerary)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(4000);
 
             builder.Property(x => x.Route)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(2000);
 
             builder.Property(x => x.PlacesCovered)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(2000);
 
             builder.Property(x => x.Inclusions)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(2000);
 
             builder.Property(x => x.Duration)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(100);
 
             builder.Property(x => x.Distance)
@@ -49,12 +49,19 @@ namespace TravoRiders.Infrastructure.Configurations
                 .HasColumnType("decimal(18,2)");
 
             builder.Property(x => x.ImageUrl)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(1000);
 
             builder.Property(x => x.IsActive)
                 .IsRequired();
 
+
+            builder.Property(x => x.IsDeleted)
+                .IsRequired();
+
+
+            builder.Property(x => x.IsDeleted)
+                .IsRequired();
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
 

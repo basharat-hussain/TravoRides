@@ -5,7 +5,7 @@ namespace TravoRides.Application.Interfaces
 {
     public interface IFeaturesMasterService
     {
-        Task<PagedResponse<FeaturesMasterDTO>> GetAllAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken = default);
+        Task<PagedResponse<FeaturesMasterDTO>> GetAllAsync(SearchFeatureMasterRequest request, CancellationToken cancellationToken = default);
         Task<FeaturesMasterDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<Guid> CreateAsync(CreateFeaturesMasterRequest request, CancellationToken cancellationToken = default);
         Task UpdateAsync(UpdateFeaturesMasterRequest request, CancellationToken cancellationToken = default);

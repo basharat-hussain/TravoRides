@@ -23,13 +23,19 @@ namespace TravoRiders.Infrastructure.Context
 
         public DbSet<Cab> Cabs => Set<Cab>();
         public DbSet<Category> Categories => Set<Category>();
-        public DbSet<FeaturesMaster> FeaturesMasters => Set<FeaturesMaster>();
+        public DbSet<FeaturesMaster> FeatureMasters => Set<FeaturesMaster>();
         public DbSet<CabFeatures> CabFeatures => Set<CabFeatures>();
         public DbSet<Package> Packages => Set<Package>();
 
         public DbSet<SelfDrive> SelfDrives => Set<SelfDrive>();
 
         public DbSet<CategoryBased> CategoryBased => Set<CategoryBased>();
+
+        #region OTP Verification
+
+        public DbSet<VerificationOtp> VerificationOtps => Set<VerificationOtp>();
+
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

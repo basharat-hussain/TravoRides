@@ -15,7 +15,7 @@ namespace TravoRides.Application.DTOs.Cabs
         public string Description { get; set; }
         public int SeatingCapacity { get; set; }
         public int LuggageCapacity { get; set; }
-        public IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
 
         public string Transmission { get; set; }

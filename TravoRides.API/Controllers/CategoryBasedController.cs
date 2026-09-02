@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TravoRiders.Application.Common.Responses;
+using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.CategoryBased;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
@@ -15,9 +16,9 @@ namespace TravoRides.API.Controllers
         public CategoryBasedController(ICategoryBasedService service) => _service = service;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAll([FromQuery] SearchCategoryBasedRequest request, CancellationToken cancellationToken = default)
         {
-            var result = await _service.GetAllAsync(pageNumber, pageSize, null, cancellationToken);
+            var result = await _service.GetAllAsync(request, cancellationToken);
             return Ok(new ApiResponse<PagedResponse<CategoryBasedDTO>> { IsSuccess = true, Message = "Items retrieved.", Data = result });
         }
 
@@ -30,7 +31,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Create([FromBody] CreateCategoryBasedRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -38,7 +39,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryBasedRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -47,7 +48,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);

@@ -8,6 +8,6 @@ namespace TravoRides.Application.Repositories
 {
     public interface ICategoryBasedRepository : IGenericRepository<CategoryBased>
     {
-        Task<PagedResponse<CategoryBased>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken);
+        Task<PagedResponse<CategoryBased>>GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken);
     }
 }

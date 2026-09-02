@@ -34,7 +34,7 @@ namespace TravoRides.Application.Services
         // ============================================================
 
         public async Task<PagedResponse<CabDTO>> GetAllAsync(
-            SearchCategoryRequest request,
+            SearchCabRequest request,
             CancellationToken cancellationToken = default)
         {
             // Defensive pagination
@@ -342,6 +342,8 @@ namespace TravoRides.Application.Services
         private CabDTO EnrichCabDtoWithAbsoluteUrls(
             CabDTO cabDto)
         {
+            if (cabDto == null)
+                return cabDto;
             if (!string.IsNullOrWhiteSpace(cabDto.ImageUrl))
             {
                 cabDto.ImageUrl =
@@ -359,6 +361,8 @@ namespace TravoRides.Application.Services
         private IEnumerable<CabDTO> EnrichCabDtosWithAbsoluteUrls(
             IEnumerable<CabDTO> cabDtos)
         {
+            if (cabDtos == null)
+                return cabDtos;
             foreach (var cabDto in cabDtos)
             {
                 EnrichCabDtoWithAbsoluteUrls(cabDto);

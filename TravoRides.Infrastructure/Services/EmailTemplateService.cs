@@ -1,6 +1,6 @@
 ﻿using TravoRides.Application.Interfaces.Services;
 
-namespace AlArwaSolutions.Infrastructure.Services
+namespace TravoRiders.Infrastructure.Services
 {
     public class EmailTemplateService : IEmailTemplateService
     {

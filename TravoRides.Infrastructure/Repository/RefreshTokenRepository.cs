@@ -4,7 +4,7 @@ using TravoRiders.Domain.Entities;
 using TravoRides.Application.Repositories;
 using TravoRiders.Infrastructure.Context;
 
-namespace AlArwaSolutions.Infrastructure.Repository
+namespace TravoRiders.Infrastructure.Repository
 {
     public class RefreshTokenRepository : GenericRepository<RefreshToken>, IRefreshTokenRepository
     {

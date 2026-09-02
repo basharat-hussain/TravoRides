@@ -15,9 +15,9 @@ namespace TravoRides.API.Controllers
         public FeaturesMasterController(IFeaturesMasterService service) => _service = service;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAll([FromQuery] SearchFeatureMasterRequest request, CancellationToken cancellationToken = default)
         {
-            var result = await _service.GetAllAsync(pageNumber, pageSize, null, cancellationToken);
+            var result = await _service.GetAllAsync(request, cancellationToken);
             return Ok(new ApiResponse<PagedResponse<FeaturesMasterDTO>> { IsSuccess = true, Message = "Features retrieved.", Data = result });
         }
 
@@ -30,7 +30,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Create([FromBody] CreateFeaturesMasterRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -38,7 +38,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateFeaturesMasterRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -47,7 +47,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);

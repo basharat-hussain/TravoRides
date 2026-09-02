@@ -5,7 +5,7 @@ using MimeKit;
 using TravoRiders.Application.Interfaces.Services;
 using TravoRiders.Application.Common.Models;
 
-namespace AlArwaSolutions.Infrastructure.Services
+namespace TravoRiders.Infrastructure.Services
 {
     public class EmailService : IEmailService
     {

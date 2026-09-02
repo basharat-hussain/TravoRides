@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using TravoRiders.Infrastructure.Context;
 using TravoRides.Domain.Entities;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.Repositories;
 
 namespace TravoRides.Infrastructure.Repository
 {
-    public class CategoryRepository : GenericRepository<Category>
+    public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
         private readonly ApplicationDbContext context;
         public CategoryRepository(ApplicationDbContext context) : base(context)
