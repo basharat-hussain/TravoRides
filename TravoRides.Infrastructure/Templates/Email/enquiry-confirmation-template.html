@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enquiry Confirmation</title>
+    <style>
+      body { font-family: Arial, sans-serif; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { text-align: center; }
+      .content { margin-top: 20px; }
+      .footer { margin-top: 30px; font-size: 12px; color: #777; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="cid:logoImage" alt="logo" style="max-width:200px;" />
+        <h2>Thank you for contacting AlArwa Solutions</h2>
+      </div>
+      <div class="content">
+        <p>Dear {{NAME}},</p>
+        <p>Thank you for contacting us about <strong>{{SUBJECT}}</strong>. Our team will respond to your enquiry as soon as possible.</p>
+
+        <h4>Your message</h4>
+        <p>{{MESSAGE}}</p>
+
+        <p><strong>Phone:</strong> {{PHONE}}</p>
+        <p><strong>Software:</strong> {{SOFTWARE}}</p>
+
+        <p>Regards,<br/>AlArwa Solutions</p>
+      </div>
+      <div class="footer">
+        <p>This is an automated message. Please do not reply to this email.</p>
+      </div>
+    </div>
+  </body>
+</html>

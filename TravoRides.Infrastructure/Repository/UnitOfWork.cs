@@ -15,6 +15,8 @@ namespace TravoRides.Infrastructure.Repository
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
 
+        public IEnquiryRepository Enquiries { get; }
+        public IReviewRepository Reviews { get; }
         public IBookingRepository Bookings { get; }
         public IGenericRepository<Payment> Payments { get; }
         public ICategoryBasedRepository CategoryBased { get; }
@@ -34,7 +36,7 @@ namespace TravoRides.Infrastructure.Repository
            IUserRepository user ,IRefreshTokenRepository refreshTokens,
             IOtpVerificationRepository otpVerifications,ICategoryBasedRepository categoryBased,
             ICategoryRepository category, IFeatureMasterRepository featureMasters, IPackageRepository packages
-            )
+            ,IEnquiryRepository enquiries, IReviewRepository reviews)
         {
             _context = context;
             Cabs = cabs;
@@ -46,7 +48,8 @@ namespace TravoRides.Infrastructure.Repository
             Categories = category;
             FeatureMasters = featureMasters;
             Packages = packages;
-
+            Enquiries = enquiries;
+            Reviews = reviews;
         }
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
            => await _context.SaveChangesAsync();

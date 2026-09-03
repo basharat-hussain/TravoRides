@@ -14,8 +14,6 @@ namespace TravoRiders.Domain.Entities
         
         public string Address { get; set; } 
 
-        public string Company { get; set; }
-
         [StringLength(2000, ErrorMessage = "Feedback is too small", MinimumLength = 10)]
         public string Feedback { get; set; }
            

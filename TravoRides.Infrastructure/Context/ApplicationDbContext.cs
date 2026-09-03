@@ -31,6 +31,9 @@ namespace TravoRiders.Infrastructure.Context
 
         public DbSet<CategoryBased> CategoryBased => Set<CategoryBased>();
 
+        public DbSet<Review> Reviews => Set<Review>();
+        public DbSet<Enquiry> Enquiries => Set<Enquiry>();
+
         #region OTP Verification
 
         public DbSet<VerificationOtp> VerificationOtps => Set<VerificationOtp>();

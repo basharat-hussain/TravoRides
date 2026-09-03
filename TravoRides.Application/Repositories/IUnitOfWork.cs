@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TravoRiders.Application.Repositories;
 using TravoRides.Domain.Entities;
+using TravoRides.Infrastructure.Repository;
 
 namespace TravoRides.Application.Repositories
 {
@@ -12,6 +13,8 @@ namespace TravoRides.Application.Repositories
 
         IRefreshTokenRepository RefreshTokens { get; }
         IBookingRepository Bookings { get; }
+        IReviewRepository Reviews { get; }
+        IEnquiryRepository Enquiries { get; }
 
         IGenericRepository<Payment> Payments { get; }
         ICategoryBasedRepository CategoryBased { get; }
