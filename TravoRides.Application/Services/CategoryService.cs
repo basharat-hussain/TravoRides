@@ -2,6 +2,7 @@ using AutoMapper;
 using TravoRiders.Application.Common.Exceptions;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.SelfDrive;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
@@ -18,91 +19,83 @@ namespace TravoRides.Application.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<PagedResponse<QuoteDTO>> GetAllAsync(SearchQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<CategoryDTO>> GetAllAsync(SearchCategoryRequest request, CancellationToken cancellationToken = default)
         {
-            if (request.PageNumber < 1) request.PageNumber = 1;
-            if (request.PageSize < 1) request.PageSize = 10;
-            if (request.PageSize > 100) request.PageSize = 100;
+            // Defensive pagination
+            if (request.PageNumber < 1)
+                request.PageNumber = 1;
 
-            var all = await _unitOfWork.Quotes.GetAllAsync(cancellationToken);
-            var query = all.AsQueryable();
+            if (request.PageSize < 1)
+                request.PageSize = 8;
 
-            if (!string.IsNullOrWhiteSpace(request.Keyword))
+            if (request.PageSize > 100)
+                request.PageSize = 100;
+
+            var pagedResponse = await _unitOfWork.Categories
+                .GetAllSearchAsync(
+                    request.PageNumber,
+                    request.PageSize,
+                    request.Keyword,
+                    cancellationToken);
+
+            var categoryDtos = _mapper.Map<IEnumerable<CategoryDTO>>(
+                pagedResponse.Items);
+
+
+            return new PagedResponse<CategoryDTO>
             {
-                var k = request.Keyword.Trim().ToLower();
-                query = query.Where(q => (q.Purpose != null && q.Purpose.ToLower().Contains(k)) || (q.Name != null && q.Name.ToLower().Contains(k)) || (q.Email != null && q.Email.ToLower().Contains(k)));
-            }
-
-            var totalCount = query.Count();
-
-            var items = query
-                .OrderByDescending(e => e.CreatedAt)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            return new PagedResponse<QuoteDTO>
-            {
-                Items = _mapper.Map<List<QuoteDTO>>(items),
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
+                Items = categoryDtos,
+                PageNumber = pagedResponse.PageNumber,
+                PageSize = pagedResponse.PageSize,
+                TotalCount = pagedResponse.TotalCount,
+                TotalPages = pagedResponse.TotalPages
             };
         }
 
-        public async Task<QuoteDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<CategoryDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(id, cancellationToken);
-            if (quote == null) return null;
-            return _mapper.Map<QuoteDTO>(quote);
+            var category = await _unitOfWork.Categories.GetByIdAsync(id, cancellationToken);
+            if (category == null) return null;
+            return _mapper.Map<CategoryDTO>(category);
         }
 
-        public async Task<Guid> CreateAsync(CreateQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.Purpose))
-                throw new ValidationException("Purpose is required");
+            if (string.IsNullOrWhiteSpace(request.Name))
+                throw new ValidationException("Category is required");
 
-            var quote = new Quote
+            var category = new Category
             {
-                Purpose = request.Purpose?.Trim(),
+              
                 Name = request.Name?.Trim(),
-                Phone = request.Phone?.Trim(),
-                Email = request.Email?.Trim(),
-                Requirements = request.Requirements?.Trim()
+                Description = request.Description?.Trim()
             };
 
-            await _unitOfWork.Quotes.AddAsync(quote, cancellationToken);
+            await _unitOfWork.Categories.AddAsync(category, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return quote.Id;
+            return category.Id;
         }
 
-        public async Task UpdateAsync(UpdateQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(UpdateCategoryRequest request, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(request.Id, cancellationToken);
-            if (quote == null) throw new ResourceNotFoundException("Quote not found.");
+            var category = await _unitOfWork.Categories.GetByIdAsync(request.Id, cancellationToken);
+            if (category == null) throw new ResourceNotFoundException("Category not found.");
 
-            quote.Purpose = request.Purpose?.Trim();
-            quote.Name = request.Name?.Trim();
-            quote.Phone = request.Phone?.Trim();
-            quote.Email = request.Email?.Trim();
-            quote.Requirements = request.Requirements?.Trim();
-
-            _unitOfWork.Quotes.Update(quote);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            category.Name = request.Name?.Trim();
+            category.Description = request.Description?.Trim();
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(id, cancellationToken);
-            if (quote == null) throw new ResourceNotFoundException("Quote not found.");
+            var category = await _unitOfWork.Categories.GetByIdAsync(id, cancellationToken);
+            if (category == null) throw new ResourceNotFoundException("Category not found.");
 
-            quote.IsDeleted = true;
-            quote.ModifiedAt = DateTime.UtcNow;
-            quote.ModifiedBy = "System";
+            category.IsDeleted = true;
+            category.ModifiedAt = DateTime.UtcNow;
+            category.ModifiedBy = "System";
 
-            _unitOfWork.Quotes.Update(quote);
+            _unitOfWork.Categories.Update(category);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 

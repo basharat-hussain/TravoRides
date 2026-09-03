@@ -1,5 +1,6 @@
 using AutoMapper;
 using TravoRiders.Application.Common.Exceptions;
+using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.SelfDrive;
 using TravoRides.Application.Interfaces;
@@ -21,89 +22,94 @@ namespace TravoRides.Application.Services
 
         public async Task<PagedResponse<SelfDriveDTO>> GetAllAsync(SearchSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
-            if (request.PageNumber < 1) request.PageNumber = 1;
-            if (request.PageSize < 1) request.PageSize = 10;
-            if (request.PageSize > 100) request.PageSize = 100;
+            // Defensive pagination
+            if (request.PageNumber < 1)
+                request.PageNumber = 1;
 
-            var all = await _unitOfWork.SelfDrives.GetAllAsync(cancellationToken);
-            var query = all.AsQueryable();
+            if (request.PageSize < 1)
+                request.PageSize = 8;
 
-            if (!string.IsNullOrWhiteSpace(request.Keyword))
+            if (request.PageSize > 100)
+                request.PageSize = 100;
+
+            var pagedResponse = await _unitOfWork.SelfDrives
+                .GetAllSearchAsync(
+                    request.PageNumber,
+                    request.PageSize,
+                    request.Keyword,
+                    request.CabId,
+                    cancellationToken);
+
+            var selfDriveDtos = _mapper.Map<IEnumerable<SelfDriveDTO>>(
+                pagedResponse.Items);
+
+
+            return new PagedResponse<SelfDriveDTO>
             {
-                var k = request.Keyword.Trim().ToLower();
-                query = query.Where(q => (q.Cab.Name != null && q.Cab.Name.ToLower().Contains(k)) || (q.Name != null && q.Name.ToLower().Contains(k)) || (q.Email != null && q.Email.ToLower().Contains(k)));
-            }
-
-            var totalCount = query.Count();
-
-            var items = query
-                .OrderByDescending(e => e.CreatedAt)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            return new PagedResponse<QuoteDTO>
-            {
-                Items = _mapper.Map<List<QuoteDTO>>(items),
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
+                Items = selfDriveDtos,
+                PageNumber = pagedResponse.PageNumber,
+                PageSize = pagedResponse.PageSize,
+                TotalCount = pagedResponse.TotalCount,
+                TotalPages = pagedResponse.TotalPages
             };
         }
 
-        public async Task<QuoteDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<SelfDriveDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(id, cancellationToken);
-            if (quote == null) return null;
-            return _mapper.Map<QuoteDTO>(quote);
+            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(id, cancellationToken);
+            if (selfDrive == null) return null;
+            return _mapper.Map<SelfDriveDTO>(selfDrive);
         }
 
-        public async Task<Guid> CreateAsync(CreateQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreateAsync(CreateSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.Purpose))
-                throw new ValidationException("Purpose is required");
+            if (request == null)
+                throw new ResourceNotFoundException("SelfDrive not found");
+            // Validate Cab
+            var cab = await _unitOfWork.Cabs
+                .GetByIdAsync(
+                    request.CabId,
+                    cancellationToken);
 
-            var quote = new Quote
+            if (cab == null || cab.IsDeleted)
+                throw new ResourceNotFoundException(
+                    "Cab not found.");
+
+            var selfDrive = new SelfDrive
             {
-                Purpose = request.Purpose?.Trim(),
-                Name = request.Name?.Trim(),
-                Phone = request.Phone?.Trim(),
-                Email = request.Email?.Trim(),
-                Requirements = request.Requirements?.Trim()
+                CabId = request.CabId,
+                PricePerDay = request.PricePerDay,
+                Discount = request.Discount,
             };
 
-            await _unitOfWork.Quotes.AddAsync(quote, cancellationToken);
+            await _unitOfWork.SelfDrives.AddAsync(selfDrive, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return quote.Id;
+            return selfDrive.Id;
         }
 
-        public async Task UpdateAsync(UpdateQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(UpdateSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(request.Id, cancellationToken);
-            if (quote == null) throw new ResourceNotFoundException("Quote not found.");
+            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(request.Id, cancellationToken);
+            if (selfDrive == null) throw new ResourceNotFoundException("Self-drive not found.");
 
-            quote.Purpose = request.Purpose?.Trim();
-            quote.Name = request.Name?.Trim();
-            quote.Phone = request.Phone?.Trim();
-            quote.Email = request.Email?.Trim();
-            quote.Requirements = request.Requirements?.Trim();
+            selfDrive.PricePerDay = request.PricePerDay;
+            selfDrive.Discount = request.Discount;
 
-            _unitOfWork.Quotes.Update(quote);
+            _unitOfWork.SelfDrives.Update(selfDrive);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(id, cancellationToken);
-            if (quote == null) throw new ResourceNotFoundException("Quote not found.");
+            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(id, cancellationToken);
+            if (selfDrive == null) throw new ResourceNotFoundException("Self-drive not found.");
 
-            quote.IsDeleted = true;
-            quote.ModifiedAt = DateTime.UtcNow;
-            quote.ModifiedBy = "System";
+            selfDrive.IsDeleted = true;
+            selfDrive.ModifiedAt = DateTime.UtcNow;
+            selfDrive.ModifiedBy = "System";
 
-            _unitOfWork.Quotes.Update(quote);
+            _unitOfWork.SelfDrives.Update(selfDrive);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

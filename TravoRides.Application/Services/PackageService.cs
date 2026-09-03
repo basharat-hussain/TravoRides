@@ -56,15 +56,15 @@ namespace TravoRides.Application.Services
 
         public async Task<PackageDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var portfolio = await _unitOfWork.Packages
+            var Package = await _unitOfWork.Packages
                 .GetByIdAsync(id, cancellationToken);
 
-            if (portfolio == null)
+            if (Package == null)
                 return null;
 
-            var portfolioDto = _mapper.Map<PackageDTO>(portfolio);
-            portfolioDto = EnrichPackageDtoWithAbsoluteUrls(portfolioDto);
-            return portfolioDto;
+            var PackageDto = _mapper.Map<PackageDTO>(Package);
+            PackageDto = EnrichPackageDtoWithAbsoluteUrls(PackageDto);
+            return PackageDto;
         }
 
         public async Task<Guid> CreateAsync(CreatePackageRequest request, CancellationToken cancellationToken = default)
@@ -78,17 +78,17 @@ namespace TravoRides.Application.Services
             if (string.IsNullOrWhiteSpace(request.Title))
                 throw new ValidationException("Title is required.");
 
-            var existingPortfolio = await _unitOfWork.Packages
+            var existingPackage = await _unitOfWork.Packages
                 .FindAsync(x => x.Title == request.Title.Trim(), cancellationToken);
 
-            if (existingPortfolio.Any())
+            if (existingPackage.Any())
                 throw new ValidationException("Package with the same title already exists.");
 
 
             var fileUploadRequest = new FileUploadRequest
             {
                 ContentType = request.Image.ContentType,
-                FolderName = "portfolio",
+                FolderName = "Package",
                 FileName = request.Image.FileName,
                 Stream = request.Image.OpenReadStream(),
             };
@@ -188,7 +188,7 @@ namespace TravoRides.Application.Services
         }
 
         /// <summary>
-        /// Converts relative file paths in a PortfolioDTO to absolute URLs
+        /// Converts relative file paths in a PackageDTO to absolute URLs
         /// </summary>
         private PackageDTO EnrichPackageDtoWithAbsoluteUrls(PackageDTO packageDto)
         {
@@ -204,16 +204,16 @@ namespace TravoRides.Application.Services
         }
 
         /// <summary>
-        /// Converts relative file paths in a collection of PortfolioDTOs to absolute URLs
+        /// Converts relative file paths in a collection of PackageDTOs to absolute URLs
         /// </summary>
         private IEnumerable<PackageDTO> EnrichPackageDtosWithAbsoluteUrls(IEnumerable<PackageDTO> packageDto)
         {
             if (packageDto == null)
                 return packageDto;
 
-            foreach (var portfolioDto in packageDto)
+            foreach (var PackageDto in packageDto)
             {
-                EnrichPackageDtoWithAbsoluteUrls(portfolioDto);
+                EnrichPackageDtoWithAbsoluteUrls(PackageDto);
             }
 
             return packageDto;

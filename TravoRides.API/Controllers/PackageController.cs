@@ -31,7 +31,7 @@ namespace TravoRides.API.Controllers
 
         [HttpPost]
         //[Authorize]
-        public async Task<IActionResult> Create([FromBody] CreatePackageRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromForm] CreatePackageRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
             return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Package created.", Data = id });
@@ -39,7 +39,7 @@ namespace TravoRides.API.Controllers
 
         [HttpPut("{id:guid}")]
         //[Authorize]
-        public async Task<IActionResult> Update(Guid id, [FromBody] PackageDTO request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdatePackageRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);

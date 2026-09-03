@@ -2,6 +2,7 @@ using AutoMapper;
 using TravoRiders.Application.Common.Exceptions;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.FeaturesMaster;
+using TravoRides.Application.DTOs.SelfDrive;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
@@ -19,91 +20,87 @@ namespace TravoRides.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<PagedResponse<QuoteDTO>> GetAllAsync(SearchQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<FeaturesMasterDTO>> GetAllAsync(SearchFeatureMasterRequest request, CancellationToken cancellationToken = default)
         {
-            if (request.PageNumber < 1) request.PageNumber = 1;
-            if (request.PageSize < 1) request.PageSize = 10;
-            if (request.PageSize > 100) request.PageSize = 100;
+            // Defensive pagination
+            if (request.PageNumber < 1)
+                request.PageNumber = 1;
 
-            var all = await _unitOfWork.Quotes.GetAllAsync(cancellationToken);
-            var query = all.AsQueryable();
+            if (request.PageSize < 1)
+                request.PageSize = 8;
 
-            if (!string.IsNullOrWhiteSpace(request.Keyword))
+            if (request.PageSize > 100)
+                request.PageSize = 100;
+
+            var pagedResponse = await _unitOfWork.FeatureMasters
+                .GetAllSearchAsync(
+                    request.PageNumber,
+                    request.PageSize,
+                    request.Keyword,
+                    cancellationToken);
+
+            var featuresMasterDtos = _mapper.Map<IEnumerable<FeaturesMasterDTO>>(
+                pagedResponse.Items);
+
+
+            return new PagedResponse<FeaturesMasterDTO>
             {
-                var k = request.Keyword.Trim().ToLower();
-                query = query.Where(q => (q.Purpose != null && q.Purpose.ToLower().Contains(k)) || (q.Name != null && q.Name.ToLower().Contains(k)) || (q.Email != null && q.Email.ToLower().Contains(k)));
-            }
-
-            var totalCount = query.Count();
-
-            var items = query
-                .OrderByDescending(e => e.CreatedAt)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            return new PagedResponse<QuoteDTO>
-            {
-                Items = _mapper.Map<List<QuoteDTO>>(items),
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
+                Items = featuresMasterDtos,
+                PageNumber = pagedResponse.PageNumber,
+                PageSize = pagedResponse.PageSize,
+                TotalCount = pagedResponse.TotalCount,
+                TotalPages = pagedResponse.TotalPages
             };
         }
 
-        public async Task<QuoteDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<FeaturesMasterDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)                  
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(id, cancellationToken);
-            if (quote == null) return null;
-            return _mapper.Map<QuoteDTO>(quote);
+            var featuresMaster = await _unitOfWork.FeatureMasters.GetByIdAsync(id, cancellationToken);
+            if (featuresMaster == null) return null;
+            return _mapper.Map<FeaturesMasterDTO>(featuresMaster);
         }
 
-        public async Task<Guid> CreateAsync(CreateQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreateAsync(CreateFeaturesMasterRequest request, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.Purpose))
-                throw new ValidationException("Purpose is required");
+            if (string.IsNullOrWhiteSpace(request.Title))
+                throw new ValidationException("Title is required");
 
-            var quote = new Quote
+            var featuresMaster = new FeaturesMaster
             {
-                Purpose = request.Purpose?.Trim(),
-                Name = request.Name?.Trim(),
-                Phone = request.Phone?.Trim(),
-                Email = request.Email?.Trim(),
-                Requirements = request.Requirements?.Trim()
+                Title = request.Title?.Trim(),
+                Description = request.Description?.Trim(),
+                Icon = request.Icon?.Trim() ?? string.Empty,
             };
 
-            await _unitOfWork.Quotes.AddAsync(quote, cancellationToken);
+            await _unitOfWork.FeatureMasters.AddAsync(featuresMaster, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return quote.Id;
+            return featuresMaster.Id;
         }
 
-        public async Task UpdateAsync(UpdateQuoteRequest request, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(UpdateFeaturesMasterRequest request, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(request.Id, cancellationToken);
-            if (quote == null) throw new ResourceNotFoundException("Quote not found.");
+            var featuresMaster = await _unitOfWork.FeatureMasters.GetByIdAsync(request.Id, cancellationToken);
+            if (featuresMaster == null) throw new ResourceNotFoundException("FeaturesMaster not found.");
 
-            quote.Purpose = request.Purpose?.Trim();
-            quote.Name = request.Name?.Trim();
-            quote.Phone = request.Phone?.Trim();
-            quote.Email = request.Email?.Trim();
-            quote.Requirements = request.Requirements?.Trim();
+            featuresMaster.Title = request.Title?.Trim();
+            featuresMaster.Description = request.Description?.Trim();
+            featuresMaster.Icon = request.Icon?.Trim() ?? string.Empty;
 
-            _unitOfWork.Quotes.Update(quote);
+            _unitOfWork.FeatureMasters.Update(featuresMaster);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var quote = await _unitOfWork.Quotes.GetByIdAsync(id, cancellationToken);
-            if (quote == null) throw new ResourceNotFoundException("Quote not found.");
+            var featuresMaster = await _unitOfWork.FeatureMasters.GetByIdAsync(id, cancellationToken);
+            if (featuresMaster == null) throw new ResourceNotFoundException("FeaturesMaster not found.");
 
-            quote.IsDeleted = true;
-            quote.ModifiedAt = DateTime.UtcNow;
-            quote.ModifiedBy = "System";
+            featuresMaster.IsDeleted = true;
+            featuresMaster.ModifiedAt = DateTime.UtcNow;
+            featuresMaster.ModifiedBy = "System";
 
-            _unitOfWork.Quotes.Update(quote);
+            _unitOfWork.FeatureMasters.Update(featuresMaster);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

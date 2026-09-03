@@ -32,7 +32,7 @@ namespace TravoRides.API.Controllers
 
         [HttpPost]
         //[Authorize]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryBasedRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromForm] CreateCategoryBasedRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
             return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Created.", Data = id });
@@ -40,7 +40,7 @@ namespace TravoRides.API.Controllers
 
         [HttpPut("{id:guid}")]
        // [Authorize]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryBasedRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateCategoryBasedRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);
