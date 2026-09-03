@@ -69,15 +69,19 @@ namespace TravoRides.Infrastructure.Repository
                 TotalPages = totalPages
             };
         }
-        public async Task<List<Cab>> GetCabsByCategoryAsync( Guid categoryId, CancellationToken cancellationToken)
+      
+
+        public async Task<Cab?> GetCabByCategoryIdAsync(Guid cabId, CancellationToken cancellationToken)
         {
+          
+
             return await context.Cabs
-                .Include(c => c.Category)
-                .Where(c =>
-                    !c.IsDeleted &&
-                    c.CategoryId == categoryId)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+        .Include(c => c.Category)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(
+            c => c.Id == cabId && !c.IsDeleted,
+            cancellationToken);
         }
     }
+
 }

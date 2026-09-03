@@ -9,6 +9,6 @@ namespace TravoRides.Application.Repositories
     public interface ISelfDriveRepository : IGenericRepository<SelfDrive>
     {
         Task<PagedResponse<SelfDrive>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, Guid? cabId, CancellationToken cancellationToken);
-        Task<List<SelfDrive>> GetSelfDrivesByCabsAsync(Guid id, CancellationToken cancellationToken);
+        Task<SelfDrive?> GetSelfDriveByCabAsync(Guid id, CancellationToken cancellationToken);
     }
 }

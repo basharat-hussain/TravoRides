@@ -9,6 +9,7 @@ namespace TravoRides.Application.Repositories
     public interface ICabRepository : IGenericRepository<Cab>
     {
         Task<PagedResponse<Cab>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, Guid? categoryId, CancellationToken cancellationToken);
-        Task<List<Cab>> GetCabsByCategoryAsync(Guid id, CancellationToken cancellationToken);
+        Task<Cab?> GetCabByCategoryIdAsync(Guid id, CancellationToken cancellationToken);
+
     }
 }

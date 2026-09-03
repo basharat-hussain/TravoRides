@@ -56,7 +56,7 @@ namespace TravoRides.Application.Services
 
         public async Task<SelfDriveDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(id, cancellationToken);
+            var selfDrive = await _unitOfWork.SelfDrives.GetSelfDriveByCabAsync(id, cancellationToken);
             if (selfDrive == null) return null;
             return _mapper.Map<SelfDriveDTO>(selfDrive);
         }

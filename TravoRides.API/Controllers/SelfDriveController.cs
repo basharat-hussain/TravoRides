@@ -18,14 +18,14 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] SearchSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
             var result = await _service.GetAllAsync(request, cancellationToken);
-            return Ok(new ApiResponse<PagedResponse<SelfDriveDTO>> { IsSuccess = true, Message = "Items retrieved.", Data = result });
+            return Ok(new ApiResponse<PagedResponse<SelfDriveDTO>> { IsSuccess = true, Message = "SelfDrive retrieved.", Data = result });
         }
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
         {
             var r = await _service.GetByIdAsync(id, cancellationToken);
-            if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "Item not found." });
+            if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "SelfDrive not found." });
             return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Item retrieved.", Data = r });
         }
 
@@ -34,7 +34,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateSelfDriveRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Created.", Data = id });
+            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "SelfDrive Created.", Data = id });
         }
 
         [HttpPut("{id:guid}")]
@@ -43,7 +43,7 @@ namespace TravoRides.API.Controllers
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Updated.", Data = id });
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "SelfDrive Updated.", Data = id });
         }
 
         [HttpDelete("{id:guid}")]
@@ -51,7 +51,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Deleted.", Data = id });
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "SelfDrive Deleted.", Data = id });
         }
     }
 }

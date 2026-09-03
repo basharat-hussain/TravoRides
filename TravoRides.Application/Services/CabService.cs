@@ -70,20 +70,7 @@ namespace TravoRides.Application.Services
             };
         }
 
-        // ============================================================
-        // GET ALL
-        // ============================================================
-
-        public async Task<IEnumerable<CabDTO>> GetAllAsync(
-            CancellationToken cancellationToken = default)
-        {
-            var cabs = await _unitOfWork.Cabs
-                .GetAllAsync(cancellationToken);
-
-            var cabDtos = _mapper.Map<List<CabDTO>>(cabs);
-
-            return EnrichCabDtosWithAbsoluteUrls(cabDtos);
-        }
+       
 
         // ============================================================
         // GET BY ID
@@ -94,7 +81,7 @@ namespace TravoRides.Application.Services
             CancellationToken cancellationToken = default)
         {
             var cab = await _unitOfWork.Cabs
-                .GetByIdAsync(id, cancellationToken);
+                .GetCabByCategoryIdAsync(id, cancellationToken);
 
             if (cab == null)
                 return null;
