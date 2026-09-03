@@ -37,6 +37,11 @@ namespace TravoRiders.Infrastructure.Context
 
         #endregion
 
+        #region Booking and Payment
+        public DbSet<Booking> Bookings => Set<Booking>();
+        public DbSet<Payment> Payments => Set<Payment>();
+        #endregion
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

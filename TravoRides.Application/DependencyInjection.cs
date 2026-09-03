@@ -21,6 +21,7 @@ namespace TravoRides.Application
             services.AddScoped<IFeaturesMasterService, FeaturesMasterService>();
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<ISelfDriveService, SelfDriveService>();
+            services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IForgotPasswordService, ForgotPasswordService>();

@@ -15,6 +15,8 @@ namespace TravoRides.Infrastructure.Repository
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
 
+        public IBookingRepository Bookings { get; }
+        public IGenericRepository<Payment> Payments { get; }
         public ICategoryBasedRepository CategoryBased { get; }
         public IOtpVerificationRepository OtpVerifications { get; }
         public ICabRepository Cabs { get; }
