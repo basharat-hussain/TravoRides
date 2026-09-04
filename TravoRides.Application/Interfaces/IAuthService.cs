@@ -1,9 +1,9 @@
-﻿using TravoRiders.Application.DTOs.Authentication;
+﻿using TravoRides.Application.DTOs.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Application.Interfaces
+namespace TravoRides.Application.Interfaces
 {
     public interface IAuthService
     {

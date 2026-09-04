@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Domain.Entities;
+using TravoRides.Application.Interfaces;
+using TravoRides.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,7 +12,7 @@ using System.Text;
 using TravoRides.Application.Interfaces;
 using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Infrastructure.Authentication
+namespace TravoRides.Infrastructure.Authentication
 {
     public class JwtTokenService : ITokenService
     {

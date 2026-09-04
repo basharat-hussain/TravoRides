@@ -1,4 +1,4 @@
-﻿using TravoRiders.Application.Common.Exceptions;
+﻿using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Interfaces;
 using System.Security.Claims;
 

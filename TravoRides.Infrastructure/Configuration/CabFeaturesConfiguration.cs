@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Infrastructure.Configurations
+namespace TravoRides.Infrastructure.Configurations
 {
     public class CabFeaturesConfiguration : IEntityTypeConfiguration<CabFeatures>
     {

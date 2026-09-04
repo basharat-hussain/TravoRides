@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Application.DTOs.Users
+﻿namespace TravoRides.Application.DTOs.Users
 {
     public class UserProfileResponse
     {

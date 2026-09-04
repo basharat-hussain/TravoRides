@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Domain.Common
+﻿namespace TravoRides.Domain.Common
 {
     public abstract class BaseEntity
     {

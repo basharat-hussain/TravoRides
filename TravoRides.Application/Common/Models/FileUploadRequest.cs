@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Application.Common.Models
+﻿namespace TravoRides.Application.Common.Models
 {
     public sealed class FileUploadRequest
     {

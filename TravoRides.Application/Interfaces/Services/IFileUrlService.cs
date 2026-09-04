@@ -1,4 +1,4 @@
-namespace TravoRiders.Application.Interfaces.Services
+namespace TravoRides.Application.Interfaces.Services
 {
     /// <summary>
     /// Service for converting relative file paths to absolute URLs

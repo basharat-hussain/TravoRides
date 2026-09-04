@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
-using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.Common.Models;
-using TravoRiders.Application.Common.Options;
-using TravoRiders.Application.Interfaces.Services;
+using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.Common.Models;
+using TravoRides.Application.Common.Options;
+using TravoRides.Application.Interfaces.Services;
 
-namespace TravoRiders.Infrastructure.Services
+namespace TravoRides.Infrastructure.Services
 {
     public class FileStorageService : IFileStorageService
     {

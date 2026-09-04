@@ -1,7 +1,7 @@
-﻿using TravoRiders.Domain.Common;
+﻿using TravoRides.Domain.Common;
 using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Domain.Entities
+namespace TravoRides.Domain.Entities
 {
     public class RefreshToken : BaseEntity
     {

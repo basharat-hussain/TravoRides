@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRiders.Application.Common.Exceptions;
+using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
@@ -70,7 +70,7 @@ namespace TravoRides.Application.Services
             {
 
                 Name = request.Name?.Trim(),
-               PhoneNo = request.PhoneNo?.Trim(),
+               Phone = request.PhoneNo?.Trim(),
                 WhatsApp = request.WhatsApp?.Trim(),
                 Email = request.Email?.Trim(),
                 TravelDate = request.TravelDate,
@@ -94,7 +94,7 @@ namespace TravoRides.Application.Services
             if (booking == null) throw new ResourceNotFoundException("Booking not found.");
 
             booking.Name = request.Name?.Trim();
-            booking.PhoneNo = request.PhoneNo?.Trim();
+            booking.Phone = request.PhoneNo?.Trim();
             booking.WhatsApp = request.WhatsApp?.Trim();
             booking.Email = request.Email?.Trim();
             booking.TravelDate = request.TravelDate;

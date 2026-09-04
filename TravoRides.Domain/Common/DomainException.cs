@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Domain.Common
+namespace TravoRides.Domain.Common
 {
     public sealed class DomainException(string message) : Exception(message)
     {

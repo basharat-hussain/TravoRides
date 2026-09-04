@@ -1,9 +1,9 @@
 using System.Net;
 using System.Text.Json;
-using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.Common.Responses;
+using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.Common.Responses;
 
-namespace TravoRiders.API.Middleware
+namespace TravoRides.API.Middleware
 {
     public class GlobalExceptionMiddleware
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRiders.Domain.Common;
-using TravoRiders.Domain.Entities;
-using TravoRiders.Domain.Enums;
+using TravoRides.Domain.Common;
+using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.Domain.Entities
 {

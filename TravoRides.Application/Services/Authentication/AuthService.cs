@@ -1,8 +1,8 @@
-﻿using TravoRiders.Application.DTOs.Authentication;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Domain.Entities;
+﻿using TravoRides.Application.DTOs.Authentication;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Domain.Entities;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
 

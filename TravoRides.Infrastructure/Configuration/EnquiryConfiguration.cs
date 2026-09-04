@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Infrastructure.Configuration
+namespace TravoRides.Infrastructure.Configuration
 {
     public class EnquiryConfiguration : IEntityTypeConfiguration<Enquiry>
     {

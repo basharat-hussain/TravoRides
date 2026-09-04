@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Infrastructure.Context;
 using TravoRides.Domain.Entities;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Repositories;

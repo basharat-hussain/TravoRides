@@ -1,9 +1,9 @@
-﻿using TravoRiders.Application.Repositories;
-using TravoRiders.Domain.Entities;
-using TravoRiders.Domain.Enums;
+﻿using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
 using TravoRides.Application.Repositories;
 
-namespace TravoRiders.Application.Repositories
+namespace TravoRides.Application.Repositories
 {
     public interface IOtpVerificationRepository : IGenericRepository<VerificationOtp>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRiders.Domain.Common;
+using TravoRides.Domain.Common;
 using TravoRides.Domain.Enums;
 
 namespace TravoRides.Domain.Entities

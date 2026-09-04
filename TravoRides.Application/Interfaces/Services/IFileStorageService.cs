@@ -1,7 +1,7 @@
 ﻿
-using TravoRiders.Application.Common.Models;
+using TravoRides.Application.Common.Models;
 
-namespace TravoRiders.Application.Interfaces.Services
+namespace TravoRides.Application.Interfaces.Services
 {
     public interface IFileStorageService
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace TravoRiders.Application.DTOs.Enquirer
+namespace TravoRides.Application.DTOs.Enquirer
 {
     public class EnquiryDTO
     {

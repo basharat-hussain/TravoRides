@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TravoRides.Infrastructure.Repository;
-using TravoRiders.Domain.Entities;
+using TravoRides.Domain.Entities;
 using TravoRides.Application.Repositories;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Infrastructure.Context;
 
-namespace TravoRiders.Infrastructure.Repository
+namespace TravoRides.Infrastructure.Repository
 {
     public class RefreshTokenRepository : GenericRepository<RefreshToken>, IRefreshTokenRepository
     {

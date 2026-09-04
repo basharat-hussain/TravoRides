@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Infrastructure.Context;
 
 #nullable disable
 
@@ -25,7 +25,7 @@ namespace TravoRides.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TravoRiders.Domain.Entities.RefreshToken", b =>
+            modelBuilder.Entity("TravoRides.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +78,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.ToTable("RefreshTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TravoRiders.Domain.Entities.VerificationOtp", b =>
+            modelBuilder.Entity("TravoRides.Domain.Entities.VerificationOtp", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -546,7 +546,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("TravoRiders.Domain.Entities.RefreshToken", b =>
+            modelBuilder.Entity("TravoRides.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("TravoRides.Domain.Entities.User", "User")
                         .WithMany("RefreshTokens")
@@ -557,7 +557,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TravoRiders.Domain.Entities.VerificationOtp", b =>
+            modelBuilder.Entity("TravoRides.Domain.Entities.VerificationOtp", b =>
                 {
                     b.HasOne("TravoRides.Domain.Entities.User", "User")
                         .WithMany()

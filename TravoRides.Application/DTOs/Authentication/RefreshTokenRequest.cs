@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Application.DTOs.Authentication
+namespace TravoRides.Application.DTOs.Authentication
 {
     public class RefreshTokenRequest
     {

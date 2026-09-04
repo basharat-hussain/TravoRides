@@ -1,9 +1,9 @@
-﻿using TravoRiders.Domain.Enums;
+﻿using TravoRides.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Application.DTOs.Users
+namespace TravoRides.Application.DTOs.Users
 {
     public class UserOnlyResponse
     {

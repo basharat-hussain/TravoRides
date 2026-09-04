@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Services;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Services;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
 using TravoRides.Application.Services.Authentication;

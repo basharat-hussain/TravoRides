@@ -1,4 +1,4 @@
-namespace TravoRiders.Application.DTOs.Enquirer
+namespace TravoRides.Application.DTOs.Enquirer
 {
     public class SearchEnquiryRequest
     {

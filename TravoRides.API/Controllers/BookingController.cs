@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TravoRiders.Application.Common.Responses;
+using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;

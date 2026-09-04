@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TravoRiders.Application.Common.Responses;
-using TravoRiders.Application.DTOs.Authentication;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Common.Responses;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Authentication;
+using TravoRides.Application.Interfaces;
 
-namespace TravoRiders.API.Controllers
+namespace TravoRides.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TravoRiders.Application.Common.Models;
-using TravoRiders.Application.Common.Options;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Infrastructure.Authentication;
-using TravoRiders.Infrastructure.Context;
-using TravoRiders.Infrastructure.Repository;
-using TravoRiders.Infrastructure.Services;
+using TravoRides.Application.Common.Models;
+using TravoRides.Application.Common.Options;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Application.Repositories;
+using TravoRides.Infrastructure.Authentication;
+using TravoRides.Infrastructure.Context;
+using TravoRides.Infrastructure.Repository;
+using TravoRides.Infrastructure.Services;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
@@ -50,6 +50,7 @@ namespace TravoRides.Infrastructure
             services.Configure<FileStorageOptions>(options => configuration.GetSection("FileStorage").Bind(options));
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.Configure<PaymentOptions>(configuration.GetSection("Payment"));
 
             return services;
         }

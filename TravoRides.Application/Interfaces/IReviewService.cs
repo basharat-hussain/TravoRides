@@ -1,11 +1,11 @@
 ﻿
-using TravoRiders.Application.DTOs.Review;
+using TravoRides.Application.DTOs.Review;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Application.DTOs.Common;
 
-namespace TravoRiders.Application.Interfaces
+namespace TravoRides.Application.Interfaces
 {
     public interface IReviewService
     {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TravoRiders.Domain.Entities;
+using TravoRides.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Infrastructure.Configurations
+namespace TravoRides.Infrastructure.Configurations
 {
     public class RefreshTokenConfiguration:IEntityTypeConfiguration<RefreshToken>
     {

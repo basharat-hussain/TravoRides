@@ -1,9 +1,9 @@
 ﻿
-using TravoRiders.Domain.Common;
-using TravoRiders.Domain.Enums;
+using TravoRides.Domain.Common;
+using TravoRides.Domain.Enums;
 using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Domain.Entities
+namespace TravoRides.Domain.Entities
 {
     public class VerificationOtp : BaseEntity
     {

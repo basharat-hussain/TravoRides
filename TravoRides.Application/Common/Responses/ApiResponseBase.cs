@@ -1,4 +1,4 @@
-namespace TravoRiders.Application.Common.Responses
+namespace TravoRides.Application.Common.Responses
 {
     public class ApiResponse
     {

@@ -2,10 +2,10 @@
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Application.Common.Models;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Application.Common.Models;
 
-namespace TravoRiders.Infrastructure.Services
+namespace TravoRides.Infrastructure.Services
 {
     public class EmailService : IEmailService
     {

@@ -1,6 +1,6 @@
-﻿using TravoRiders.Domain.Enums;
+﻿using TravoRides.Domain.Enums;
 
-namespace TravoRiders.Application.Interfaces
+namespace TravoRides.Application.Interfaces
 {
     public interface IOtpVerificationService
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
-using TravoRiders.Domain.Common;
+using TravoRides.Domain.Common;
 
 namespace TravoRides.Application.Repositories
 {

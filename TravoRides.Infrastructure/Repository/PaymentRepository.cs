@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Infrastructure.Context;
 using TravoRides.Domain.Entities;
 
 namespace TravoRides.Infrastructure.Repository

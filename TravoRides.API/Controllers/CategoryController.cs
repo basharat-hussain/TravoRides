@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TravoRiders.Application.Common.Responses;
+using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;

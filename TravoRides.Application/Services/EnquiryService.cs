@@ -1,10 +1,10 @@
-﻿using TravoRiders.Application.Common.Exceptions;
+﻿using TravoRides.Application.Common.Exceptions;
 
-using TravoRiders.Application.DTOs.Enquirer;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Domain.Entities;
+using TravoRides.Application.DTOs.Enquirer;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,9 @@ using System.Text;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Application.Services
+namespace TravoRides.Application.Services
 {
     public class EnquiryService : IEnquiryService
     {
@@ -101,6 +102,7 @@ namespace TravoRiders.Application.Services
                     request.Subject,
                     request.Message,
                     request.Phone
+                  
                     );
 
                 if (!string.IsNullOrWhiteSpace(request.Email))
@@ -113,7 +115,7 @@ namespace TravoRiders.Application.Services
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var enquiry = await _unitOfWork.Enquirers
+            var enquiry = await _unitOfWork.Enquiries
                 .GetByIdAsync(id, cancellationToken);
 
             if (enquiry == null)
@@ -123,7 +125,7 @@ namespace TravoRiders.Application.Services
             enquiry.ModifiedAt = DateTime.UtcNow;
             enquiry.ModifiedBy = "System"; // You
 
-            _unitOfWork.Enquirers.Update(enquiry);
+            _unitOfWork.Enquiries.Update(enquiry);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using TravoRiders.Domain.Common;
+using TravoRides.Domain.Common;
 
 namespace TravoRides.Domain.Entities
 {
@@ -24,14 +24,16 @@ namespace TravoRides.Domain.Entities
         [StringLength(12, ErrorMessage = "Phone should be 10 characters long", MinimumLength = 10)]
         public String Phone { get; set; }
         public string WhatsApp { get; set; } = string.Empty;
+
+        public bool IsConfirmed { get; set; } = false;
         public DateTime TravelDate { get; set; }
         public string PickupLocation { get; set; }
         public string DropLocation { get; set; } 
-        public string PickupTime { get; set; } = string.Empty;
+        public DateTime PickupTime { get; set; } 
         public string Passengers { get; set; } = string.Empty;
         public string? Luggage { get; set; } = string.Empty;
         public string? SpecialRequirements { get; set; } = string.Empty;
 
-        public Payment Payment { get; set; } = null!;
+        public Payment? Payment { get; set; } 
     }
 }

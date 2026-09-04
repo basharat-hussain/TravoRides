@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace TravoRiders.Application.DTOs.Review
+namespace TravoRides.Application.DTOs.Review
 {
     public class ReviewDTO
     {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Domain.Entities;
-using TravoRiders.Domain.Enums;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
+using TravoRides.Infrastructure.Context;
 using TravoRides.Infrastructure.Repository;
 
-namespace TravoRiders.Infrastructure.Repository
+namespace TravoRides.Infrastructure.Repository
 {
     public class OtpVerificationRepository : GenericRepository<VerificationOtp>, IOtpVerificationRepository
     {

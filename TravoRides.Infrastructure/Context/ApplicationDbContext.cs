@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRiders.Domain.Entities;
+using TravoRides.Domain.Entities;
 using TravoRides.Domain.Entities;
 
-namespace TravoRiders.Infrastructure.Context
+namespace TravoRides.Infrastructure.Context
 {
     public class ApplicationDbContext : DbContext
     {

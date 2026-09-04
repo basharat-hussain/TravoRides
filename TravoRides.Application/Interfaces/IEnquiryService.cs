@@ -1,11 +1,11 @@
 ﻿
-using TravoRiders.Application.DTOs.Enquirer;
+using TravoRides.Application.DTOs.Enquirer;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Application.DTOs.Common;
 
-namespace TravoRiders.Application.Interfaces
+namespace TravoRides.Application.Interfaces
 {
     public interface IEnquiryService
     {

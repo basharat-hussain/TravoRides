@@ -1,6 +1,6 @@
-﻿using TravoRiders.Domain.Enums;
+﻿using TravoRides.Domain.Enums;
 
-namespace TravoRiders.Application.DTOs.Users
+namespace TravoRides.Application.DTOs.Users
 {
     public class CreateUserRequst
     {

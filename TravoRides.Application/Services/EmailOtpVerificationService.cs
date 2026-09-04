@@ -1,16 +1,16 @@
-﻿using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Domain.Entities;
-using TravoRiders.Domain.Enums;
+﻿using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
 using System.Security.Cryptography;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Interfaces.Services;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 
-namespace TravoRiders.Application.Services
+namespace TravoRides.Application.Services
 {
     public class EmailOtpVerificationService : IOtpVerificationService
     {

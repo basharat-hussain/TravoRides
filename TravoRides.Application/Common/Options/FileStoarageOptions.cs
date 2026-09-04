@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Application.Common.Options
+namespace TravoRides.Application.Common.Options
 {
     public class FileStorageOptions
     {

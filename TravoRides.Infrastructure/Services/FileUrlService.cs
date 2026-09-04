@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using TravoRiders.Application.Interfaces.Services;
+using TravoRides.Application.Interfaces.Services;
 
-namespace TravoRiders.Infrastructure.Services
+namespace TravoRides.Infrastructure.Services
 {
     public class FileUrlService : IFileUrlService
     {

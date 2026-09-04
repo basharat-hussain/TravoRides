@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Application.Repositories;
+using TravoRides.Infrastructure.Context;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 

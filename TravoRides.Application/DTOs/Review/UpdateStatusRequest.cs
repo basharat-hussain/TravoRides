@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravoRiders.Application.DTOs.Review
+namespace TravoRides.Application.DTOs.Review
 {
     public class UpdateStatusRequest
     {

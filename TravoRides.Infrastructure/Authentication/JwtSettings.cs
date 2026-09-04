@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Infrastructure.Authentication
+﻿namespace TravoRides.Infrastructure.Authentication
 {
     public class JwtSettings
     {

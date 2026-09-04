@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Infrastructure.Context;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 

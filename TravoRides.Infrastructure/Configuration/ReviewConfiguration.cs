@@ -1,8 +1,8 @@
-﻿using TravoRiders.Domain.Entities;
+﻿using TravoRides.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace TravoRiders.Infrastructure.Configurations
+namespace TravoRides.Infrastructure.Configurations
 {
     public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
@@ -30,9 +30,6 @@ namespace TravoRiders.Infrastructure.Configurations
             builder.Property(x => x.Feedback)
                 .IsRequired()
                 .HasMaxLength(2000);
-
-            builder.Property(x => x.Company)
-                .IsRequired();
 
             builder.Property(x => x.IsActive)
                 .IsRequired();

@@ -1,17 +1,18 @@
-﻿using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.DTOs.Client;
-using TravoRiders.Application.DTOs.Common;
-using TravoRiders.Application.DTOs.Review;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Domain.Entities;
+﻿using TravoRides.Application.Common.Exceptions;
+
+using TravoRides.Application.DTOs.Review;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TravoRides.Application.Repositories;
+using TravoRides.Application.DTOs.Common;
 
-namespace TravoRiders.Application.Services
+namespace TravoRides.Application.Services
 {
     public class ReviewService : IReviewService
     {
@@ -42,7 +43,7 @@ namespace TravoRiders.Application.Services
             if (!string.IsNullOrWhiteSpace(request.Keyword))
             {
                 var k = request.Keyword.Trim().ToLower();
-                query = query.Where(r => (r.Name != null && r.Name.ToLower().Contains(k)) || (r.Company != null && r.Company.ToLower().Contains(k)));
+                query = query.Where(r => (r.Name != null && r.Name.ToLower().Contains(k)) || (r.Address != null && r.Address.ToLower().Contains(k)));
             }
 
             var totalCount = query.Count();
@@ -80,7 +81,7 @@ namespace TravoRiders.Application.Services
             if (!string.IsNullOrWhiteSpace(request.Keyword))
             {
                 var k = request.Keyword.Trim().ToLower();
-                query = query.Where(r => (r.Name != null && r.Name.ToLower().Contains(k)) || (r.Company != null && r.Company.ToLower().Contains(k)));
+                query = query.Where(r => (r.Name != null && r.Name.ToLower().Contains(k)) || (r.Address != null && r.Address.ToLower().Contains(k)));
             }
 
             var totalCount = query.Count();
@@ -121,7 +122,7 @@ namespace TravoRiders.Application.Services
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ValidationException(" name is required.");
 
-            var existingClient = await _unitOfWork.Clients
+            var existingClient = await _unitOfWork.Reviews
                 .FindAsync(x => x.Name == request.Name.Trim(), cancellationToken);
 
             var review = new Review
@@ -130,7 +131,7 @@ namespace TravoRiders.Application.Services
                 Address = request.Address.Trim(),
                 Feedback = request.Feedback.Trim(),
                 Rating = request.Rating,
-                Company = request.Company,
+              
                 ImageUrl = request.ImageUrl
             };
 
@@ -154,7 +155,7 @@ namespace TravoRiders.Application.Services
 
             review.Name = request.Name.Trim();
             review.Address = request.Address.Trim();
-            review.Company = request.Company.Trim();
+          
             review.Feedback = request.Feedback.Trim();
             review.ImageUrl = request.ImageUrl;
 

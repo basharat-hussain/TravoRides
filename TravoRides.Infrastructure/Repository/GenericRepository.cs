@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
-using TravoRiders.Domain.Common;
-using TravoRiders.Infrastructure.Context;
+using TravoRides.Domain.Common;
+using TravoRides.Infrastructure.Context;
 using TravoRides.Application.Repositories;
 
 namespace TravoRides.Infrastructure.Repository

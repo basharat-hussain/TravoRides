@@ -1,12 +1,12 @@
 ﻿
 using System.Security.Cryptography;
-using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.DTOs.Authentication;
-using TravoRiders.Application.Interfaces;
-using TravoRiders.Application.Interfaces.Services;
-using TravoRiders.Application.Repositories;
-using TravoRiders.Domain.Entities;
-using TravoRiders.Domain.Enums;
+using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.DTOs.Authentication;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
+using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 

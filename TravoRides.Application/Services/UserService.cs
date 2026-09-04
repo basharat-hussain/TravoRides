@@ -1,7 +1,7 @@
 using AutoMapper;
-using TravoRiders.Application.Common.Exceptions;
-using TravoRiders.Application.DTOs.Users;
-using TravoRiders.Application.Interfaces.Services;
+using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.DTOs.Users;
+using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;

@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Domain.Enums
+﻿namespace TravoRides.Domain.Enums
 {
     public enum UserRole
     {

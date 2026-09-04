@@ -1,4 +1,4 @@
-namespace TravoRiders.Application.Common.Exceptions
+namespace TravoRides.Application.Common.Exceptions
 {
     public class AppException : Exception
     {

@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TravoRiders.Application.DTOs.Review;
-using TravoRiders.Domain.Entities;
-using TravoRiders.Infrastructure.Context;
-using TravoRides.Application.DTOs.Common;
+
 using TravoRides.Domain.Entities;
+using TravoRides.Infrastructure.Context;
+using TravoRides.Application.DTOs.Common;
+
 
 namespace TravoRides.Infrastructure.Repository
 {

@@ -1,6 +1,6 @@
 ﻿using TravoRides.Application.Interfaces.Services;
 
-namespace TravoRiders.Infrastructure.Services
+namespace TravoRides.Infrastructure.Services
 {
     public class EmailTemplateService : IEmailTemplateService
     {
@@ -47,5 +47,44 @@ namespace TravoRiders.Infrastructure.Services
 
             return html;
         }
+
+        public async Task<string> GetBookingConfirmationTemplateAsync(string name, string bookingId, DateTime bookingDate, string cabName, string cabType, decimal totalAmount)
+        {
+            var path = Path.Combine(GetFullTemplatePath("email"), "booking-confirmation-template.html");
+            var html = await File.ReadAllTextAsync(path);
+            html = html.Replace("{{NAME}}", System.Net.WebUtility.HtmlEncode(name))
+                       .Replace("{{BOOKING_ID}}", System.Net.WebUtility.HtmlEncode(bookingId))
+                       .Replace("{{BOOKING_DATE}}", bookingDate.ToString("f"))
+                       .Replace("{{CAB_NAME}}", System.Net.WebUtility.HtmlEncode(cabName))
+                       .Replace("{{CAB_TYPE}}", System.Net.WebUtility.HtmlEncode(cabType))
+                       .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString("C"));
+            return html;
+        }
+
+        public async Task<string> GetBookingCancellationTemplateAsync(string name, string bookingId, DateTime bookingDate, string cabName, string cabType, decimal totalAmount)
+        {
+            var path = Path.Combine(GetFullTemplatePath("email"), "booking-cancellation-template.html");
+            var html = await File.ReadAllTextAsync(path);
+            html = html.Replace("{{NAME}}", System.Net.WebUtility.HtmlEncode(name))
+                       .Replace("{{BOOKING_ID}}", System.Net.WebUtility.HtmlEncode(bookingId))
+                       .Replace("{{BOOKING_DATE}}", bookingDate.ToString("f"))
+                       .Replace("{{CAB_NAME}}", System.Net.WebUtility.HtmlEncode(cabName))
+                       .Replace("{{CAB_TYPE}}", System.Net.WebUtility.HtmlEncode(cabType))
+                       .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString("C"));
+            return html;
+        }
+        public async Task<string> GetBookingCompletionTemplateAsync(string name, string bookingId, DateTime bookingDate, string cabName, string cabType, decimal totalAmount)
+        {
+            var path = Path.Combine(GetFullTemplatePath("email"), "booking-completion-template.html");
+            var html = await File.ReadAllTextAsync(path);
+            html = html.Replace("{{NAME}}", System.Net.WebUtility.HtmlEncode(name))
+                       .Replace("{{BOOKING_ID}}", System.Net.WebUtility.HtmlEncode(bookingId))
+                       .Replace("{{BOOKING_DATE}}", bookingDate.ToString("f"))
+                       .Replace("{{CAB_NAME}}", System.Net.WebUtility.HtmlEncode(cabName))
+                       .Replace("{{CAB_TYPE}}", System.Net.WebUtility.HtmlEncode(cabType))
+                       .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString("C"));
+            return html;
+        }
+        
     }
 }

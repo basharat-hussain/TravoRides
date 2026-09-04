@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Application.Interfaces.Services
+﻿namespace TravoRides.Application.Interfaces.Services
 {
     public interface IPasswordHasher
     {

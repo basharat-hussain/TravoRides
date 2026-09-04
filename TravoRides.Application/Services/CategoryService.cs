@@ -1,5 +1,5 @@
 using AutoMapper;
-using TravoRiders.Application.Common.Exceptions;
+using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.SelfDrive;

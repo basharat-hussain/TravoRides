@@ -1,7 +1,7 @@
-﻿using TravoRiders.Application.DTOs.Authentication;
-using TravoRiders.Domain.Enums;
+﻿using TravoRides.Application.DTOs.Authentication;
+using TravoRides.Domain.Enums;
 
-namespace TravoRiders.Application.Interfaces
+namespace TravoRides.Application.Interfaces
 {
     public interface IForgotPasswordService
     {

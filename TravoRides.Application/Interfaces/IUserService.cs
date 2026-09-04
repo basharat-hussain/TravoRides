@@ -1,4 +1,4 @@
-using TravoRiders.Application.DTOs.Users;
+using TravoRides.Application.DTOs.Users;
 
 namespace TravoRides.Application.Interfaces
 {

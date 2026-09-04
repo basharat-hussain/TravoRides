@@ -1,4 +1,4 @@
-﻿namespace TravoRiders.Application.DTOs.Authentication
+﻿namespace TravoRides.Application.DTOs.Authentication
 {
     public class LoginRequest
     {
