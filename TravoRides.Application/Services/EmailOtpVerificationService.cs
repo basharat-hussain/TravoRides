@@ -5,10 +5,6 @@ using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 using TravoRides.Domain.Enums;
 using System.Security.Cryptography;
-using TravoRides.Application.Interfaces;
-using TravoRides.Application.Interfaces.Services;
-using TravoRides.Application.Interfaces.Services;
-using TravoRides.Application.Repositories;
 
 namespace TravoRides.Application.Services
 {
@@ -76,7 +72,7 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var subject = "Verify your PulseClinic360 email";
+            var subject = "Verify your TravoRides email";
 
             var template = await _templateService.GetEmailOTPVerificationTemplateAsync(otp, EXPIRATION_MINUTES);
 

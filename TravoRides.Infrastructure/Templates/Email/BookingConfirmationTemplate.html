@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f6f8; padding:30px 15px;">
+        <tr>
+            <td align="center">
+
+                <!-- Main Container -->
+                <table width="600" cellpadding="0" cellspacing="0" border="0"
+                       style="max-width:600px; width:100%; background:#ffffff; border-radius:10px; overflow:hidden;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background:#1f6feb; padding:30px; text-align:center;">
+
+                            <h1 style="margin:0; color:#ffffff; font-size:28px;">
+                                Booking Confirmed!
+                            </h1>
+
+                            <p style="margin:10px 0 0; color:#e8f1ff; font-size:15px;">
+                                Thank you for choosing TravoRides
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding:35px 30px;">
+
+                            <p style="margin:0 0 15px; font-size:17px; color:#333333;">
+                                Hello <strong>{{NAME}}</strong>,
+                            </p>
+
+                            <p style="margin:0 0 25px; font-size:15px; line-height:1.6; color:#555555;">
+                                Your cab booking has been successfully confirmed.
+                                Here are your booking details:
+                            </p>
+
+                            <!-- Booking Details -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="border:1px solid #e5e7eb; border-radius:8px;">
+
+                                <tr>
+                                    <td colspan="2"
+                                        style="padding:15px; background:#f8fafc; border-bottom:1px solid #e5e7eb;">
+                                        <strong style="font-size:16px; color:#222222;">
+                                            Booking Details
+                                        </strong>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px; color:#666666; font-size:14px;">
+                                        Booking ID
+                                    </td>
+
+                                    <td align="right"
+                                        style="padding:12px 15px; color:#222222; font-size:14px; font-weight:bold;">
+                                        {{BOOKING_ID}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px; color:#666666; font-size:14px;">
+                                        Booking Date
+                                    </td>
+
+                                    <td align="right"
+                                        style="padding:12px 15px; color:#222222; font-size:14px;">
+                                        {{BOOKING_DATE}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px; color:#666666; font-size:14px;">
+                                        Cab Name
+                                    </td>
+
+                                    <td align="right"
+                                        style="padding:12px 15px; color:#222222; font-size:14px; font-weight:bold;">
+                                        {{CAB_NAME}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px; color:#666666; font-size:14px;">
+                                        Cab Type
+                                    </td>
+
+                                    <td align="right"
+                                        style="padding:12px 15px; color:#222222; font-size:14px;">
+                                        {{CAB_TYPE}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:15px; border-top:1px solid #e5e7eb; color:#333333; font-size:15px;">
+                                        <strong>Total Amount</strong>
+                                    </td>
+
+                                    <td align="right"
+                                        style="padding:15px; border-top:1px solid #e5e7eb; color:#1f6feb; font-size:18px; font-weight:bold;">
+                                        {{TOTAL_AMOUNT}}
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                            <!-- Message -->
+                            <p style="margin:25px 0 10px; font-size:15px; line-height:1.6; color:#555555;">
+                                Please keep your booking ID for future reference.
+                                We look forward to providing you with a comfortable
+                                and hassle-free journey.
+                            </p>
+
+                            <p style="margin:20px 0 0; font-size:15px; color:#333333;">
+                                Thank you for riding with <strong>TravoRides</strong>.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background:#f8fafc; padding:20px 30px; text-align:center; border-top:1px solid #e5e7eb;">
+
+                            <p style="margin:0; font-size:13px; color:#777777;">
+                                © TravoRides. All rights reserved.
+                            </p>
+
+                            <p style="margin:8px 0 0; font-size:12px; color:#999999;">
+                                This is an automated email. Please do not reply directly to this email.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+    </body>
+</html>

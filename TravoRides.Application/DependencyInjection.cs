@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Services;
-
-using TravoRides.Application.Services.Authentication;
 using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application
@@ -27,7 +25,7 @@ namespace TravoRides.Application
             services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IOtpVerificationService, EmailOtpVerificationService>();
-          services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IEnquiryService, EnquiryService>();
 
             return services;

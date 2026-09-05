@@ -6,13 +6,7 @@ using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TravoRides.Application.Interfaces.Services;
-using TravoRides.Application.Repositories;
 using TravoRides.Application.DTOs.Common;
-using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Services
 {

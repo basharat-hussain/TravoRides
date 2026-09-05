@@ -26,7 +26,7 @@ namespace TravoRides.Infrastructure.Repository
         public async Task InvalidateActiveOtpsAsync(Guid userId, VerificationOtpPurpose purpose, CancellationToken cancellationToken = default)
         {
             var otps = await dbContext.VerificationOtps
-                .Where(x =>x.UserId == userId && x.Purpose == purpose && !x.IsUsed && x.ExpiresAt > DateTime.UtcNow)
+                .Where(x => x.UserId == userId && x.Purpose == purpose && !x.IsUsed && x.ExpiresAt > DateTime.UtcNow)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
 

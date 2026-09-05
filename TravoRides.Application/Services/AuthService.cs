@@ -1,12 +1,11 @@
-﻿using TravoRides.Application.DTOs.Authentication;
+﻿using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.DTOs.Authentication;
 using TravoRides.Application.Interfaces;
-using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Interfaces.Services;
-using TravoRides.Domain.Entities;
-using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
+using TravoRides.Domain.Entities;
 
-namespace TravoRides.Application.Services.Authentication
+namespace TravoRides.Application.Services
 {
     public class AuthService : IAuthService
     {
@@ -75,7 +74,7 @@ namespace TravoRides.Application.Services.Authentication
             {
                 UserId = user.Id,
                 Email = user.Email,
-                Role = "Admin",
+                Role = user.Role.ToString(),
 
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenValue,
@@ -187,7 +186,5 @@ namespace TravoRides.Application.Services.Authentication
                     cancellationToken);
             }
         }
-
-        
     }
 }

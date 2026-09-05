@@ -1,16 +1,14 @@
-﻿
-using System.Security.Cryptography;
-using TravoRides.Application.Common.Exceptions;
+﻿using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.DTOs.Authentication;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 using TravoRides.Domain.Enums;
-using TravoRides.Application.Interfaces.Services;
-using TravoRides.Application.Repositories;
+using System.Security.Cryptography;
+using static System.Net.WebRequestMethods;
 
-namespace TravoRides.Application.Services.Authentication
+namespace TravoRides.Application.Services
 {
     public class ForgotPasswordService : IForgotPasswordService
     {
@@ -81,7 +79,7 @@ namespace TravoRides.Application.Services.Authentication
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            var subject = "Verify your PulseClinic360 email";
+            var subject = "Verify your TravoRides email";
 
             var template = await templateService.GetForgotPasswordOTPTemplateAsync(otp, EXPIRATION_MINUTES);
 
