@@ -10,6 +10,8 @@ using TravoRides.Application.Services;
 
 namespace TravoRides.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class BookingController : Controller
     {
         private readonly IBookingService _service;

@@ -19,12 +19,7 @@ namespace TravoRides.Infrastructure.Repository
             this.context = context;
         }
 
-        public async Task<PagedResponse<Booking>> GetAllSearchAsync(
-           int pageNumber,
-           int pageSize,
-           string? keyword,
-           
-           CancellationToken cancellationToken)
+        public async Task<PagedResponse<Booking>> GetAllSearchAsync( int pageNumber, int pageSize,string? keyword, CancellationToken cancellationToken)
         {
             var query = context.Bookings    
                 .Where(b => !b.IsDeleted)

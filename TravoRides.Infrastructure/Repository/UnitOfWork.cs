@@ -36,7 +36,7 @@ namespace TravoRides.Infrastructure.Repository
            IUserRepository user ,IRefreshTokenRepository refreshTokens,
             IOtpVerificationRepository otpVerifications,ICategoryBasedRepository categoryBased,
             ICategoryRepository category, IFeatureMasterRepository featureMasters, IPackageRepository packages
-            ,IEnquiryRepository enquiries, IReviewRepository reviews)
+            ,IEnquiryRepository enquiries, IReviewRepository reviews,IBookingRepository booking)
         {
             _context = context;
             Cabs = cabs;
@@ -50,6 +50,8 @@ namespace TravoRides.Infrastructure.Repository
             Packages = packages;
             Enquiries = enquiries;
             Reviews = reviews;
+            Bookings = booking;
+            Payments = new GenericRepository<Payment>(context);
         }
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
            => await _context.SaveChangesAsync();

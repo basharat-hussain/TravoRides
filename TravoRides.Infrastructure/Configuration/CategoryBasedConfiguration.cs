@@ -19,7 +19,12 @@ namespace TravoRides.Infrastructure.Configurations
             builder.Property(x => x.Description)
                 .IsRequired()
                 .HasMaxLength(2000);
-
+            builder.Property(x => x.Price)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+            builder.Property(x => x.Discount)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
             builder.Property(x => x.ImageUrl)
                 .IsRequired()
                 .HasMaxLength(1000);
