@@ -30,6 +30,7 @@ namespace TravoRides.Infrastructure
             services.AddScoped<IFeatureMasterRepository, FeatureMasterRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IEnquiryRepository, EnquiryRepository>();
+            services.AddScoped<IBookingRepository, BookingRepository>();
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

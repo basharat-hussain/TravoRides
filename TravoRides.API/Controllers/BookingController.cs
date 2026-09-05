@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.BookingDTO;
+using TravoRides.Application.DTOs.BookingReport;
+using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
+using TravoRides.Application.Services;
 
 namespace TravoRides.API.Controllers
 {
@@ -24,7 +27,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             var r = await _service.GetByIdAsync(id, cancellationToken);
             if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "Booking not found." });
@@ -36,9 +39,10 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateBookingRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Booking created.", Data = id });
+            return CreatedAtAction(nameof(GetById), new { id }, new ApiResponse<object> 
+            { IsSuccess = true, Message = "Booking created.", Data = id });
         }
-
+      
         [HttpPut("{id:guid}")]
         // [Authorize]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBookingRequest request, CancellationToken cancellationToken)
@@ -54,6 +58,24 @@ namespace TravoRides.API.Controllers
         {
             await _service.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Booking deleted.", Data = id });
+        }
+
+        // -----------------------------------------
+        // BOOKING REPORT
+        // -----------------------------------------
+
+        [HttpGet("report")]
+        public async Task<IActionResult> GetReport([FromQuery] SearchBookingRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _service.GetBookingReportAsync(request,cancellationToken);
+
+            return Ok(
+                new ApiResponse<BookingReportResponse>
+                {
+                    IsSuccess = true,
+                    Message = "Booking report retrieved.",
+                    Data = result
+                });
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.DTOs.BookingDTO;
+using TravoRides.Application.DTOs.BookingReport;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
@@ -54,6 +55,48 @@ namespace TravoRides.Application.Services
             };
         }
 
+        public async Task<BookingReportResponse> GetBookingReportAsync(
+            SearchBookingRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            // Defensive pagination
+            if (request.PageNumber < 1)
+                request.PageNumber = 1;
+
+            if (request.PageSize < 1)
+                request.PageSize = 8;
+
+            if (request.PageSize > 100)
+                request.PageSize = 100;
+
+            // Get report from repository
+            var report = await _unitOfWork.Bookings
+                .GetBookingReportAsync(
+                    request.PageNumber,
+                    request.PageSize,
+                    request.Keyword,
+                    request.FromDate,
+                    request.ToDate,
+                    cancellationToken);
+
+            // Map booking records
+            var bookingDtos = _mapper.Map<IEnumerable<BookingReportDTO>>(
+                report.Bookings.Items);
+
+            return new BookingReportResponse
+            {
+                Summary = report.Summary,
+
+                Bookings = new PagedResponse<BookingReportDTO>
+                {
+                    Items = bookingDtos,
+                    PageNumber = report.Bookings.PageNumber,
+                    PageSize = report.Bookings.PageSize,
+                    TotalCount = report.Bookings.TotalCount,
+                    TotalPages = report.Bookings.TotalPages
+                }
+            };
+        }
         public async Task<BookingDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id, cancellationToken);
@@ -76,7 +119,7 @@ namespace TravoRides.Application.Services
                 TravelDate = request.TravelDate,
                 PickupLocation = request.PickupLocation?.Trim(),
                 DropLocation = request.DropLocation?.Trim(),
-                PickupTime = request.PickupTime?.Trim(),
+                PickupTime = request.PickupTime,
                 Passengers = request.Passengers?.Trim(),
                 Luggage = request.Luggage?.Trim(),
                 SpecialRequirements = request.SpecialRequirements?.Trim()   
@@ -100,7 +143,7 @@ namespace TravoRides.Application.Services
             booking.TravelDate = request.TravelDate;
             booking.PickupLocation = request.PickupLocation?.Trim();
             booking.DropLocation = request.DropLocation?.Trim();
-            booking.PickupTime = request.PickupTime?.Trim();
+            booking.PickupTime = request.PickupTime;
             booking.Passengers = request.Passengers?.Trim();
             booking.Luggage = request.Luggage?.Trim();
             booking.SpecialRequirements = request.SpecialRequirements?.Trim();

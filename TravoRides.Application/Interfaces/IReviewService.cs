@@ -17,7 +17,7 @@ namespace TravoRides.Application.Interfaces
 
 
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<PagedResponse<ReviewDTO>> GetAllApprovedAsync(SearchReviewRequest request, CancellationToken cancellationToken = default);
+        Task<IEnumerable<ReviewDTO>> GetAllApprovedAsync(SearchReviewRequest request, CancellationToken cancellationToken = default);
         Task UpdateAsync(UpdateReviewRequest request, CancellationToken cancellationToken);
 
         // Toggle or set review active status

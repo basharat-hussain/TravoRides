@@ -9,6 +9,7 @@ namespace TravoRides.Domain.Entities
     public class Booking : BaseEntity
     {
         public string BookingNo { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Please enter your name")]
         [StringLength(100, ErrorMessage = "Name is too small", MinimumLength = 3)]
         public String Name { get; set; }
@@ -34,6 +35,6 @@ namespace TravoRides.Domain.Entities
         public string? Luggage { get; set; } = string.Empty;
         public string? SpecialRequirements { get; set; } = string.Empty;
 
-        public Payment? Payment { get; set; } 
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

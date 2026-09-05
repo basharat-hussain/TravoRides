@@ -1,6 +1,5 @@
 ﻿using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
-using TravoRides.Application.DTOs.Quote;
 using TravoRides.Application.DTOs.Review;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
@@ -40,7 +39,14 @@ namespace TravoRides.API.Controllers
         {
             var review = await _service.GetAllApprovedAsync(request, cancellationToken);
 
-            return Ok(new ApiResponse<PagedResponse<ReviewDTO>>
+            if (review == null)
+                return NotFound(new ApiResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = "Reviews not found.",
+                    Data = null
+                });
+            return Ok(new ApiResponse <object>
             {
                 IsSuccess = true,
                 Message = "Approved reviews retrieved successfully.",

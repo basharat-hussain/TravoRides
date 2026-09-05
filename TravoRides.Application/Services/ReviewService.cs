@@ -36,25 +36,9 @@ namespace TravoRides.Application.Services
             if (request.PageSize < 1) request.PageSize = 10;
             if (request.PageSize > 100) request.PageSize = 100;
 
-            var all = await _unitOfWork.Reviews.GetAllAsync(cancellationToken);
+            var all = await _unitOfWork.Reviews.GetAllSearchAsync(request.PageNumber, request.PageSize, request.Keyword, cancellationToken);
 
-            var query = all.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(request.Keyword))
-            {
-                var k = request.Keyword.Trim().ToLower();
-                query = query.Where(r => (r.Name != null && r.Name.ToLower().Contains(k)) || (r.Address != null && r.Address.ToLower().Contains(k)));
-            }
-
-            var totalCount = query.Count();
-
-            var items = query
-                .OrderByDescending(r => r.CreatedAt)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            var reviewDtos = _mapper.Map<List<ReviewDTO>>(items);
+            var reviewDtos = _mapper.Map<List<ReviewDTO>>(all.Items);
             reviewDtos = EnrichReviewDtosWithAbsoluteUrls(reviewDtos).ToList();
 
             return new PagedResponse<ReviewDTO>
@@ -62,47 +46,16 @@ namespace TravoRides.Application.Services
                 Items = reviewDtos,
                 PageNumber = request.PageNumber,
                 PageSize = request.PageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)System.Math.Ceiling((double)totalCount / request.PageSize)
+                TotalCount = all.TotalCount,
+                TotalPages = all.TotalPages
             };
         }
 
         // Method 2: For the Public Frontend (See Only Approved/Active)
-        public async Task<PagedResponse<ReviewDTO>> GetAllApprovedAsync(SearchReviewRequest request, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ReviewDTO>> GetAllApprovedAsync(SearchReviewRequest request, CancellationToken cancellationToken = default)
         {
-            if (request.PageNumber < 1) request.PageNumber = 1;
-            if (request.PageSize < 1) request.PageSize = 10;
-            if (request.PageSize > 100) request.PageSize = 100;
-
-            var all = await _unitOfWork.Reviews.GetAllApprovedAsync(cancellationToken);
-
-            var query = all.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(request.Keyword))
-            {
-                var k = request.Keyword.Trim().ToLower();
-                query = query.Where(r => (r.Name != null && r.Name.ToLower().Contains(k)) || (r.Address != null && r.Address.ToLower().Contains(k)));
-            }
-
-            var totalCount = query.Count();
-
-            var items = query
-                .OrderByDescending(r => r.CreatedAt)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            var reviewDtos = _mapper.Map<List<ReviewDTO>>(items);
-            reviewDtos = EnrichReviewDtosWithAbsoluteUrls(reviewDtos).ToList();
-
-            return new PagedResponse<ReviewDTO>
-            {
-                Items = reviewDtos,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)System.Math.Ceiling((double)totalCount / request.PageSize)
-            };
+           var reviews = await _unitOfWork.Reviews.GetAllApprovedAsync(cancellationToken);
+           return _mapper.Map<IEnumerable<ReviewDTO>>(reviews);
         }
         public async Task<ReviewDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {

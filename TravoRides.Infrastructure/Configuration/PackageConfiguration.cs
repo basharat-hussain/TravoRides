@@ -55,11 +55,6 @@ namespace TravoRides.Infrastructure.Configurations
             builder.Property(x => x.IsActive)
                 .IsRequired();
 
-
-            builder.Property(x => x.IsDeleted)
-                .IsRequired();
-
-
             builder.Property(x => x.IsDeleted)
                 .IsRequired();
             builder.Property(x => x.CreatedAt)

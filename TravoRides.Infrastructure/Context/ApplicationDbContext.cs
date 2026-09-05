@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Domain.Entities;
-using TravoRides.Domain.Entities;
+
 
 namespace TravoRides.Infrastructure.Context
 {
@@ -30,7 +30,7 @@ namespace TravoRides.Infrastructure.Context
         public DbSet<SelfDrive> SelfDrives => Set<SelfDrive>();
 
         public DbSet<CategoryBased> CategoryBased => Set<CategoryBased>();
-
+      
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<Enquiry> Enquiries => Set<Enquiry>();
 
