@@ -40,7 +40,7 @@ namespace TravoRides.Application.Services
             {
                 throw new ValidationException("Email is required.");
             }
-           
+
             var user = new User();
             if (!string.IsNullOrWhiteSpace(request.Email))
             {
@@ -58,7 +58,7 @@ namespace TravoRides.Application.Services
                 throw new AuthenticationException("Your account has been deactivated.");
             }
 
-           
+
 
             var passwordValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
 

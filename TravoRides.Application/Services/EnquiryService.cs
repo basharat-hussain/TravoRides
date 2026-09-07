@@ -1,12 +1,12 @@
-﻿using TravoRides.Application.Common.Exceptions;
-
+﻿using AutoMapper;
+using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.DTOs.Category;
+using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Enquirer;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
-using AutoMapper;
-using TravoRides.Application.DTOs.Common;
 
 namespace TravoRides.Application.Services
 {
@@ -30,32 +30,27 @@ namespace TravoRides.Application.Services
             if (request.PageSize < 1) request.PageSize = 10;
             if (request.PageSize > 100) request.PageSize = 100;
 
-            var all = await _unitOfWork.Enquiries.GetAllAsync(cancellationToken);
+            var pagedResponse = await _unitOfWork.Enquiries
+               .GetAllSearchAsync(
+                   request.PageNumber,
+                   request.PageSize,
+                   request.Keyword,
+                   cancellationToken);
 
-            var query = all.AsQueryable();
+            var categoryDtos = _mapper.Map<IEnumerable<EnquiryDTO>>(
+                pagedResponse.Items);
 
-            if (!string.IsNullOrWhiteSpace(request.Keyword))
-            {
-                var k = request.Keyword.Trim().ToLower();
-                query = query.Where(e => (e.Name != null && e.Name.ToLower().Contains(k)) || (e.Email != null && e.Email.ToLower().Contains(k)));
-            }
-
-            var totalCount = query.Count();
-
-            var items = query
-                .OrderByDescending(e => e.CreatedAt)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
 
             return new PagedResponse<EnquiryDTO>
             {
-                Items = _mapper.Map<List<EnquiryDTO>>(items),
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize,
-                TotalCount = totalCount,
-                TotalPages = (int)System.Math.Ceiling((double)totalCount / request.PageSize)
+                Items = categoryDtos,
+                PageNumber = pagedResponse.PageNumber,
+                PageSize = pagedResponse.PageSize,
+                TotalCount = pagedResponse.TotalCount,
+                TotalPages = pagedResponse.TotalPages
             };
+
+          
         }
 
         public async Task<EnquiryDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -89,7 +84,7 @@ namespace TravoRides.Application.Services
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             // Send a confirmation email to the enquirer using template
-            var subject = "Thank you for your enquiry";
+             var subject = "Thank you for your enquiry";
 
                 var body = await _emailTemplateService.GetEnquiryConfirmationTemplateAsync(
                     request.Name,

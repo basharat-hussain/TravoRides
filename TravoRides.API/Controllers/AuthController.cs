@@ -62,31 +62,7 @@ namespace TravoRides.API.Controllers
             });
         }
 
-        [HttpPost("send-email-otp")]
-        public async Task<IActionResult> SendEmailOtp([FromBody] SendEmailVerificationRequest request, CancellationToken cancellationToken)
-        {
-            await _otpVerificationService.SendOtpAsync(request.Email, VerificationOtpPurpose.EmailVerification, cancellationToken);
-
-            return Ok(new ApiResponse<object>
-            {
-                IsSuccess = true,
-                Message = "New OTP sent successfully."
-            });
-        }
-
-        [HttpPost("verify-email")]
-        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request, CancellationToken cancellationToken)
-        {
-            var result = await _otpVerificationService.VerifyOtpAsync(request.Email, request.Otp, VerificationOtpPurpose.EmailVerification, cancellationToken);
-
-            return Ok(new ApiResponse<object>
-            {
-                IsSuccess = result,
-                Message = result ? "Email verified successfully." : "Email verification failed.",
-                Data = result
-            });
-        }
-
+       
 
         [HttpPost("send-forgot-password-otp")]
         public async Task<IActionResult> SendForgotPasswordOtp([FromBody] ForgotPasswordRequest request)
