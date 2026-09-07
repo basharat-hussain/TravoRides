@@ -13,7 +13,7 @@ namespace TravoRides.Application.DTOs.Review
         public string Address { get; set; }
 
         public string Feedback { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } = false;
         public int Rating { get; set; }
         public string? ImageUrl { get; set; }
     }

@@ -12,7 +12,7 @@ namespace TravoRides.Domain.Entities
         public string Email { get; set; } = string.Empty;
 
         public string PasswordHash { get; set; } = string.Empty;
-        public bool IsEmailVerified { get; set; }
+        public bool IsEmailVerified { get; set; } = true;
         public DateTime? EmailVerifiedAt { get; set; }
 
         public UserRole Role { get; set; }

@@ -31,29 +31,40 @@ namespace TravoRides.Application.Services
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
-            var email = request.Email.Trim().ToLowerInvariant();
+            if (request == null)
+            {
+                throw new ValidationException("Login request cannot be null.");
+            }
 
-            var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                throw new ValidationException("Email is required.");
+            }
+           
+            var user = new User();
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                var email = request.Email.Trim().ToLowerInvariant();
+                user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+            }
 
             if (user == null)
             {
-                throw new AuthenticationException("Invalid email or password.");
+                throw new AuthenticationException($"Invalid email or password.");
             }
 
             if (!user.IsActive)
             {
                 throw new AuthenticationException("Your account has been deactivated.");
             }
-            if (!user.IsEmailVerified)
-            {
-                throw new AuthenticationException("Please verify your email before logging in.");
-            }
+
+           
 
             var passwordValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash);
 
             if (!passwordValid)
             {
-                throw new AuthenticationException("Invalid email or password.");
+                throw new AuthenticationException($"Invalid email or password.");
             }
 
             var accessToken = _tokenService.GenerateAccessToken(user);

@@ -27,5 +27,19 @@
     <ProjectReference Include="..\TravoRides.Application\TravoRides.Application.csproj" />
     <ProjectReference Include="..\TravoRides.Domain\TravoRides.Domain.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<Content Include="Templates\Email\**\*.html">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Remove="Templates\Email\Images\headerlogo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Templates\Email\Images\headerlogo.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 </Project>

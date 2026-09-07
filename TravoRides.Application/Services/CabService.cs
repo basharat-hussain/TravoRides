@@ -159,11 +159,9 @@ namespace TravoRides.Application.Services
 
                 SeatingCapacity = request.SeatingCapacity,
 
-                LuggageCapacity =
-                    request.LuggageCapacity,
+                LuggageCapacity = request.LuggageCapacity,
 
-                Transmission =
-                    request.Transmission?.Trim(),
+                Transmission = request.Transmission?.Trim(),
 
                 Fuel = request.Fuel,
 

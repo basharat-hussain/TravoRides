@@ -21,9 +21,10 @@ namespace TravoRides.Application
             services.AddScoped<ISelfDriveService, SelfDriveService>();
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
-            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IOtpVerificationService, EmailOtpVerificationService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IEnquiryService, EnquiryService>();

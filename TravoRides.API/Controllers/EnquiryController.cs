@@ -20,7 +20,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+      //  [Authorize]
         public async Task<IActionResult> GetAll([FromQuery]SearchEnquiryRequest request, CancellationToken cancellationToken = default)
         {
             var enquiry = await _service.GetAllAsync(request, cancellationToken);
@@ -71,19 +71,19 @@ namespace TravoRides.API.Controllers
 
 
 
-        // DELETE: api/Enquiry/{id}
-        [HttpDelete("{id:guid}")]
-        [Authorize]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
-        {
-            await _service.DeleteAsync(id, cancellationToken);
+        //// DELETE: api/Enquiry/{id}
+        //[HttpDelete("{id:guid}")]
+        //[Authorize]
+        //public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
+        //{
+        //    await _service.DeleteAsync(id, cancellationToken);
 
-            return Ok(new ApiResponse<object>
-            {
-                IsSuccess = true,
-                Message = "Enquiry deleted successfully.",
-                Data = id
-            });
-        }
+        //    return Ok(new ApiResponse<object>
+        //    {
+        //        IsSuccess = true,
+        //        Message = "Enquiry deleted successfully.",
+        //        Data = id
+        //    });
+        //}
     }
 }
