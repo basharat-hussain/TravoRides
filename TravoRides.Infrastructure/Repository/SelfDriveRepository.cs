@@ -17,12 +17,8 @@ namespace TravoRides.Infrastructure.Repository
             this.context = context;
         }
 
-        public async Task<PagedResponse<Cab>> GetAllSearchAsync(
-            int pageNumber,
-            int pageSize,
-            string? keyword,
-            Guid? cabId,
-            CancellationToken cancellationToken)
+        public async Task<PagedResponse<Cab>> GetAllSearchAsync( int pageNumber, int pageSize, string? keyword,
+            Guid? cabId, CancellationToken cancellationToken)
         {
             var query = context.Cabs
                 .Include(c => c.Category)
@@ -72,9 +68,7 @@ namespace TravoRides.Infrastructure.Repository
             };
         }
 
-        public async Task<Cab?> GetSelfDriveById(
-      Guid id,
-      CancellationToken cancellationToken)
+        public async Task<Cab?> GetSelfDriveById(Guid id, CancellationToken cancellationToken)
         {
             var query = context.Cabs
                 .AsNoTracking()
@@ -84,6 +78,16 @@ namespace TravoRides.Infrastructure.Repository
             return await query.FirstOrDefaultAsync(
                 c => c.Id == id,
                 cancellationToken);
+        }
+
+        public async Task<SelfDrive?> GetByCabIdAsync( Guid cabId, CancellationToken cancellationToken)
+        {
+            return await context.SelfDrives
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.CabId == cabId &&
+                         !x.IsDeleted,
+                    cancellationToken);
         }
     }
 }

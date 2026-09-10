@@ -5,7 +5,7 @@ using TravoRides.Domain.Common;
 
 namespace TravoRides.Domain.Entities
 {
-    public class CategoryBased : BaseEntity
+    public class Transit : BaseEntity
     {
         public string Title { get; set; } = string.Empty;
 
@@ -14,6 +14,9 @@ namespace TravoRides.Domain.Entities
 
         public decimal Price { get; set; }
 
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
+
+        public ICollection<TransitRate> TransitRates { get; set; } = new List<TransitRate>();
+
     }
 }

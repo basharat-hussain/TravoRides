@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Cabs;
-using TravoRides.Application.DTOs.CategoryBased;
+using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
 
@@ -10,16 +10,16 @@ namespace TravoRides.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryBasedController : ControllerBase
+    public class TransitController : ControllerBase
     {
-        private readonly ICategoryBasedService _service;
-        public CategoryBasedController(ICategoryBasedService service) => _service = service;
+        private readonly ITransitService _service;
+        public TransitController(ITransitService service) => _service = service;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] SearchCategoryBasedRequest request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAll([FromQuery] SearchTransitRequest request, CancellationToken cancellationToken = default)
         {
             var result = await _service.GetAllAsync(request, cancellationToken);
-            return Ok(new ApiResponse<PagedResponse<CategoryBasedDTO>> { IsSuccess = true, Message = "Items retrieved.", Data = result });
+            return Ok(new ApiResponse<PagedResponse<TransitDTO>> { IsSuccess = true, Message = "Items retrieved.", Data = result });
         }
 
         [HttpGet("{id:guid}")]
@@ -32,7 +32,7 @@ namespace TravoRides.API.Controllers
 
         [HttpPost]
         //[Authorize]
-        public async Task<IActionResult> Create([FromForm] CreateCategoryBasedRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromForm] CreateTransitRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
             return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Created.", Data = id });
@@ -40,7 +40,7 @@ namespace TravoRides.API.Controllers
 
         [HttpPut("{id:guid}")]
        // [Authorize]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateCategoryBasedRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateTransitRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);

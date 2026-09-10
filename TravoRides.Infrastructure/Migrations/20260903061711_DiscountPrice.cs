@@ -12,14 +12,14 @@ namespace TravoRides.Infrastructure.Migrations
         {
             migrationBuilder.AddColumn<decimal>(
                 name: "Discount",
-                table: "CategoryBased",
+                table: "Transit",
                 type: "decimal(18,2)",
                 nullable: false,
                 defaultValue: 0m);
 
             migrationBuilder.AddColumn<decimal>(
                 name: "Price",
-                table: "CategoryBased",
+                table: "Transit",
                 type: "decimal(18,2)",
                 nullable: false,
                 defaultValue: 0m);
@@ -30,11 +30,11 @@ namespace TravoRides.Infrastructure.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Discount",
-                table: "CategoryBased");
+                table: "Transit");
 
             migrationBuilder.DropColumn(
                 name: "Price",
-                table: "CategoryBased");
+                table: "Transit");
         }
     }
 }

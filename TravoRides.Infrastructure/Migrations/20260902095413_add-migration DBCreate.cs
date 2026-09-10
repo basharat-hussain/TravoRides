@@ -31,7 +31,7 @@ namespace TravoRides.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CategoryBased",
+                name: "Transit",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -47,7 +47,7 @@ namespace TravoRides.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CategoryBased", x => x.Id);
+                    table.PrimaryKey("PK_Transit", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -318,7 +318,7 @@ namespace TravoRides.Infrastructure.Migrations
                 name: "CabFeatures");
 
             migrationBuilder.DropTable(
-                name: "CategoryBased");
+                name: "Transit");
 
             migrationBuilder.DropTable(
                 name: "Packages");

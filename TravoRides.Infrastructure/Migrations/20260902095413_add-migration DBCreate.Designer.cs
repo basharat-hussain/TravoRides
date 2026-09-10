@@ -282,7 +282,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.ToTable("Categories", (string)null);
                 });
 
-            modelBuilder.Entity("TravoRides.Domain.Entities.CategoryBased", b =>
+            modelBuilder.Entity("TravoRides.Domain.Entities.Transit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -324,7 +324,7 @@ namespace TravoRides.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryBased", (string)null);
+                    b.ToTable("Transit", (string)null);
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.FeaturesMaster", b =>

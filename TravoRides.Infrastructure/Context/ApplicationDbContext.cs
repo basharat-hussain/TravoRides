@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using TravoRides.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,7 +30,11 @@ namespace TravoRides.Infrastructure.Context
 
         public DbSet<SelfDrive> SelfDrives => Set<SelfDrive>();
 
-        public DbSet<CategoryBased> CategoryBased => Set<CategoryBased>();
+        public DbSet<Transit> Transit => Set<Transit>();
+        public DbSet<PackageRate> PackageRates => Set<PackageRate>();
+        public DbSet<TransitRate> TransitRates => Set<TransitRate>();
+        public DbSet<Subscription> Subscriptions => Set<Subscription>();
+        public DbSet<LatestThinking> LatestThinkings => Set<LatestThinking>();
       
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<Enquiry> Enquiries => Set<Enquiry>();

@@ -3,7 +3,7 @@ using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Common.Models;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.DTOs.Cabs;
-using TravoRides.Application.DTOs.CategoryBased;
+using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
@@ -11,7 +11,7 @@ using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Services
 {
-    public class CategoryBasedService : ICategoryBasedService
+    public class TransitService : ITransitService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -19,7 +19,7 @@ namespace TravoRides.Application.Services
         private readonly IFileStorageService _fileStorageService;
         private readonly IFileUrlService _fileUrlService;
 
-        public CategoryBasedService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, IFileUrlService fileUrlService)
+        public TransitService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorageService, IFileUrlService fileUrlService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -27,8 +27,8 @@ namespace TravoRides.Application.Services
             _fileUrlService = fileUrlService;
         }
 
-        public async Task<PagedResponse<CategoryBasedDTO>> GetAllAsync(
-      SearchCategoryBasedRequest request,
+        public async Task<PagedResponse<TransitDTO>> GetAllAsync(
+      SearchTransitRequest request,
       CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
@@ -37,20 +37,20 @@ namespace TravoRides.Application.Services
             if (request.PageSize > 100) request.PageSize = 100;
 
             // 2. Fetch structu
-            var pagedResponse = await _unitOfWork.CategoryBased
+            var pagedResponse = await _unitOfWork.Transit
                 .GetAllSearchAsync(
                     request.PageNumber,
                     request.PageSize,
                     request.Keyword,
                     cancellationToken);
             // 3. Map entities to DTOs and convert file URLs to absolute paths
-            var categoryBasedDtos = _mapper.Map<IEnumerable<CategoryBasedDTO>>(pagedResponse.Items);
-            categoryBasedDtos = EnrichCategoryBasedDtosWithAbsoluteUrls(categoryBasedDtos);
+            var TransitDtos = _mapper.Map<IEnumerable<TransitDTO>>(pagedResponse.Items);
+            TransitDtos = EnrichTransitDtosWithAbsoluteUrls(TransitDtos);
 
             // 4. Assemble and return mapped generic response
-            return new PagedResponse<CategoryBasedDTO>
+            return new PagedResponse<TransitDTO>
             {
-                Items = categoryBasedDtos,
+                Items = TransitDtos,
                 PageNumber = pagedResponse.PageNumber,
                 PageSize = pagedResponse.PageSize,
                 TotalCount = pagedResponse.TotalCount,
@@ -58,20 +58,20 @@ namespace TravoRides.Application.Services
             };
         }
 
-        public async Task<CategoryBasedDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<TransitDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var categoryBased = await _unitOfWork.CategoryBased
+            var Transit = await _unitOfWork.Transit
                 .GetByIdAsync(id, cancellationToken);
 
-            if (categoryBased == null)
+            if (Transit == null)
                 return null;
 
-            var categoryBasedDto = _mapper.Map<CategoryBasedDTO>(categoryBased);
-            categoryBasedDto = EnrichCategoryBasedDtoWithAbsoluteUrls(categoryBasedDto);
-            return categoryBasedDto;
+            var TransitDto = _mapper.Map<TransitDTO>(Transit);
+            TransitDto = EnrichTransitDtoWithAbsoluteUrls(TransitDto);
+            return TransitDto;
         }
 
-        public async Task<Guid> CreateAsync(CreateCategoryBasedRequest request, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreateAsync(CreateTransitRequest request, CancellationToken cancellationToken = default)
         {
             if (request.ImageUrl == null)
             {
@@ -82,17 +82,17 @@ namespace TravoRides.Application.Services
             if (string.IsNullOrWhiteSpace(request.Title))
                 throw new ValidationException("Title is required.");
 
-            var existingCategoryBased = await _unitOfWork.CategoryBased
+            var existingTransit = await _unitOfWork.Transit
                 .FindAsync(x => x.Title == request.Title.Trim(), cancellationToken);
 
-            if (existingCategoryBased.Any())
+            if (existingTransit.Any())
                 throw new ValidationException("Category-based entry with the same title already exists.");
 
 
             var fileUploadRequest = new FileUploadRequest
             {
                 ContentType = request.ImageUrl.ContentType,
-                FolderName = "categoryBased",
+                FolderName = "Transit",
                 FileName = request.ImageUrl.FileName,
                 Stream = request.ImageUrl.OpenReadStream(),
             };
@@ -105,7 +105,7 @@ namespace TravoRides.Application.Services
             if (result == null)
                 throw new ValidationException("File upload failed");
 
-            var categoryBased = new CategoryBased
+            var Transit = new Transit
             {
                 Title = request.Title.Trim(),
                Price = request.Price,
@@ -114,22 +114,22 @@ namespace TravoRides.Application.Services
                 Description = request.Description?.Trim()
             };
 
-            await _unitOfWork.CategoryBased.AddAsync(categoryBased, cancellationToken);
+            await _unitOfWork.Transit.AddAsync(Transit, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return categoryBased.Id;
+            return Transit.Id;
         }
 
-        public async Task UpdateAsync(UpdateCategoryBasedRequest request, CancellationToken cancellationToken = default)
+        public async Task UpdateAsync(UpdateTransitRequest request, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.Title))
                 throw new ValidationException("title is required.");
 
-            var categoryBased = await _unitOfWork.CategoryBased
+            var Transit = await _unitOfWork.Transit
                 .GetByIdAsync(request.Id, cancellationToken);
 
-            if (categoryBased == null)
+            if (Transit == null)
                 throw new ResourceNotFoundException("Category-based entry not found.");
 
 
@@ -139,7 +139,7 @@ namespace TravoRides.Application.Services
                 var fileUploadRequest = new FileUploadRequest
                 {
                     ContentType = request.ImageFile.ContentType,
-                    FolderName = "categoryBased",
+                    FolderName = "Transit",
                     FileName = request.ImageFile.FileName,
                     Stream = request.ImageFile.OpenReadStream(),
                 };
@@ -150,23 +150,23 @@ namespace TravoRides.Application.Services
 
                 // Optional: Call a service to delete the old file using client.LogoUrl here
 
-                categoryBased.ImageUrl = result.AbsolutePath;
+                Transit.ImageUrl = result.AbsolutePath;
             }
 
             // 3. Update remaining properties
-            categoryBased.Title = request.Title.Trim();
-            categoryBased.Description = request.Description?.Trim();
-            categoryBased.Price = request.Price;
-            categoryBased.Discount = request.Discount;
+            Transit.Title = request.Title.Trim();
+            Transit.Description = request.Description?.Trim();
+            Transit.Price = request.Price;
+            Transit.Discount = request.Discount;
 
-            _unitOfWork.CategoryBased.Update(categoryBased);
+            _unitOfWork.Transit.Update(Transit);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var portfolio = await _unitOfWork.CategoryBased
+            var portfolio = await _unitOfWork.Transit
                 .GetByIdAsync(id, cancellationToken);
 
             if (portfolio == null)
@@ -176,41 +176,41 @@ namespace TravoRides.Application.Services
             portfolio.ModifiedAt = DateTime.UtcNow;
             portfolio.ModifiedBy = "System"; // You
 
-            _unitOfWork.CategoryBased.Update(portfolio);
+            _unitOfWork.Transit.Update(portfolio);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
-        /// Converts relative file paths in a CategoryBasedDTO to absolute URLs
+        /// Converts relative file paths in a TransitDTO to absolute URLs
         /// </summary>
-        private CategoryBasedDTO EnrichCategoryBasedDtoWithAbsoluteUrls(CategoryBasedDTO categoryBasedDto)
+        private TransitDTO EnrichTransitDtoWithAbsoluteUrls(TransitDTO TransitDto)
         {
-            if (categoryBasedDto == null)
-                return categoryBasedDto;
+            if (TransitDto == null)
+                return TransitDto;
 
-            if (!string.IsNullOrWhiteSpace(categoryBasedDto.ImageUrl))
+            if (!string.IsNullOrWhiteSpace(TransitDto.ImageUrl))
             {
-                categoryBasedDto.ImageUrl = _fileUrlService.GetAbsoluteUrl(categoryBasedDto.ImageUrl);
+                TransitDto.ImageUrl = _fileUrlService.GetAbsoluteUrl(TransitDto.ImageUrl);
             }
 
-            return categoryBasedDto;
+            return TransitDto;
         }
 
         /// <summary>
-        /// Converts relative file paths in a collection of CategoryBasedDTOs to absolute URLs
+        /// Converts relative file paths in a collection of TransitDTOs to absolute URLs
         /// </summary>
-        private IEnumerable<CategoryBasedDTO> EnrichCategoryBasedDtosWithAbsoluteUrls(IEnumerable<CategoryBasedDTO> categoryBasedDtos)
+        private IEnumerable<TransitDTO> EnrichTransitDtosWithAbsoluteUrls(IEnumerable<TransitDTO> TransitDtos)
         {
-            if (categoryBasedDtos == null)
-                return categoryBasedDtos;
+            if (TransitDtos == null)
+                return TransitDtos;
 
-            foreach (var categoryBasedDto in categoryBasedDtos)
+            foreach (var TransitDto in TransitDtos)
             {
-                EnrichCategoryBasedDtoWithAbsoluteUrls(categoryBasedDto);
+                EnrichTransitDtoWithAbsoluteUrls(TransitDto);
             }
 
-            return categoryBasedDtos;
+            return TransitDtos;
         }
     }
 }

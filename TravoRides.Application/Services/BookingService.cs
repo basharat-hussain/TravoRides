@@ -10,6 +10,7 @@ using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.Application.Services
 {
@@ -55,9 +56,7 @@ namespace TravoRides.Application.Services
             };
         }
 
-        public async Task<BookingReportResponse> GetBookingReportAsync(
-            SearchBookingRequest request,
-            CancellationToken cancellationToken = default)
+        public async Task<BookingReportResponse> GetBookingReportAsync(SearchBookingRequest request,  CancellationToken cancellationToken = default)
         {
             // Defensive pagination
             if (request.PageNumber < 1)
@@ -97,6 +96,35 @@ namespace TravoRides.Application.Services
                 }
             };
         }
+
+        private async Task<decimal> GetBookingRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+        {
+            switch (request.BookingType)
+            {
+                case BookingType.Transit:
+
+                    return await GetTransitRateAsync( request, cancellationToken);
+
+
+                case BookingType.Package:
+
+                    return await GetPackageRateAsync( request, cancellationToken);
+
+
+                case BookingType.Cab:
+
+                    return await GetCabRateAsync( request, cancellationToken);
+
+
+                case BookingType.SelfDrive:
+
+                    return await GetSelfDriveRateAsync(  request,  cancellationToken);
+
+                default:
+
+                    throw new ValidationException( "Invalid booking type.");
+            }
+        }
         public async Task<BookingDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id, cancellationToken);
@@ -104,29 +132,68 @@ namespace TravoRides.Application.Services
             return _mapper.Map<BookingDTO>(booking);
         }
 
-        public async Task<Guid> CreateAsync(CreateBookingRequest request, CancellationToken cancellationToken = default)
+        public async Task<Guid> CreateAsync(CreateBookingRequest request,CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(request.Name))
-                throw new ValidationException("Booking is required");
+            ValidateBookingType(request);
+            // Verify cab
+            var cab = await _unitOfWork.Cabs.GetByIdAsync(
+                request.CabId,
+                cancellationToken);
 
+            if (cab == null)
+            {
+                throw new ResourceNotFoundException(
+                    "Cab not found.");
+            }
+
+            // Calculate rate based on booking type
+            var rate = await GetBookingRateAsync(request, cancellationToken);
+
+            // Create booking
             var booking = new Booking
             {
+                Id = Guid.NewGuid(),
 
-                Name = request.Name?.Trim(),
-               Phone = request.PhoneNo?.Trim(),
-                WhatsApp = request.WhatsApp?.Trim(),
-                Email = request.Email?.Trim(),
+                BookingNo = request.BookingNo,
+
+                CabId = request.CabId,
+
+                BookingType = request.BookingType,
+
+                TransitId = request.TransitId,
+
+                PackageId = request.PackageId,
+
+                Name = request.Name,
+
+                Email = request.Email,
+
+                Phone = request.PhoneNo,
+
+                WhatsApp = request.WhatsApp,
+
                 TravelDate = request.TravelDate,
-                PickupLocation = request.PickupLocation?.Trim(),
-                DropLocation = request.DropLocation?.Trim(),
+
+                PickupLocation = request.PickupLocation,
+
+                DropLocation = request.DropLocation,
+
                 PickupTime = request.PickupTime,
-                Passengers = request.Passengers?.Trim(),
-                Luggage = request.Luggage?.Trim(),
-                SpecialRequirements = request.SpecialRequirements?.Trim()   
+
+                Passengers = request.Passengers,
+
+                Luggage = request.Luggage,
+
+                SpecialRequirements = request.SpecialRequirements,
+
+                IsConfirmed = false,
+                // Server-calculated amount
+                Rate = rate
             };
 
-            await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.Bookings.AddAsync( booking,  cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync( cancellationToken);
 
             return booking.Id;
         }
@@ -161,6 +228,145 @@ namespace TravoRides.Application.Services
             _unitOfWork.Bookings.Update(booking);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+        private async Task<decimal> GetTransitRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+        {
+            if (!request.TransitId.HasValue)
+            {
+                throw new ValidationException(
+                    "Transit is required for a transit booking.");
+            }
 
+            var transitRate = await _unitOfWork.TransitRates
+             .GetByCabAndTransitAsync( request.CabId,request.TransitId.Value,cancellationToken);
+
+            if (transitRate == null)
+            {
+                throw new ResourceNotFoundException( "Rate not found for the selected cab and transit.");
+            }
+
+            var discount = transitRate.Discount ?? 0;
+
+            var finalRate = transitRate.Rate - discount;
+
+            if (finalRate < 0)
+            {
+                throw new ValidationException("Transit discount cannot be greater than the transit rate.");
+            }
+
+            return finalRate;
+        }
+
+        private async Task<decimal> GetPackageRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)  
+        {
+            if (!request.PackageId.HasValue)
+            {
+                throw new ValidationException(
+                    "Package is required for a package booking.");
+            }
+
+            var packageRate =
+                await _unitOfWork.PackageRates
+                    .GetByCabAndPackageAsync(
+                        request.CabId,
+                        request.PackageId.Value,
+                        cancellationToken);
+
+            if (packageRate == null)
+            {
+                throw new ResourceNotFoundException(
+                    "Rate not found for the selected cab and package.");
+            }
+
+            var discount = packageRate.Discount ?? 0;
+
+            return packageRate.Rate - discount;
+        }
+        private async Task<decimal> GetCabRateAsync( CreateBookingRequest request, CancellationToken cancellationToken)
+        {
+            var cab = await _unitOfWork.Cabs.GetByIdAsync( request.CabId,  cancellationToken);
+
+            if (cab == null)
+            {
+                throw new ResourceNotFoundException(
+                    "Cab not found.");
+            }
+
+            var discount = cab.Discount ?? 0;
+
+            var finalRate = cab.PricePerDay - discount;
+
+            if (finalRate < 0)
+            {
+                throw new ValidationException(
+                    "Cab discount cannot be greater than the Cab rate.");
+            }
+
+            return finalRate;
+        }
+        private async Task<decimal> GetSelfDriveRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+        {
+            var selfDrive = await _unitOfWork.SelfDrives.GetByCabIdAsync(request.CabId,  cancellationToken);
+
+            if (selfDrive == null)
+            {
+                throw new ResourceNotFoundException("Self-drive rate not found for the selected cab.");
+            }
+
+            var discount = selfDrive.Discount ?? 0;
+
+            var finalRate = selfDrive.PricePerDay - discount;
+
+            if (finalRate < 0)
+            {
+                throw new ValidationException(
+                    "Package discount cannot be greater than the package rate.");
+            }
+
+            return finalRate;
+        }
+
+        private void ValidateBookingType(CreateBookingRequest request)
+        {
+            switch (request.BookingType)
+            {
+                case BookingType.Transit:
+
+                    if (!request.TransitId.HasValue)
+                        throw new ValidationException( "TransitId is required for Transit booking.");
+
+                    if (request.PackageId.HasValue)
+                        throw new ValidationException( "PackageId should not be provided for Transit booking.");
+
+                    break;
+
+
+                case BookingType.Package:
+
+                    if (!request.PackageId.HasValue)
+                        throw new ValidationException("PackageId is required for Package booking.");
+
+                    if (request.TransitId.HasValue)
+                        throw new ValidationException("TransitId should not be provided for Package booking.");
+
+                    break;
+
+
+                case BookingType.Cab:
+                case BookingType.SelfDrive:
+
+                    if (request.TransitId.HasValue ||
+                        request.PackageId.HasValue)
+                    {
+                        throw new ValidationException("TransitId and PackageId are not required for this booking type.");
+                    }
+
+                    break;
+               
+                default:
+
+                    throw new ValidationException( "Invalid booking type.");
+            }
+        }
     }
+
 }

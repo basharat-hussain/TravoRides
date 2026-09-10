@@ -22,13 +22,16 @@ namespace TravoRides.Infrastructure
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<ICabRepository, CabRepository>();
             services.AddScoped<ISelfDriveRepository, SelfDriveRepository>();
-            services.AddScoped<ICategoryBasedRepository, CategoryBasedRepository>();
+            services.AddScoped<ITransitRepository, TransitRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IPackageRepository, PackageRepository>();
             services.AddScoped<IFeatureMasterRepository, FeatureMasterRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IEnquiryRepository, EnquiryRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<ILatestThinkingRepository, LatestThinkingRepository>();
+            services.AddScoped<IPackageRateRepository,  PackageRateRepository>();
+            services.AddScoped<ITransitRateRepository, TransitRateRepository>();
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

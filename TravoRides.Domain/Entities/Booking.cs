@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using TravoRides.Domain.Common;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.Domain.Entities
 {
@@ -10,31 +11,48 @@ namespace TravoRides.Domain.Entities
     {
         public string BookingNo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please enter your name")]
-        [StringLength(100, ErrorMessage = "Name is too small", MinimumLength = 3)]
-        public String Name { get; set; }
+        public Guid CabId { get; set; }
 
-        [Required(ErrorMessage = "Please enter your email")]
-        [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Email is not valid")]
-        [StringLength(100, ErrorMessage = "Email is too small", MinimumLength = 10)]
-        public String Email { get; set; }
+        public BookingType BookingType { get; set; }
 
+        public Guid? TransitId { get; set; }
 
-        [Required(ErrorMessage = "Please enter your phone number")]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Please enter numbers only")]
-        [StringLength(12, ErrorMessage = "Phone should be 10 characters long", MinimumLength = 10)]
-        public String Phone { get; set; }
+        public Guid? PackageId { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string Phone { get; set; } = string.Empty;
+
         public string WhatsApp { get; set; } = string.Empty;
 
-        public bool IsConfirmed { get; set; } = false;
         public DateTime TravelDate { get; set; }
-        public string PickupLocation { get; set; }
-        public string DropLocation { get; set; } 
-        public DateTime PickupTime { get; set; } 
-        public string Passengers { get; set; } = string.Empty;
-        public string? Luggage { get; set; } = string.Empty;
-        public string? SpecialRequirements { get; set; } = string.Empty;
 
-        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public string PickupLocation { get; set; } = string.Empty;
+
+        public string DropLocation { get; set; } = string.Empty;
+
+        public DateTime PickupTime { get; set; }
+
+        public string Passengers { get; set; } = string.Empty;
+
+        public string? Luggage { get; set; }
+
+        public bool IsConfirmed { get; set; }
+
+        public string? SpecialRequirements { get; set; }
+
+        // Final price at the time of booking
+        public decimal Rate { get; set; }
+
+        public Cab Cab { get; set; } = null!;
+
+        public Transit? Transit { get; set; }
+
+        public Package? Package { get; set; }
+
+        public ICollection<Payment> Payments { get; set; }
+            = new List<Payment>();
     }
 }

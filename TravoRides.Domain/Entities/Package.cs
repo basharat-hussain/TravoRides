@@ -19,7 +19,9 @@ namespace TravoRides.Domain.Entities
 
         public decimal Distance { get; set; }
         public decimal Price { get; set; }
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
+
+        public ICollection<PackageRate> PackageRates { get; set; } = new List<PackageRate>();
     }
 }

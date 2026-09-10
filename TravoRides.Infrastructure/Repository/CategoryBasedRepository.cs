@@ -9,22 +9,22 @@ using TravoRides.Domain.Entities;
 
 namespace TravoRides.Infrastructure.Repository
 {
-    public class CategoryBasedRepository : GenericRepository<CategoryBased>, ICategoryBasedRepository
+    public class TransitRepository : GenericRepository<Transit>, ITransitRepository
     {
         private readonly ApplicationDbContext context;
-        public CategoryBasedRepository(ApplicationDbContext context) : base(context)
+        public TransitRepository(ApplicationDbContext context) : base(context)
         {
             this.context = context;
         }
 
-        public async Task<PagedResponse<CategoryBased>> GetAllSearchAsync(
+        public async Task<PagedResponse<Transit>> GetAllSearchAsync(
          int pageNumber,
          int pageSize,
          string? keyword,
          
          CancellationToken cancellationToken)
         {
-            var query = context.CategoryBased
+            var query = context.Transit
                 
                 .Where(c => !c.IsDeleted)
                 .AsNoTracking()
@@ -55,7 +55,7 @@ namespace TravoRides.Infrastructure.Repository
             var totalPages = (int)Math.Ceiling(
                 (double)totalCount / pageSize);
 
-            return new PagedResponse<CategoryBased>
+            return new PagedResponse<Transit>
             {
                 Items = items,
                 PageNumber = pageNumber,

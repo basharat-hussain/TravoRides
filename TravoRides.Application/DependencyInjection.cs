@@ -15,11 +15,13 @@ namespace TravoRides.Application
 
             services.AddScoped<ICabService, CabService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<ICategoryBasedService, CategoryBasedService>();
+            services.AddScoped<ITransitService, TransitService>();
             services.AddScoped<IFeaturesMasterService, FeaturesMasterService>();
             services.AddScoped<IPackageService, PackageService>();
             services.AddScoped<ISelfDriveService, SelfDriveService>();
             services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<ILatestThinkingService, LatestThinkingService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 

@@ -15,9 +15,13 @@ namespace TravoRides.Application.Repositories
         IBookingRepository Bookings { get; }
         IReviewRepository Reviews { get; }
         IEnquiryRepository Enquiries { get; }
-
+        ILatestThinkingRepository LatestThinkings { get; }
         IGenericRepository<Payment> Payments { get; }
-        ICategoryBasedRepository CategoryBased { get; }
+        IGenericRepository<Subscription> Subscriptions { get; }
+        ITransitRepository Transit { get; }
+
+        ITransitRateRepository TransitRates { get; }
+        IPackageRateRepository PackageRates { get; }
         IOtpVerificationRepository OtpVerifications { get; }
         ICabRepository Cabs{ get; }
         ISelfDriveRepository SelfDrives { get; }

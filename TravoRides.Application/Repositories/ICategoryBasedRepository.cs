@@ -6,8 +6,8 @@ using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Repositories
 {
-    public interface ICategoryBasedRepository : IGenericRepository<CategoryBased>
+    public interface ITransitRepository : IGenericRepository<Transit>
     {
-        Task<PagedResponse<CategoryBased>>GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken);
+        Task<PagedResponse<Transit>>GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken);
     }
 }

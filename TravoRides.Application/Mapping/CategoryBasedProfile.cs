@@ -1,16 +1,16 @@
 using AutoMapper;
-using TravoRides.Application.DTOs.CategoryBased;
+using TravoRides.Application.DTOs.Transit;
 using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Mapping
 {
-    public class CategoryBasedProfile : Profile
+    public class TransitProfile : Profile
     {
-        public CategoryBasedProfile()
+        public TransitProfile()
         {
-            CreateMap<CreateCategoryBasedRequest, CategoryBased>();
-            CreateMap<UpdateCategoryBasedRequest, CategoryBased>();
-            CreateMap<CategoryBased, CategoryBasedDTO>();
+            CreateMap<CreateTransitRequest, Transit>();
+            CreateMap<UpdateTransitRequest, Transit>();
+            CreateMap<Transit, TransitDTO>();
         }
     }
 }

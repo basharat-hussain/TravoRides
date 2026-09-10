@@ -11,82 +11,45 @@ namespace TravoRides.Infrastructure.Configuration
     {
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
-            // Table
             builder.ToTable("Bookings");
+            builder.HasKey(x => x.Id);
 
-            // Primary Key
-            builder.HasKey(b => b.Id);
-
-            // Booking Number
-            builder.Property(b => b.BookingNo)
+            builder.Property(x => x.BookingNo)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            // Name
-            builder.Property(b => b.Name)
+            builder.Property(x => x.Name)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            // Email
-            builder.Property(b => b.Email)
+            builder.Property(x => x.Email)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            // Phone
-            builder.Property(b => b.Phone)
+            builder.Property(x => x.Phone)
                 .IsRequired()
-                .HasMaxLength(12);
+                .HasMaxLength(20);
 
-            // WhatsApp
-            builder.Property(b => b.WhatsApp)
-                .HasMaxLength(12);
+            builder.Property(x => x.Rate)
+                .HasPrecision(18, 2);
 
-            // IsConfirmed
-            builder.Property(b => b.IsConfirmed)
-                .IsRequired()
-                .HasDefaultValue(false);
+            // Booking -> Cab
+            builder.HasOne(x => x.Cab)
+                .WithMany(x => x.Bookings)
+                .HasForeignKey(x => x.CabId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Travel Date
-            builder.Property(b => b.TravelDate)
-                .IsRequired();
+            // Booking -> Transit
+            builder.HasOne(x => x.Transit)
+                .WithMany()
+                .HasForeignKey(x => x.TransitId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Pickup Location
-            builder.Property(b => b.PickupLocation)
-                .IsRequired()
-                .HasMaxLength(250);
-
-            // Drop Location
-            builder.Property(b => b.DropLocation)
-                .IsRequired()
-                .HasMaxLength(250);
-
-            // Pickup Time
-            builder.Property(b => b.PickupTime)
-                .IsRequired();
-
-            // Passengers
-            builder.Property(b => b.Passengers)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            // Luggage
-            builder.Property(b => b.Luggage)
-                .HasMaxLength(500);
-
-            // Special Requirements
-            builder.Property(b => b.SpecialRequirements)
-                .HasMaxLength(1000);
-            builder.Property(x => x.IsActive)
-                .IsRequired();
-
-            builder.Property(x => x.IsDeleted)
-                .IsRequired();
-            builder.Property(x => x.CreatedAt)
-                .IsRequired();
-
-            builder.Property(x => x.ModifiedAt)
-                .IsRequired(false);
-           
+            // Booking -> Package
+            builder.HasOne(x => x.Package)
+                .WithMany()
+                .HasForeignKey(x => x.PackageId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TravoRides.Domain.Entities
 
         public decimal PricePerDay { get; set; }
 
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
 
     }
 }

@@ -4,11 +4,11 @@ using TravoRides.Domain.Entities;
 
 namespace TravoRides.Infrastructure.Configurations
 {
-    public class CategoryBasedConfiguration : IEntityTypeConfiguration<CategoryBased>
+    public class TransitConfiguration : IEntityTypeConfiguration<Transit>
     {
-        public void Configure(EntityTypeBuilder<CategoryBased> builder)
+        public void Configure(EntityTypeBuilder<Transit> builder)
         {
-            builder.ToTable("CategoryBased");
+            builder.ToTable("Transit");
 
             builder.HasKey(x => x.Id);
 

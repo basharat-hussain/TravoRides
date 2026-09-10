@@ -1,8 +1,8 @@
 using System;
 
-namespace TravoRides.Application.DTOs.CategoryBased
+namespace TravoRides.Application.DTOs.Transit
 {
-    public class CategoryBasedDTO
+    public class TransitDTO
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;

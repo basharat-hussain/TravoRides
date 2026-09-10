@@ -15,15 +15,17 @@ namespace TravoRides.Domain.Entities
         public int LuggageCapacity { get; set; }
         public int SeatingCapacity { get; set; }
         public decimal PricePerDay { get; set; }
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
         public FuelType Fuel { get; set; }
 
         public string Transmission { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
         public SelfDrive? SelfDrive { get; set; }
 
+        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public ICollection<CabFeatures> CabFeatures { get; set; } = new List<CabFeatures>();
-
+        public ICollection<PackageRate> PackageRates { get; set; } = new List<PackageRate>();
+        public ICollection<TransitRate> TransitRates { get; set; } = new List<TransitRate>();
 
     }
 }

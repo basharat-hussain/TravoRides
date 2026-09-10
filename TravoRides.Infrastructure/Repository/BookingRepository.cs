@@ -61,7 +61,7 @@ namespace TravoRides.Infrastructure.Repository
         }
 
         public async Task<BookingReportResponse> GetBookingReportAsync( int pageNumber, int pageSize, string? keyword,
-                 DateTime? fromDate, DateTime? toDate, CancellationToken cancellationToken)
+                 DateTime? fromDate, DateTime? toDate,bool? isConfirmed, CancellationToken cancellationToken)
         {
             var query = context.Bookings.Where(b => !b.IsDeleted).AsNoTracking().AsQueryable();
 
@@ -78,7 +78,13 @@ namespace TravoRides.Infrastructure.Repository
                     b.Email.Contains(cleanKeyword) ||
                     b.BookingNo.Contains(cleanKeyword));
             }
+            // IsConfirmed Filter
 
+            if (isConfirmed.HasValue)
+            {
+                query = query.Where(x =>
+                    x.IsConfirmed == isConfirmed.Value);
+            }
             // -----------------------------
             // BOOKING DATE FILTER
             // -----------------------------
@@ -225,6 +231,19 @@ namespace TravoRides.Infrastructure.Repository
                     TotalPages = totalPages
                 }
             };
+        }
+
+        public async Task<Booking?> GetByIdAsync( Guid id, CancellationToken cancellationToken)
+        {
+            return await context.Bookings
+                .Include(x => x.Cab)
+                .Include(x => x.Transit)
+                .Include(x => x.Package)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.Id == id &&
+                         !x.IsDeleted,
+                    cancellationToken);
         }
     }
 }

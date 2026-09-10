@@ -12,6 +12,8 @@ namespace TravoRides.Application.DTOs.BookingDTO
 
         public string? Keyword { get; set; }
 
+        public bool? IsConfirmed { get; set; }
+
         public DateTime? FromDate { get; set; }
 
         public DateTime? ToDate { get; set; }

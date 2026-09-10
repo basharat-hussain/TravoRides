@@ -10,5 +10,6 @@ namespace TravoRides.Application.Repositories
     {
         Task<PagedResponse<Cab>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, Guid? cabId, CancellationToken cancellationToken);
         Task<Cab?> GetSelfDriveById(Guid id, CancellationToken cancellationToken);
+        Task<SelfDrive?> GetByCabIdAsync(Guid categoryId, CancellationToken cancellationToken);
     }
 }
