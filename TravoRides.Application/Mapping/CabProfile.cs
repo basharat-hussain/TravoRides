@@ -16,7 +16,9 @@ namespace TravoRides.Application.Mapping
 
             CreateMap<UpdateCabRequest, Cab>();
 
-            CreateMap<Cab, CabDTO>();
+            CreateMap<Cab, CabDTO>()
+                .ForMember(c => c.Fuel, opt => opt.MapFrom(src => src.Fuel.ToString()))
+            ;
 
         }
     }
