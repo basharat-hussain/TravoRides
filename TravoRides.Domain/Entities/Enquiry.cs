@@ -12,14 +12,13 @@ namespace TravoRides.Domain.Entities
         [StringLength(100, ErrorMessage = "Name is too small", MinimumLength = 3)]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Please enter your email")]
-        [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Email is not valid")]
-        [StringLength(100, ErrorMessage = "Email is too small", MinimumLength = 10)]
+
+        [EmailAddress]
+        [StringLength(255, MinimumLength = 5)]
         public string Email { get; set; }
 
-
+        [Phone]
         [Required(ErrorMessage = "Please enter your phone number")]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Please enter numbers only")]
         [StringLength(12, ErrorMessage = "Phone should be 10 characters long", MinimumLength = 10)]
         public string Phone { get; set; }
 

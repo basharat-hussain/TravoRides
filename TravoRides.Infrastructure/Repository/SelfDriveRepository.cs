@@ -17,15 +17,17 @@ namespace TravoRides.Infrastructure.Repository
             this.context = context;
         }
 
-        public async Task<PagedResponse<SelfDrive>> GetAllSearchAsync(
+        public async Task<PagedResponse<Cab>> GetAllSearchAsync(
             int pageNumber,
             int pageSize,
             string? keyword,
             Guid? cabId,
             CancellationToken cancellationToken)
         {
-            var query = context.SelfDrives
-                .Include(c => c.Cab)
+            var query = context.Cabs
+                .Include(c => c.Category)
+                .Include(c => c.CabFeatures)
+                .Join(context.SelfDrives, c => c.Id, s => s.CabId, (c, s) => c)
                 .Where(c => !c.IsDeleted)
                 .AsNoTracking()
                 .AsQueryable();
@@ -36,15 +38,15 @@ namespace TravoRides.Infrastructure.Repository
                 string cleanKeyword = keyword.Trim();
 
                 query = query.Where(c =>
-                    c.Cab.Name.Contains(cleanKeyword) ||
-                    (c.Cab.Description != null &&
-                     c.Cab.Description.Contains(cleanKeyword)));
+                    c.Name.Contains(cleanKeyword) ||
+                    (c.Description != null &&
+                     c.Description.Contains(cleanKeyword)));
             }
 
             // Filter by cab
             if (cabId.HasValue)
             {
-                query = query.Where(c => c.CabId == cabId.Value);
+                query = query.Where(c => c.Id == cabId.Value);
             }
 
             // Total records
@@ -60,7 +62,7 @@ namespace TravoRides.Infrastructure.Repository
             var totalPages = (int)Math.Ceiling(
                 (double)totalCount / pageSize);
 
-            return new PagedResponse<SelfDrive>
+            return new PagedResponse<Cab>
             {
                 Items = items,
                 PageNumber = pageNumber,
@@ -69,14 +71,19 @@ namespace TravoRides.Infrastructure.Repository
                 TotalPages = totalPages
             };
         }
-        public async Task<SelfDrive?> GetSelfDriveByCabAsync(Guid selfDriveId, CancellationToken cancellationToken)
+
+        public async Task<Cab?> GetSelfDriveById(
+      Guid id,
+      CancellationToken cancellationToken)
         {
-            return await context.SelfDrives
-         .Include(c => c.Cab)
-         .AsNoTracking()
-         .FirstOrDefaultAsync(
-             c => c.Id == selfDriveId && !c.IsDeleted,
-             cancellationToken);
+            var query = context.Cabs
+                .AsNoTracking()
+                .Include(c => c.Category)
+                .Include(c => c.CabFeatures);
+
+            return await query.FirstOrDefaultAsync(
+                c => c.Id == id,
+                cancellationToken);
         }
     }
 }

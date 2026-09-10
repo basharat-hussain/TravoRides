@@ -10,9 +10,7 @@ using TravoRides.Infrastructure.Context;
 using TravoRides.Infrastructure.Repository;
 using TravoRides.Infrastructure.Services;
 using TravoRides.Application.Interfaces;
-using TravoRides.Application.Interfaces.Services;
-using TravoRides.Application.Repositories;
-using TravoRides.Infrastructure.Repository;
+
 
 namespace TravoRides.Infrastructure
 {

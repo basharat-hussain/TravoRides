@@ -20,7 +20,7 @@ namespace TravoRides.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<PagedResponse<SelfDriveDTO>> GetAllAsync(SearchSelfDriveRequest request, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<CabDTO>> GetAllAsync(SearchSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
             // Defensive pagination
             if (request.PageNumber < 1)
@@ -32,7 +32,7 @@ namespace TravoRides.Application.Services
             if (request.PageSize > 100)
                 request.PageSize = 100;
 
-            var pagedResponse = await _unitOfWork.SelfDrives
+            var pagedResponse = await _unitOfWork.Cabs
                 .GetAllSearchAsync(
                     request.PageNumber,
                     request.PageSize,
@@ -40,11 +40,11 @@ namespace TravoRides.Application.Services
                     request.CabId,
                     cancellationToken);
 
-            var selfDriveDtos = _mapper.Map<IEnumerable<SelfDriveDTO>>(
+            var selfDriveDtos = _mapper.Map<IEnumerable<CabDTO>>(
                 pagedResponse.Items);
 
 
-            return new PagedResponse<SelfDriveDTO>
+            return new PagedResponse<CabDTO>
             {
                 Items = selfDriveDtos,
                 PageNumber = pagedResponse.PageNumber,
@@ -56,24 +56,32 @@ namespace TravoRides.Application.Services
 
         public async Task<SelfDriveDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var selfDrive = await _unitOfWork.SelfDrives.GetSelfDriveByCabAsync(id, cancellationToken);
-            if (selfDrive == null) return null;
+            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(id, cancellationToken);
+
+            if (selfDrive == null)
+                return null;
             return _mapper.Map<SelfDriveDTO>(selfDrive);
+
+        }
+             public async Task<CabDTO?> GetByCabIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var selfDrive = await _unitOfWork.SelfDrives.GetSelfDriveById(id, cancellationToken);
+            if (selfDrive == null) return null;
+            return _mapper.Map<CabDTO>(selfDrive);
         }
 
         public async Task<Guid> CreateAsync(CreateSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
                 throw new ResourceNotFoundException("SelfDrive not found");
-            // Validate Cab
-            var cab = await _unitOfWork.Cabs
-                .GetByIdAsync(
-                    request.CabId,
-                    cancellationToken);
+            var cab = await _unitOfWork.Cabs.GetByIdAsync(
+     request.CabId,
+     cancellationToken);
 
-            if (cab == null || cab.IsDeleted)
-                throw new ResourceNotFoundException(
-                    "Cab not found.");
+            if (cab == null)
+            {
+                throw new ResourceNotFoundException("Cab not found.");
+            }
 
             var selfDrive = new SelfDrive
             {
@@ -92,6 +100,7 @@ namespace TravoRides.Application.Services
         {
             var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(request.Id, cancellationToken);
             if (selfDrive == null) throw new ResourceNotFoundException("Self-drive not found.");
+            selfDrive.CabId = request.CabId;
 
             selfDrive.PricePerDay = request.PricePerDay;
             selfDrive.Discount = request.Discount;

@@ -4,6 +4,7 @@ using TravoRides.Application.DTOs.SelfDrive;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Cabs;
 
 namespace TravoRides.API.Controllers
 {
@@ -12,13 +13,21 @@ namespace TravoRides.API.Controllers
     public class SelfDriveController : ControllerBase
     {
         private readonly ISelfDriveService _service;
-        public SelfDriveController(ISelfDriveService service) => _service = service;
+        private readonly ICabService _cabService;
+        public SelfDriveController(ISelfDriveService service, ICabService cabService)
+        {
+
+            _cabService = cabService;
+            _service = service;
+        }
+            
+            
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] SearchSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
             var result = await _service.GetAllAsync(request, cancellationToken);
-            return Ok(new ApiResponse<PagedResponse<SelfDriveDTO>> { IsSuccess = true, Message = "SelfDrive retrieved.", Data = result });
+            return Ok(new ApiResponse<PagedResponse<CabDTO>> { IsSuccess = true, Message = "SelfDrive retrieved.", Data = result });
         }
 
         [HttpGet("{id:guid}")]
@@ -29,6 +38,14 @@ namespace TravoRides.API.Controllers
             return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Item retrieved.", Data = r });
         }
 
+        [HttpGet("{id:guid}/GetByCab")]
+
+        public async Task<IActionResult> GetByCab(Guid id, CancellationToken cancellationToken)
+        {
+            var r = await _service.GetByCabIdAsync(id, cancellationToken);
+            if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "SelfDrive not found." });
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Item retrieved.", Data = r });
+        }
         [HttpPost]
         //[Authorize]
         public async Task<IActionResult> Create([FromBody] CreateSelfDriveRequest request, CancellationToken cancellationToken)
