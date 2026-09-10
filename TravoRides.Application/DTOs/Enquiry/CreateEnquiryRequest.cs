@@ -10,15 +10,13 @@ namespace TravoRides.Application.DTOs.Enquirer
 
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Please enter your email")]
-        [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Email is not valid")]
-        [StringLength(100, ErrorMessage = "Email is too small", MinimumLength = 10)]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
 
         [Required(ErrorMessage = "Please enter your phone number")]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "Please enter numbers only")]
-        [StringLength(12, ErrorMessage = "Phone should be 10 characters long", MinimumLength = 10)]
+        [Phone]
         public String Phone { get; set; }
 
         public string Subject { get; set; }

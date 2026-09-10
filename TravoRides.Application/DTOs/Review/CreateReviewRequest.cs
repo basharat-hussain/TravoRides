@@ -14,7 +14,7 @@ namespace TravoRides.Application.DTOs.Review
 
 
         [Required(ErrorMessage = "Please enter your feedback")]
-        [StringLength(2000, ErrorMessage = "feedback is too small", MinimumLength = 40)]
+        [StringLength(2000, ErrorMessage = "feedback is too small", MinimumLength = 10)]
         public string Feedback { get; set; }
 
 
