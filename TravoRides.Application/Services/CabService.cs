@@ -283,14 +283,13 @@ namespace TravoRides.Application.Services
             cab.Fuel = request.Fuel;
 
             cab.PricePerDay = request.PricePerDay;
-
+            cab.Discount = request.Discount;
             // Update Foreign Key
             cab.CategoryId = request.CategoryId;
 
             _unitOfWork.Cabs.Update(cab);
 
-            await _unitOfWork.SaveChangesAsync(
-                cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         // ============================================================

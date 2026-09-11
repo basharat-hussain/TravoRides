@@ -84,6 +84,9 @@ namespace TravoRides.Application.Services
 
             category.Name = request.Name?.Trim();
             category.Description = request.Description?.Trim();
+            
+            _unitOfWork.Categories.Update(category);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

@@ -14,7 +14,13 @@ namespace TravoRides.API.Controllers
     public class TransitController : ControllerBase
     {
         private readonly ITransitService _service;
-        public TransitController(ITransitService service) => _service = service;
+        private readonly IBookingService bookingService;
+
+        public TransitController(ITransitService service, IBookingService bookingService)
+        {
+            _service = service;
+            this.bookingService = bookingService;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] SearchTransitRequest request, CancellationToken cancellationToken = default)
@@ -52,7 +58,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-       // [Authorize]
+        // [Authorize]
         public async Task<IActionResult> Update(Guid id, [FromForm] UpdateTransitRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -66,6 +72,18 @@ namespace TravoRides.API.Controllers
         {
             await _service.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Deleted.", Data = id });
+        }
+
+        [HttpGet("{id:guid}/rates/{cabid:guid}")]
+        public async Task<IActionResult> GetTransitRates(Guid id, Guid cabid, CancellationToken cancellationToken)
+        {
+            var rates = await _service.GetTransitRateAsync(cabid, id, cancellationToken);
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Data = rates,
+                Message = "Transit rates fetched successfully",
+            });
         }
     }
 }

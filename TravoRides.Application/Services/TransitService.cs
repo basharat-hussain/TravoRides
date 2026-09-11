@@ -1,6 +1,7 @@
 using AutoMapper;
 using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Common.Models;
+using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
@@ -185,6 +186,7 @@ namespace TravoRides.Application.Services
             Transit.Description = request.Description?.Trim();
             Transit.Price = request.Price;
             Transit.Discount = request.Discount;
+            
 
             _unitOfWork.Transit.Update(Transit);
 
@@ -206,6 +208,35 @@ namespace TravoRides.Application.Services
             _unitOfWork.Transit.Update(portfolio);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<object> GetTransitRateAsync(Guid cabId, Guid transitId, CancellationToken cancellationToken)
+        {
+            var transitRate = await _unitOfWork.TransitRates.GetByCabAndTransitAsync(cabId, transitId, cancellationToken);
+
+            if (transitRate == null)
+            {
+                throw new ResourceNotFoundException("Rate not found for the selected cab and transit.");
+            }
+
+            // Get both discounts
+            decimal transitDiscount = transitRate.Transit.Discount ?? 0;
+            decimal transitRateDiscount = transitRate.Discount ?? 0;
+
+            // Use the greater discount
+            decimal applicableDiscount = Math.Max(transitDiscount, transitRateDiscount);
+
+            // Calculate final price
+            decimal finalRate = transitRate.Rate - applicableDiscount;
+
+            // Prevent negative price
+            if (finalRate < 0)
+            {
+                    throw new ValidationException("Transit discount cannot be greater than the transit rate.");
+                
+            }
+
+            return new { FinalRate = finalRate, OriginalRate = transitRate.Rate, Discount = applicableDiscount };
         }
 
         /// <summary>

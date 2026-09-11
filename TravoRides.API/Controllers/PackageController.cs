@@ -67,5 +67,17 @@ namespace TravoRides.API.Controllers
             await _service.DeleteAsync(id, cancellationToken);
             return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Package deleted.", Data = id });
         }
+
+        [HttpGet("{id:guid}/rates/{cabid:guid}")]
+        public async Task<IActionResult> GetPackageRates(Guid id, Guid cabid, CancellationToken cancellationToken)
+        {
+            var rates = await _service.GetPackageRateAsync(cabid, id, cancellationToken);
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Data = rates,
+                Message = "Transit rates fetched successfully",
+            });
+        }
     }
 }

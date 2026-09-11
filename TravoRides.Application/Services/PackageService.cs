@@ -54,6 +54,38 @@ namespace TravoRides.Application.Services
                             (x.Discount ?? 0)
             }).ToList();
         }
+
+        public async Task<object> GetPackageRateAsync(Guid cabId, Guid packageId, CancellationToken cancellationToken)
+        {
+            var packageRate = await _unitOfWork.PackageRates.GetByCabAndPackageAsync(cabId, packageId, cancellationToken);
+
+            if (packageRate == null)
+            {
+                throw new ResourceNotFoundException("Rate not found for the selected cab and transit.");
+            }
+
+            // Get both discounts
+            decimal packageDiscount = packageRate.Package.Discount ?? 0;
+            decimal packageRateDiscount = packageRate.Discount ?? 0;
+
+            // Use the greater discount
+            decimal applicableDiscount = Math.Max(packageDiscount, packageRateDiscount);
+
+            // Calculate final price
+            decimal finalRate = packageRate.Rate - applicableDiscount;
+
+            // Prevent negative price
+          
+            
+                if (finalRate < 0)
+                {
+                    throw new ValidationException("Package discount cannot be greater than the package rate.");
+                }
+            
+
+            return new { FinalRate = finalRate, OriginalRate = packageRate.Rate, Discount = applicableDiscount };
+        }
+
         public async Task<PagedResponse<PackageDTO>> GetAllAsync(SearchPackageRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
