@@ -1,11 +1,12 @@
 using AutoMapper;
 using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Common.Models;
-using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.DTOs.Cabs;
-using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 
@@ -26,10 +27,36 @@ namespace TravoRides.Application.Services
             _fileStorageService = fileStorageService;
             _fileUrlService = fileUrlService;
         }
+        public async Task<List<TransitCabRateDTO>> GetCabsWithRatesAsync(Guid transitId, CancellationToken cancellationToken = default)
+        {
+            var transitRates = await _unitOfWork.TransitRates
+                .GetByTransitIdAsync(transitId, cancellationToken);
 
-        public async Task<PagedResponse<TransitDTO>> GetAllAsync(
-      SearchTransitRequest request,
-      CancellationToken cancellationToken = default)
+            if (!transitRates.Any())
+            {
+                throw new ResourceNotFoundException(
+                    "No cabs are available for this transit.");
+            }
+
+            return transitRates.Select(x => new TransitCabRateDTO
+            {
+                CabId = x.CabId,
+                CabName = x.Cab.Name,
+                ImageUrl = x.Cab.ImageUrl,
+                SeatingCapacity = x.Cab.SeatingCapacity,
+                LuggageCapacity = x.Cab.LuggageCapacity,
+                Fuel = x.Cab.Fuel,
+                Transmission = x.Cab.Transmission,
+
+                Rate = x.Rate,
+                Discount = x.Discount,
+
+                FinalRate = x.Rate -
+                            (x.Discount ?? 0)
+            }).ToList();
+        }
+
+        public async Task<PagedResponse<TransitDTO>> GetAllAsync( SearchTransitRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
             if (request.PageNumber < 1) request.PageNumber = 1;

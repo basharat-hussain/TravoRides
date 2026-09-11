@@ -1,5 +1,6 @@
-using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.DTOs.Transit;
 
 namespace TravoRides.Application.Interfaces
 {
@@ -10,5 +11,7 @@ namespace TravoRides.Application.Interfaces
         Task<Guid> CreateAsync(CreateTransitRequest request, CancellationToken cancellationToken = default);
         Task UpdateAsync(UpdateTransitRequest request, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<List<TransitCabRateDTO>> GetCabsWithRatesAsync(Guid transitId, CancellationToken cancellationToken = default);
+
     }
 }

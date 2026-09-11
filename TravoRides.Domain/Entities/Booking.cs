@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿
 using TravoRides.Domain.Common;
 using TravoRides.Domain.Enums;
 
@@ -52,7 +49,6 @@ namespace TravoRides.Domain.Entities
 
         public Package? Package { get; set; }
 
-        public ICollection<Payment> Payments { get; set; }
-            = new List<Payment>();
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

@@ -10,5 +10,6 @@ namespace TravoRides.Application.Interfaces
         Task<Guid> CreateAsync(CreatePackageRequest request, CancellationToken cancellationToken = default);
         Task UpdateAsync(UpdatePackageRequest request, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<List<PackageCabRateDTO>> GetCabsWithRatesAsync( Guid packageId, CancellationToken cancellationToken = default);
     }
 }

@@ -76,6 +76,7 @@ namespace TravoRides.Application.Services
                     request.Keyword,
                     request.FromDate,
                     request.ToDate,
+                    request.IsConfirmed,
                     cancellationToken);
 
             // Map booking records
@@ -232,54 +233,68 @@ namespace TravoRides.Application.Services
         {
             if (!request.TransitId.HasValue)
             {
-                throw new ValidationException(
-                    "Transit is required for a transit booking.");
+                throw new ValidationException("Transit is required for a transit booking.");
             }
 
-            var transitRate = await _unitOfWork.TransitRates
-             .GetByCabAndTransitAsync( request.CabId,request.TransitId.Value,cancellationToken);
+            var transitRate = await _unitOfWork.TransitRates.GetByCabAndTransitAsync( request.CabId,request.TransitId.Value,cancellationToken);
 
             if (transitRate == null)
             {
                 throw new ResourceNotFoundException( "Rate not found for the selected cab and transit.");
             }
 
-            var discount = transitRate.Discount ?? 0;
+            // Get both discounts
+            decimal transitDiscount = transitRate.Transit.Discount ?? 0;
+            decimal transitRateDiscount = transitRate.Discount ?? 0;
 
-            var finalRate = transitRate.Rate - discount;
+            // Use the greater discount
+            decimal applicableDiscount = Math.Max(transitDiscount, transitRateDiscount);
 
+            // Calculate final price
+            decimal finalRate = transitRate.Rate - applicableDiscount;
+
+            // Prevent negative price
             if (finalRate < 0)
             {
-                throw new ValidationException("Transit discount cannot be greater than the transit rate.");
+                if (finalRate < 0)
+                {
+                    throw new ValidationException("Package discount cannot be greater than the package rate.");
+                }
             }
 
             return finalRate;
         }
-
         private async Task<decimal> GetPackageRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)  
         {
             if (!request.PackageId.HasValue)
             {
-                throw new ValidationException(
-                    "Package is required for a package booking.");
+                throw new ValidationException("PackageId is required for package booking.");
             }
 
-            var packageRate =
-                await _unitOfWork.PackageRates
-                    .GetByCabAndPackageAsync(
-                        request.CabId,
-                        request.PackageId.Value,
-                        cancellationToken);
+            var packageRate = await _unitOfWork.PackageRates.GetByCabAndPackageAsync( request.CabId, request.PackageId.Value,cancellationToken);
 
             if (packageRate == null)
             {
-                throw new ResourceNotFoundException(
-                    "Rate not found for the selected cab and package.");
+                throw new ResourceNotFoundException("No rate found for the selected cab and package.");
             }
 
-            var discount = packageRate.Discount ?? 0;
+            // Get both discounts
+            decimal packageDiscount = packageRate.Package.Discount ?? 0;
+            decimal packageRateDiscount = packageRate.Discount ?? 0;
 
-            return packageRate.Rate - discount;
+            // Use the greater discount
+            decimal applicableDiscount = Math.Max( packageDiscount, packageRateDiscount);
+
+            // Calculate final price
+            decimal finalRate = packageRate.Rate - applicableDiscount;
+
+            // Prevent negative price
+            if (finalRate < 0)
+            {
+                throw new ValidationException("Package discount cannot be greater than the package rate.");
+            }
+
+            return finalRate;
         }
         private async Task<decimal> GetCabRateAsync( CreateBookingRequest request, CancellationToken cancellationToken)
         {
@@ -312,15 +327,23 @@ namespace TravoRides.Application.Services
                 throw new ResourceNotFoundException("Self-drive rate not found for the selected cab.");
             }
 
-            var discount = selfDrive.Discount ?? 0;
+            // Get both discounts
+            decimal cabDiscount = selfDrive.Cab.Discount ?? 0;
+            decimal selfDriveDiscount = selfDrive.Discount ?? 0;
 
-            var finalRate = selfDrive.PricePerDay - discount;
+            // Use the greater discount
+            decimal applicableDiscount = Math.Max(selfDriveDiscount, cabDiscount);
 
-            if (finalRate < 0)
-            {
-                throw new ValidationException(
-                    "Package discount cannot be greater than the package rate.");
-            }
+            // Calculate final price
+            decimal finalRate = selfDrive.PricePerDay - applicableDiscount;
+
+            // Prevent negative price
+            
+                if (finalRate < 0)
+                {
+                    throw new ValidationException("SelfDrive discount cannot be greater than the SelfDrive rate.");
+                }
+            
 
             return finalRate;
         }

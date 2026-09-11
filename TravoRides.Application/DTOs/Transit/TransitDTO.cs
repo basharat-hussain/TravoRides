@@ -8,6 +8,9 @@ namespace TravoRides.Application.DTOs.Transit
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+
+        public decimal Price { get; set; }
+        public decimal Discount { get; set; } 
         
     }
 }

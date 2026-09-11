@@ -26,9 +26,35 @@ namespace TravoRides.Application.Services
             _fileStorage = fileStorage;
         }
 
-        public async Task<PagedResponse<PackageDTO>> GetAllAsync(
-      SearchPackageRequest request,
-      CancellationToken cancellationToken = default)
+        public async Task<List<PackageCabRateDTO>> GetCabsWithRatesAsync( Guid packageId,  CancellationToken cancellationToken = default)
+        {
+            var packageRates = await _unitOfWork.PackageRates
+                .GetByPackageIdAsync(packageId, cancellationToken);
+
+            if (!packageRates.Any())
+            {
+                throw new ResourceNotFoundException(
+                    "No cabs are available for this package.");
+            }
+
+            return packageRates.Select(x => new PackageCabRateDTO
+            {
+                CabId = x.CabId,
+                CabName = x.Cab.Name,
+                ImageUrl = x.Cab.ImageUrl,
+                SeatingCapacity = x.Cab.SeatingCapacity,
+                LuggageCapacity = x.Cab.LuggageCapacity,
+                Fuel = x.Cab.Fuel,
+                Transmission = x.Cab.Transmission,
+
+                Rate = x.Rate,
+                Discount = x.Discount,
+
+                FinalRate = x.Rate -
+                            (x.Discount ?? 0)
+            }).ToList();
+        }
+        public async Task<PagedResponse<PackageDTO>> GetAllAsync(SearchPackageRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
             if (request.PageNumber < 1) request.PageNumber = 1;

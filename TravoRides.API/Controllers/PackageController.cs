@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TravoRides.Application.DTOs.Common;
-using TravoRides.Application.Interfaces;
 using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.Interfaces;
+using TravoRides.Application.Services;
 
 namespace TravoRides.API.Controllers
 {
@@ -27,6 +28,19 @@ namespace TravoRides.API.Controllers
             var r = await _service.GetByIdAsync(id, cancellationToken);
             if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "Package not found." });
             return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Package retrieved.", Data = r });
+        }
+
+        [HttpGet("{packageId:guid}/cabs")]
+        public async Task<IActionResult> GetCabsWithRates( Guid packageId, CancellationToken cancellationToken)
+        {
+            var result = await _service .GetCabsWithRatesAsync(packageId, cancellationToken);
+
+            return Ok(new ApiResponse<List<PackageCabRateDTO>>
+            {
+                IsSuccess = true,
+                Message = "Available cabs retrieved successfully.",
+                Data = result
+            });
         }
 
         [HttpPost]

@@ -17,7 +17,7 @@ namespace TravoRides.Application.DTOs.Cabs
 
         public string ImageUrl { get; set; } = string.Empty;
         public string Transmission { get; set; } = string.Empty;
-        public string Fuel { get; set; } = string.Empty;
+        public FuelType Fuel { get; set; } 
         public decimal PricePerDay { get; set; }
 
         public decimal Discount { get; set; }

@@ -7,9 +7,7 @@ namespace TravoRides.Application.Repositories
 {
     public interface ITransitRateRepository
     {
-        Task<TransitRate?> GetByCabAndTransitAsync(
-            Guid cabId,
-            Guid transitId,
-            CancellationToken cancellationToken = default);
+        Task<List<TransitRate>> GetByTransitIdAsync(Guid transitId, CancellationToken cancellationToken = default);
+        Task<TransitRate?> GetByCabAndTransitAsync(Guid cabId,Guid transitId, CancellationToken cancellationToken = default);
     }
 }

@@ -33,6 +33,14 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("BookingType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("CabId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -62,8 +70,8 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Luggage")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -76,6 +84,9 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid?>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Passengers")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -83,8 +94,8 @@ namespace TravoRides.Infrastructure.Migrations
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("PickupLocation")
                         .IsRequired()
@@ -94,19 +105,35 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<DateTime>("PickupTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("SpecialRequirements")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("TransitId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("TravelDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("WhatsApp")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingNo")
+                        .IsUnique();
+
+                    b.HasIndex("CabId");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("TransitId");
 
                     b.ToTable("Bookings", (string)null);
                 });
@@ -132,16 +159,19 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<decimal>("Discount")
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Fuel")
-                        .HasColumnType("int");
+                    b.Property<string>("Fuel")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -150,7 +180,6 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("LuggageCapacity")
-                        .HasMaxLength(100)
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -161,10 +190,11 @@ namespace TravoRides.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<decimal>("PricePerDay")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("SeatingCapacity")
@@ -172,8 +202,8 @@ namespace TravoRides.Infrastructure.Migrations
 
                     b.Property<string>("Transmission")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -259,57 +289,6 @@ namespace TravoRides.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories", (string)null);
-                });
-
-            modelBuilder.Entity("TravoRides.Domain.Entities.Transit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Transit", (string)null);
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Enquiry", b =>
@@ -412,6 +391,86 @@ namespace TravoRides.Infrastructure.Migrations
                     b.ToTable("FeaturesMaster", (string)null);
                 });
 
+            modelBuilder.Entity("TravoRides.Domain.Entities.LatestThinking", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CanonicalUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageAltText")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KeyTakeaways")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PublishedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subtitle")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LatestThinkings", (string)null);
+                });
+
             modelBuilder.Entity("TravoRides.Domain.Entities.Package", b =>
                 {
                     b.Property<Guid>("Id")
@@ -484,6 +543,55 @@ namespace TravoRides.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Packages", (string)null);
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.PackageRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CabId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("CabId", "PackageId")
+                        .IsUnique();
+
+                    b.ToTable("PackageRates", (string)null);
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Payment", b =>
@@ -707,6 +815,141 @@ namespace TravoRides.Infrastructure.Migrations
                     b.ToTable("SelfDrives", (string)null);
                 });
 
+            modelBuilder.Entity("TravoRides.Domain.Entities.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.Transit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Transit", (string)null);
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.TransitRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CabId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Rate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("TransitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransitId");
+
+                    b.HasIndex("CabId", "TransitId")
+                        .IsUnique();
+
+                    b.ToTable("TransitRates", (string)null);
+                });
+
             modelBuilder.Entity("TravoRides.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -813,12 +1056,37 @@ namespace TravoRides.Infrastructure.Migrations
                     b.ToTable("VerificationOtps");
                 });
 
+            modelBuilder.Entity("TravoRides.Domain.Entities.Booking", b =>
+                {
+                    b.HasOne("TravoRides.Domain.Entities.Cab", "Cab")
+                        .WithMany("Bookings")
+                        .HasForeignKey("CabId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TravoRides.Domain.Entities.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TravoRides.Domain.Entities.Transit", "Transit")
+                        .WithMany()
+                        .HasForeignKey("TransitId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Cab");
+
+                    b.Navigation("Package");
+
+                    b.Navigation("Transit");
+                });
+
             modelBuilder.Entity("TravoRides.Domain.Entities.Cab", b =>
                 {
                     b.HasOne("TravoRides.Domain.Entities.Category", "Category")
                         .WithMany("Cabs")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -841,6 +1109,25 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Navigation("Cab");
 
                     b.Navigation("Feature");
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.PackageRate", b =>
+                {
+                    b.HasOne("TravoRides.Domain.Entities.Cab", "Cab")
+                        .WithMany("PackageRates")
+                        .HasForeignKey("CabId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TravoRides.Domain.Entities.Package", "Package")
+                        .WithMany("PackageRates")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cab");
+
+                    b.Navigation("Package");
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Payment", b =>
@@ -876,6 +1163,25 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Navigation("Cab");
                 });
 
+            modelBuilder.Entity("TravoRides.Domain.Entities.TransitRate", b =>
+                {
+                    b.HasOne("TravoRides.Domain.Entities.Cab", "Cab")
+                        .WithMany("TransitRates")
+                        .HasForeignKey("CabId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TravoRides.Domain.Entities.Transit", "Transit")
+                        .WithMany("TransitRates")
+                        .HasForeignKey("TransitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cab");
+
+                    b.Navigation("Transit");
+                });
+
             modelBuilder.Entity("TravoRides.Domain.Entities.VerificationOtp", b =>
                 {
                     b.HasOne("TravoRides.Domain.Entities.User", "User")
@@ -894,9 +1200,15 @@ namespace TravoRides.Infrastructure.Migrations
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Cab", b =>
                 {
+                    b.Navigation("Bookings");
+
                     b.Navigation("CabFeatures");
 
+                    b.Navigation("PackageRates");
+
                     b.Navigation("SelfDrive");
+
+                    b.Navigation("TransitRates");
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Category", b =>
@@ -907,6 +1219,16 @@ namespace TravoRides.Infrastructure.Migrations
             modelBuilder.Entity("TravoRides.Domain.Entities.FeaturesMaster", b =>
                 {
                     b.Navigation("CabFeatures");
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.Package", b =>
+                {
+                    b.Navigation("PackageRates");
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.Transit", b =>
+                {
+                    b.Navigation("TransitRates");
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.User", b =>
