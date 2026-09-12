@@ -14,12 +14,12 @@ namespace TravoRides.Infrastructure.Repository
         private readonly ApplicationDbContext _context;
         public LatestThinkingRepository(ApplicationDbContext context) : base(context)
         {
-            context = context;
+            _context = context;
         }
 
         public async Task<PagedResponse<LatestThinking>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, string? author, CancellationToken cancellationToken)
         {
-            var query = _context.Set<LatestThinking>().Where(p => !p.IsDeleted).AsNoTracking().AsQueryable();
+            var query = _context.LatestThinkings.Where(p => !p.IsDeleted).AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(keyword))
             {

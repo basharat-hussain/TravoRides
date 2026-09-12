@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.Interfaces.Services;
 
 namespace TravoRides.Infrastructure.Services
@@ -45,6 +46,21 @@ namespace TravoRides.Infrastructure.Services
                        .Replace("{{SUBJECT}}",WebUtility.HtmlEncode(subject))
                        .Replace("{{MESSAGE}}",WebUtility.HtmlEncode(message))
                        .Replace("{{PHONE}}", WebUtility.HtmlEncode(phone));
+
+            return html;
+        }
+        public async Task<string> GetQuoteConfirmationTemplateAsync(string name,string phone,string passengers,DateTime startDate, DateTime endDate, string requirements)
+        {
+            var path = Path.Combine(GetFullTemplatePath("email"), "quote-confirmation-template.html");
+
+            var html = await File.ReadAllTextAsync(path);
+
+            html = html.Replace("{{NAME}}", WebUtility.HtmlEncode(name))
+                       .Replace("{{PHONE}}", WebUtility.HtmlEncode(phone))
+             .Replace("{{PASSENGERS}}", WebUtility.HtmlEncode(passengers))
+             .Replace("{{STARTDATE}}", startDate.ToString("f"))
+             .Replace("{{ENDDATE}}", endDate.ToString("f"))
+             .Replace("{{REQUIREMENTS}}", WebUtility.HtmlEncode(requirements));
 
             return html;
         }

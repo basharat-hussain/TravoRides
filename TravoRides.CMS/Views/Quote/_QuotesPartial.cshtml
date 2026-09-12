@@ -1,0 +1,54 @@
+@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.Quote
+@model PagedResponse<QuoteDTO>
+
+@if (Model.Items.Count() > 0)
+{
+    <thead>
+        <tr>
+            <th style="width:5%">S.No</th>
+            <th style="width:15%">Purpose</th>
+            <th style="width:15%">Name</th>
+            <th style="width:15%">Phone</th>
+            <th style="width:15%">Email</th>
+            <th style="width:25%">Requirements</th>
+            <th style="width:10%" class="text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int count = 1; }
+        @foreach (var q in Model.Items)
+        {
+            <tr>
+                <td>
+                    @(count++)
+                    <input type="hidden" class="hdn-id" value="@q.Id" />
+                </td>
+                <td class="name">@q.Purpose</td>
+                <td>@q.Name</td>
+                <td>@q.Phone</td>
+                <td>@q.Email</td>
+                    <td>
+                    @{ var fb = q.Requirements ?? string.Empty; }
+                    @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
+                </td>
+               <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                            data-id="@q.Id"
+                            data-name="@q.Name"
+                            data-phone="@q.Phone"
+                            data-email="@q.Email"
+                            data-description="@q.Requirements">
+                        View
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+}
+else
+{
+    <tr>
+        <td colspan="7">No quotes found</td>
+    </tr>
+}

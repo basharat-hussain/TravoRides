@@ -1,0 +1,29 @@
+﻿.dataTables_filter{
+    padding: 20px 15px 5px;
+}
+
+.table td, .table th{
+    padding: 0.5rem;
+    font-size: 0.98rem;
+}
+
+.btn-group-sm > .btn, .btn-sm{
+    font-size: 0.75rem;
+}
+
+
+.dataTables_info{
+    padding: 10px 20px;
+}
+
+.pagination {
+    padding: 15px 20px;
+}
+
+.paginate_button{
+    font-size:14px;
+}
+
+.dataTables_info{
+    font-size:14px;
+}

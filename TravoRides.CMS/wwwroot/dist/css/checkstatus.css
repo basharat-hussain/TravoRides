@@ -1,0 +1,103 @@
+﻿.border-less {
+    border: none;
+}
+
+.width-auto {
+    width: auto;
+    margin: auto;
+}
+
+.font-large {
+    font-size: 24px;
+}
+
+.file-number {
+    background-color: #eee;
+    color: #000;
+    font-size: 19px;
+    height: 45px;
+    border: none;
+}
+
+    .file-number:focus {
+        background-color: #eee;
+        outline: none;
+        border: none;
+    }
+
+    .file-number[readonly] {
+        cursor: no-drop;
+    }
+
+#file_status_section {
+    padding: 20px 40px;
+    box-shadow: 0 0 4px #666;
+    border-radius: 15px;
+    background-color: #fff;
+    margin-top: 10%;
+}
+
+.timeline::before {
+    background-color: #999;
+}
+
+.filestatus_header img, .filestatus_header h4 {
+    margin-bottom: 0;
+    margin:auto;
+    text-align: center;
+    font-size: 1.7rem;
+    display: block;
+    color: #666;
+    line-height:165px;
+}
+
+
+
+#btnGenerateOtp {
+    background-color: #007bff;
+}
+
+#lblMsg.alert-success {
+    background-color: #68d080;
+    color: #000;
+    border: none;
+}
+
+#lblMsg.alert-danger {
+    background-color: #f38f98;
+    color: #000;
+    border: none;
+}
+
+.txt-otp {
+    background-color: #eee;
+    font-stretch: expanded;
+}
+
+.txt-otp:focus{
+    background-color:#eee;
+    border-radius:0;
+}
+
+.bg-light-gray{
+    background:#eee;
+}
+
+
+@media(max-width:1240px) {
+    .filestatus_header img, .filestatus_header h4{
+        line-height:100px;
+        font-size: 20px;
+    }
+}
+
+@media(max-width:990px) {
+    .filestatus_header img, .filestatus_header h4 {
+        line-height: 40px;
+        font-size: 20px;
+    }
+
+    .filestatus_header img{
+        height: 150px;
+    }
+}

@@ -9,5 +9,7 @@
         public Task<string> GetBookingCancellationTemplateAsync(string name, string bookingId, DateTime bookingDate, string cabName, string cabType, decimal totalAmount);
         public Task<string> GetBookingCompletionTemplateAsync(string name, string bookingId, DateTime bookingDate, string cabName, string cabType, decimal totalAmount);
         public Task<string> GetEnquiryConfirmationTemplateAsync(string name, string subject, string message, string phone);
+        public Task<string> GetQuoteConfirmationTemplateAsync(string name, string phone,string passengers, DateTime startDate, DateTime enddate, string requirements);
     }
+    
 }

@@ -1,0 +1,90 @@
+﻿@using AlArwaSolutions.CMS.Models
+@{
+    Layout = null;
+}
+@model LoginModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Performance and Monitoring System | User Log in</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="~/plugins/toastr/toastr.min.css">
+    <link href="~/dist/css/loginpage.css" rel="stylesheet" />
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            
+            <img src="~/images/alarwa_logo_main.png" class="img-fluid" />
+        </div>
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="text-center project-name">Content Management System</p>
+                <p class="login-box-msg">Login Panel</p>
+
+                <form asp-controller="Login" asp-action="Login" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
+                    <div class="input-group">
+                        <input type="email" asp-for="Email" class="form-control" placeholder="Email" autocomplete="off">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+
+                    <div class="input-group mt-3">
+                        <input type="password" asp-for="Password" class="form-control" placeholder="Password" autocomplete="off">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+
+                   @*  <div class="row mt-2">
+                        <div class="col-md-12">
+                            <div class="icheck-primary">
+                                <input type="checkbox" id="remember" asp-for="RememberMe">
+                                <label for="remember">
+                                    Remember Me
+                                </label>
+                            </div>
+                        </div>
+                    </div> *@
+
+                    <div class="social-auth-links mt-4 mb-3">
+
+                        <button type="submit" class="btn btn-md btn-primary" id="login-btn">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Login
+                        </button>
+                        <a href="#" class="float-right mt-2">I forgot my password</a>
+                    </div>
+
+                   
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/dist/js/adminlte.min.js"></script>
+    <script src="~/plugins/toastr/toastr.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/loginmodule.js"></script>
+
+</body>
+</html>

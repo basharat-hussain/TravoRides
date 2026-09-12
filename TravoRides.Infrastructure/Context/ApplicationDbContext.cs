@@ -27,7 +27,7 @@ namespace TravoRides.Infrastructure.Context
         public DbSet<FeaturesMaster> FeatureMasters => Set<FeaturesMaster>();
         public DbSet<CabFeatures> CabFeatures => Set<CabFeatures>();
         public DbSet<Package> Packages => Set<Package>();
-
+        public DbSet<Quote> Quotes => Set<Quote>(); 
         public DbSet<SelfDrive> SelfDrives => Set<SelfDrive>();
 
         public DbSet<Transit> Transit => Set<Transit>();

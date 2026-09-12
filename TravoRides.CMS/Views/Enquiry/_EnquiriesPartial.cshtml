@@ -1,0 +1,79 @@
+﻿@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.Enquirer
+@model PagedResponse<EnquiryDTO>
+
+@if (Model.Items.Count() > 0)
+{
+    <thead>
+        <tr>
+            <th style="width: 5%">
+                S.No
+            </th>
+            
+            <th style="width: 15%">
+                Name
+            </th>
+            <th style="width: 20%">
+                Address
+            </th>
+            <th style="width: 10%">
+                Phone No
+            </th>
+
+            <th style="width: 15%">
+                Email
+            </th>
+
+            <th style="width: 25%">
+                Enquiry Description
+            </th>
+            <th style="width: 10%" class="text-center">
+                View</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @{ int count = 1;}
+        @foreach (var enquiry in Model.Items)
+        {
+        <tr>
+            <td>
+                @(count++)
+                <input type="hidden" class="hdn-id" value="@enquiry.Id" />
+            </td>
+            
+            <td>@enquiry.Name</td>
+            <td>@enquiry.Subject</td>
+            <td>@enquiry.Phone</td>
+            <td>@enquiry.Email</td>
+            <td>
+                    @{ var fb = enquiry.Message ?? string.Empty; }
+                    @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
+             </td>       
+             <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                            data-id="@enquiry.Id"
+                            data-name="@enquiry.Name"
+                            data-email="@enquiry.Email"
+                            data-phone="@enquiry.Phone"
+                            data-subject="@enquiry.Subject"
+                            data-message="@enquiry.Message"
+                           >
+                        View
+                    </button>
+               </td>
+        </tr>
+        }
+
+    </tbody>
+                            
+   }
+
+   
+
+else
+{
+    <tr>
+        <td>Sorry! No Enquiry found</td>
+    </tr>
+}

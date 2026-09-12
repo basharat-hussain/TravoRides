@@ -1,0 +1,48 @@
+﻿@using AlArwaSolutions.Application.Common.Responses
+@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.Subscription
+@model ApiResponse<PagedResponse<SubscriptionDTO>>
+
+@* Breadcrumb *@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Subscriptions</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Subscription" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item active">Subscription</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Content *@
+<section class="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Enquiry</h3>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-responsive dataTable" id="data-grid">
+                @await Html.PartialAsync("_SubscriptionsPartial", Model.Data)
+            </table>
+        </div>
+        <div class="card-footer clearfix">
+            @await Html.PartialAsync("~/Views/Shared/_PaginationPartial.cshtml", Model.Data)
+        </div>
+    </div>
+
+</section>
+
+<partial name="_ManageModalsPartial" />
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    var module = "Subscription";
+</script>
+<script src="~/js/managemodule.js"></script>

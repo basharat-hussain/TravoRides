@@ -1,0 +1,129 @@
+﻿@using AlArwaSolutions.Application.Common.Responses
+@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.Review
+@model ApiResponse<PagedResponse<ReviewDTO>>
+@* Breadcrumb *@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Reviews</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Reviews</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Content *@
+<section class="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Reviews</h3>
+
+          
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-responsive dataTable" id="data-grid">
+                @await Html.PartialAsync("_ReviewsPartial", Model.Data)
+            </table>
+        </div>
+        <div class="card-footer clearfix">
+            @await Html.PartialAsync("~/Views/Shared/_PaginationPartial.cshtml", Model.Data)
+        </div>
+    </div>
+
+</section>
+
+<partial name="_ManageModalsPartial" />
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    var module = "Review";
+</script>
+
+<script>
+    function showReviewDetails(btn) {
+        var $btn = $(btn);
+        var id = $btn.data('id');
+        var name = $btn.data('name') || '';
+        var address = $btn.data('address') || '';
+        var company = $btn.data('company') || '';
+        var feedback = $btn.data('feedback') || '';
+        var rating = $btn.data('rating') || '';
+        var image = $btn.data('image') || '';
+        var isActive = $btn.data('isactive');
+
+        var statusText = isActive ? 'Approved' : 'Unapproved';
+
+        var html = '<div class="row">';
+        html += '<div class="col-md-4">';
+        if (image) {
+            html += '<img src="' + image + '" class="img-fluid" />';
+        }
+        html += '</div>';
+        html += '<div class="col-md-8">';
+        html += '<p><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
+        html += '<p><strong>Company:</strong> ' + $('<div/>').text(company).html() + '</p>';
+        html += '<p><strong>Address:</strong> ' + $('<div/>').text(address).html() + '</p>';
+        html += '<p><strong>Rating:</strong> ' + rating + '</p>';
+        html += '<p><strong>Status:</strong> ' + statusText + '</p>';
+        html += '<p><strong>Feedback:</strong><br />' + $('<div/>').text(feedback).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#modal-getbyid .lbl-module').text('Review');
+        $('#modal-getbyid #modal-body').html(html);
+        $('#modal-getbyid').modal('show');
+    }
+</script>
+<script src="~/js/managemodule.js"></script>
+<script>
+    function toggleReviewStatus(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to change the review status?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, change it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: '/Review/ToggleReviewStatus',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Updated!',
+                                text: 'Review status updated successfully.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload(); // or refresh partial
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire(
+                            'Error!',
+                            'Something went wrong.',
+                            'error'
+                        );
+                    }
+                });
+
+            }
+        });
+    }
+</script>

@@ -22,14 +22,17 @@ namespace TravoRides.Application
             services.AddScoped<IBookingService, BookingService>();
             services.AddScoped<ILatestThinkingService, LatestThinkingService>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IEnquiryService, EnquiryService>();
+            services.AddScoped<IQuoteService, QuoteService>();
+            
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
             services.AddScoped<IOtpVerificationService, EmailOtpVerificationService>();
-            services.AddScoped<IReviewService, ReviewService>();
-            services.AddScoped<IEnquiryService, EnquiryService>();
+           
 
             return services;
         }

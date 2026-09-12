@@ -1,0 +1,51 @@
+@model dynamic
+@using System.Web
+
+@{
+    if (Model == null) { return; }
+
+    int current = Model.PageNumber;
+    int total = Model.TotalPages;
+    int pageSize = Model.PageSize;
+
+    if (total <= 1)
+    {
+        return;
+    }
+
+    var path = Context.Request.Path.Value ?? string.Empty;
+    // copy existing query params
+    var query = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    foreach (var kv in Context.Request.Query)
+    {
+        query[kv.Key] = kv.Value.ToString();
+    }
+
+    string BuildLink(int page)
+    {
+        query["pageNumber"] = page.ToString();
+        query["pageSize"] = pageSize.ToString();
+
+        var qs = string.Join("&", query.Select(k => $"{HttpUtility.UrlEncode(k.Key)}={HttpUtility.UrlEncode(k.Value)}"));
+        return qs.Length > 0 ? $"{path}?{qs}" : path;
+    }
+}
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-end">
+        <li class="page-item @(current <= 1 ? "disabled" : "")">
+            <a class="page-link" href="@(current <= 1 ? "#" : BuildLink(current - 1))">Previous</a>
+        </li>
+
+        @for (var i = 1; i <= total; i++)
+        {
+            <li class="page-item @(i == current ? "active" : "")">
+                <a class="page-link" href="@(i == current ? "#" : BuildLink(i))">@i</a>
+            </li>
+        }
+
+        <li class="page-item @(current >= total ? "disabled" : "")">
+            <a class="page-link" href="@(current >= total ? "#" : BuildLink(current + 1))">Next</a>
+        </li>
+    </ul>
+</nav>

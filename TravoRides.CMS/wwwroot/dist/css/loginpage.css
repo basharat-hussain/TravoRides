@@ -1,0 +1,27 @@
+﻿.login-box{
+    width: 400px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 4px #666;
+    background:#fff;
+}
+
+.login-logo{
+    margin-bottom: 0;
+}
+
+.login-logo > img {
+    margin-top: 30px ;
+}
+
+.login-box-msg{
+    font-size: 20px;
+    font-weight:bold;
+}
+.login-box .card{
+    box-shadow: none;
+}
+
+.project-name{
+    font-size: 20px;
+}

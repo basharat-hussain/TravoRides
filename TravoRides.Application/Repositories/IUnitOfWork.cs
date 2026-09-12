@@ -18,6 +18,7 @@ namespace TravoRides.Application.Repositories
         ILatestThinkingRepository LatestThinkings { get; }
         IGenericRepository<Payment> Payments { get; }
         IGenericRepository<Subscription> Subscriptions { get; }
+        IGenericRepository<Quote> Quotes { get; }
         ITransitRepository Transit { get; }
 
         ITransitRateRepository TransitRates { get; }

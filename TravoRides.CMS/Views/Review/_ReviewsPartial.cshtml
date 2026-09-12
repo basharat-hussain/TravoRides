@@ -1,0 +1,130 @@
+﻿@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.Review
+@model PagedResponse<ReviewDTO>
+<style>
+
+    .rating .active {
+        color: #ffc107; /* yellow */
+    }
+
+    .rating .inactive {
+        color: #ccc; /* grey */
+    }
+
+    .badge{
+        padding: 8px;
+    }
+</style>
+@if (Model.Items.Count() > 0)
+{
+    <thead>
+        <tr>
+            <th style="width: 5%">
+                S.No
+            </th>
+
+            <th style="width: 25%">
+                Name
+            </th>
+
+            <th style="width: 25%">
+                Address
+            </th>
+
+            <th style="width: 15%">
+                Rating
+            </th>
+            <th style="width: 20%">
+               Feedback
+            </th>
+
+            <th style="width: 10%" class="text-center">
+               Status
+            </th>
+            <th style="width: 10%" class="text-center">
+               Actions
+            </th>
+           
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @{ int count = 1;}
+        @foreach (var review in Model.Items)
+        {
+            <tr>
+                <td>
+                    @(count++)
+                    <input type="hidden" class="hdn-id" value="@review.Id" />
+
+                </td>
+
+                <td class="name">@review.Name</td>
+
+                <td>@review.Address</td>
+
+                <td class="rating">
+                    @{
+                        int Rating = Convert.ToInt32(review.Rating);
+                    }
+                    @for (int i = 1; i <= Rating; i++)
+                    {
+                        <i class="fa fa-star active"></i>
+                    }
+                    @for (int i = Rating; i < 5; i++)
+                    {
+                        <i class="fa fa-star inactive"></i>
+                    }
+                </td>
+
+                <td>
+                    @{ var fb = review.Feedback ?? string.Empty; }
+                    @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
+                </td>
+                @* <td>
+                    @{
+                        Boolean Status = Convert.ToBoolean(review.Status);
+                        String St = Status ? "Approved" : "Unapproved";
+                    }
+                </td> *@
+                @* <td>
+                    <span class="badge @(review.IsActive ? "bg-success" : "bg-warning")">
+                        @(review.IsActive ? "Approve" : "Unapprove")
+                    </span>
+                </td> *@
+                <td>
+                    <button class="btn btn-sm @(review.IsActive ? "btn-danger ml-1" : "btn-success ml-1")"
+                            onclick="toggleReviewStatus('@review.Id')">
+                        @(review.IsActive ? "Unapprove" : "Approve")
+                    </button>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                            data-id="@review.Id"
+                            data-name="@review.Name"
+                            data-address="@review.Address"
+                            data-company="@review.Company"
+                            data-feedback="@review.Feedback"
+                            data-rating="@review.Rating"
+                            data-image="@review.ImageUrl"
+                            data-isactive="@review.IsActive">
+                        View
+                    </button>
+
+                    
+                </td>
+           
+            </tr>
+        }
+
+
+
+    </tbody>
+}
+else
+{
+    <tr>
+        <td>Sorry! No Reviews found</td>
+    </tr>
+}

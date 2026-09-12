@@ -1,0 +1,87 @@
+﻿@using AlArwaSolutions.Application.Common.Responses
+@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.LatestThinking
+
+@model ApiResponse<PagedResponse<LatestThinkingDTO>>
+@* Breadcrumb *@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Latest Thinkings</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Latest Thinkings</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Content *@
+<section class="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Portfolios</h3>
+
+            <div class="card-tools">
+                <a asp-controller="LatestThinking" asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> &nbsp; Add latestThinking
+                </a>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-responsive dataTable" id="data-grid">
+                @await Html.PartialAsync("_LatestThinkingsPartial", Model.Data)
+            </table>
+        </div>
+        <div class="card-footer clearfix">
+            @await Html.PartialAsync("~/Views/Shared/_PaginationPartial.cshtml", Model.Data)
+        </div>
+    </div>
+
+</section>
+
+<partial name="_ManageModalsPartial" />
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    var module = "Portfolio";
+</script>
+
+<script>
+    function showReviewDetails(btn) {
+        var $btn = $(btn);
+        var id = $btn.data('id');
+        var title = $btn.data('title') || '';
+        var subtitle = $btn.data('subtitle') || '';
+        var author = $btn.data('author') || '';
+        var technology = $btn.data('technology') || '';
+        var description = $btn.data('description') || '';
+        var image = $btn.data('image') || '';
+
+        var html = '<div class="row">';
+        html += '<div class="col-md-4">';
+        if (image) {
+            html += '<img src="' + image + '" class="img-fluid" />';
+        }
+        html += '</div>';
+        html += '<div class="col-md-8">';
+        html += '<p><strong>Title:</strong> ' + $('<div/>').text(title).html() + '</p>';
+        html += '<p><strong>Subtitle:</strong> ' + $('<div/>').text(subtitle).html() + '</p>';
+        html += '<p><strong>Author:</strong> ' + $('<div/>').text(author).html() + '</p>';
+        html += '<p><strong>Technology:</strong> ' + $('<div/>').text(technology).html() + '</p>';
+        html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#modal-getbyid .lbl-module').text('LatestThinking');
+        $('#modal-getbyid #modal-body').html(html);
+        $('#modal-getbyid').modal('show');
+    }
+    </script>
+<script src="~/js/managemodule.js"></script>

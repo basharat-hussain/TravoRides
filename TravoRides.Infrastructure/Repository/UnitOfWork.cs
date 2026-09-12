@@ -19,6 +19,8 @@ namespace TravoRides.Infrastructure.Repository
         public IBookingRepository Bookings { get; }
         public IGenericRepository<Payment> Payments { get; }
         public IGenericRepository<Subscription> Subscriptions { get; }
+        public IGenericRepository<Quote> Quotes { get; }
+             
         public ITransitRepository Transit { get; }
         public IOtpVerificationRepository OtpVerifications { get; }
         public ICabRepository Cabs { get; }
@@ -59,6 +61,7 @@ namespace TravoRides.Infrastructure.Repository
             TransitRates = transitRate;
             Payments = new GenericRepository<Payment>(context);
             Subscriptions = new GenericRepository<Subscription>(context);
+            Quotes = new GenericRepository<Quote>(context);
         }
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
            => await _context.SaveChangesAsync();

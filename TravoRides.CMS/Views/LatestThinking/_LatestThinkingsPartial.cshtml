@@ -1,0 +1,99 @@
+﻿@using AlArwaSolutions.Application.DTOs.Common
+@using AlArwaSolutions.Application.DTOs.LatestThinking
+@model PagedResponse<LatestThinkingDTO>
+
+@if (Model.Items.Count() > 0)
+{
+    <thead>
+        <tr>
+            <th style="width: 5%">
+                S.No
+            </th>
+
+            <th style="width: 15%">
+                Title
+            </th>
+
+            <th style="width: 10%">
+                SubTitle
+            </th>
+
+            <th style="width: 10%">
+                Image
+            </th>
+            <th style="width: 15%">
+                Author
+            </th>
+            
+            <th style="width: 25%" class="text-center">
+                Description
+            </th>
+            <th style="width: 10%" class="text-center">
+                Actions
+                </th>
+                <th style="width: 10%" class="text-center"> 
+                    View </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @{ int count = 1;}
+        @foreach (var latestThinking in Model.Items)
+        {
+            <tr>
+                <td>
+                    @(count++)
+                    <input type="hidden" class="hdn-id" value="@latestThinking.Id" />
+
+                </td>
+
+                <td class="name">@latestThinking.Title</td>
+
+                <td>@latestThinking.Subtitle</td>
+
+                <td><img src="@latestThinking.ImageUrl" class="img-fluid" style="height:80px; width:200px;" /></td>
+
+                <td>
+                    @latestThinking.Author<br />
+                    
+                </td>
+               
+                <td>
+                    @{ var fb = latestThinking.Description ?? string.Empty; }
+                    @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
+                </td>
+
+                <td class="project-actions text-center">
+
+                    <a asp-controller="LatestThinking" asp-action="Edit" asp-route-id="@latestThinking.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn btn-danger btn-sm btn-delete" href="#" data-toggle="modal" data-target="#modal-delete" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                            data-id="@latestThinking.Id"
+                            data-title="@latestThinking.Title"
+                            data-subtitle="@latestThinking.Subtitle"
+                            data-author="@latestThinking.Author"
+                            data-description="@latestThinking.Description"
+                            data-image="@latestThinking.ImageUrl"
+                           >
+                        View
+                    </button>
+                    </td>
+            </tr>
+        }
+
+
+
+    </tbody>
+}
+else
+{
+    <tr>
+        <td>Sorry! No Latest Thinking found</td>
+    </tr>
+}
