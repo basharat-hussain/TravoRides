@@ -101,7 +101,7 @@ namespace TravoRides.Application.Services
 
         public async Task<Guid> CreateAsync(CreateTransitRequest request, CancellationToken cancellationToken = default)
         {
-            if (request.ImageUrl == null)
+            if (request.Image == null)
             {
                 throw new ValidationException("image is required");
             }
@@ -119,10 +119,10 @@ namespace TravoRides.Application.Services
 
             var fileUploadRequest = new FileUploadRequest
             {
-                ContentType = request.ImageUrl.ContentType,
+                ContentType = request.Image.ContentType,
                 FolderName = "Transit",
-                FileName = request.ImageUrl.FileName,
-                Stream = request.ImageUrl.OpenReadStream(),
+                FileName = request.Image.FileName,
+                Stream = request.Image.OpenReadStream(),
             };
 
 
@@ -166,10 +166,10 @@ namespace TravoRides.Application.Services
             {
                 var fileUploadRequest = new FileUploadRequest
                 {
-                    ContentType = request.ImageFile.ContentType,
+                    ContentType = request.Image.ContentType,
                     FolderName = "Transit",
-                    FileName = request.ImageFile.FileName,
-                    Stream = request.ImageFile.OpenReadStream(),
+                    FileName = request.Image.FileName,
+                    Stream = request.Image.OpenReadStream(),
                 };
 
                 var result = await _fileStorageService.UploadAsync(fileUploadRequest, cancellationToken);
@@ -210,7 +210,7 @@ namespace TravoRides.Application.Services
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<object> GetTransitRateAsync(Guid cabId, Guid transitId, CancellationToken cancellationToken)
+        public async Task<TransitCabRateDTO> GetTransitRateAsync(Guid cabId, Guid transitId, CancellationToken cancellationToken)
         {
             var transitRate = await _unitOfWork.TransitRates.GetByCabAndTransitAsync(cabId, transitId, cancellationToken);
 
@@ -232,12 +232,16 @@ namespace TravoRides.Application.Services
             // Prevent negative price
             if (finalRate < 0)
             {
-                    throw new ValidationException("Transit discount cannot be greater than the transit rate.");
-                
-            }
+                throw new ValidationException("Transit discount cannot be greater than the transit rate.");
 
-            return new { FinalRate = finalRate, OriginalRate = transitRate.Rate, Discount = applicableDiscount };
-        }
+            }
+            return new TransitCabRateDTO
+            {
+                FinalRate = finalRate,
+                Rate = transitRate.Rate,
+                Discount = applicableDiscount
+            };
+           }
 
         /// <summary>
         /// Converts relative file paths in a TransitDTO to absolute URLs

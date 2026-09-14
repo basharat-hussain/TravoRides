@@ -1,18 +1,18 @@
 ﻿@using TravoRides.Application.Common.Responses
-@using TravoRides.Application.DTOs.Cabs
+@using TravoRides.Application.DTOs.Package
 @using TravoRides.Application.DTOs.Common
-@model ApiResponse<PagedResponse<CabDTO>>
+@model ApiResponse<PagedResponse<PackageDTO>>
 @* Breadcrumb *@
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Cabs</h1>
+                <h1>Packages</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Cabs</li>
+                    <li class="breadcrumb-item active">Packages</li>
                 </ol>
             </div>
         </div>
@@ -24,18 +24,18 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Cabs</h3>
+            <h3 class="card-title">Packages</h3>
 
             <div class="card-tools">
-                <a asp-controller="Cab" asp-action="Create" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus"></i> &nbsp; Add Cab
+                <a asp-controller="Package" asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> &nbsp; Add Package
                 </a>
 
             </div>
         </div>
         <div class="card-body p-0">
             <table class="table table-striped table-responsive dataTable" id="data-grid">
-                @await Html.PartialAsync("_CabsPartial", Model.Data)
+                @await Html.PartialAsync("_PackagesPartial", Model.Data)
             </table>
         </div>
         <div class="card-footer clearfix">
@@ -49,22 +49,22 @@
 <partial name="_ValidationScriptsPartial" />
 
 <script>
-    var module = "Cab";
+    var module = "Package";
 </script>
 
 <script>
     function showReviewDetails(btn) {
         var $btn = $(btn);
         var id = $btn.data('id');
-        var category = $btn.data('category') || '';
         var name = $btn.data('name') || '';
         var price = $btn.data('price') || '';
         var discount = $btn.data('discount') || '';
-        var transmission = $btn.data('transmission') || '';
-        var luggage = $btn.data('luggage') || '';
-                var seating = $btn.data('seating') || '';
+        var inclusions = $btn.data('inclusions') || '';
+        var distance = $btn.data('distance') || '';
+        var duration = $btn.data('duration') || '';
+        var places = $btn.data('places') || '';
 
-        var fuel = $btn.data('fuel') || '';
+        var route = $btn.data('route') || '';
         var description = $btn.data('description')|| '';
 
         var imageurl = $btn.data('imageurl') || '';
@@ -76,22 +76,23 @@
         }
         html += '</div>';
         html += '<div class="col-md-8">';
-        html += '<p><strong>Category:</strong> ' + $('<div/>').text(category).html() + '</p>';
         html += '<p><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
         html += '<p><strong>Price:</strong> ' + $('<div/>').text(price).html() + '</p>';
         html += '<p><strong>Discount:</strong> ' + $('<div/>').text(discount).html() + '</p>';
-        html += '<p><strong>Transmission:</strong> ' + $('<div/>').text(transmission).html() + '</p>';
-        html += '<p><strong>FuelType:</strong> ' + $('<div/>').text(fuel).html() + '</p>';
-         html += '<p><strong>Luggage:</strong> ' + $('<div/>').text(luggage).html() + '</p>';
+        html += '<p><strong>Inclusions:</strong> ' + $('<div/>').text(inclusions).html() + '</p>';
+        html += '<p><strong>Itenarary:</strong> ' + $('<div/>').text(itenarary).html() + '</p>';
+        html += '<p><strong>Distance:</strong> ' + $('<div/>').text(distance).html() + '</p>';
+        html += '<p><strong>Duration:</strong> ' + $('<div/>').text(duration).html() + '</p>';
+        html += '<p><strong>Route:</strong> ' + $('<div/>').text(route).html() + '</p>';
 
-        html += '<p><strong>SeatingCapacity:</strong> ' + $('<div/>').text(seating).html() + '</p>';
+        html += '<p><strong>Places:</strong> ' + $('<div/>').text(places).html() + '</p>';
 
         html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
 
         html += '</div>';
         html += '</div>';
 
-        $('#modal-getbyid .lbl-module').text('Cab');
+        $('#modal-getbyid .lbl-module').text('Package');
         $('#modal-getbyid #modal-body').html(html);
         $('#modal-getbyid').modal('show');
     }

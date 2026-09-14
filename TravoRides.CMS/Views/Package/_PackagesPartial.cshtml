@@ -1,0 +1,89 @@
+﻿@using TravoRides.Application.DTOs.Package
+@using TravoRides.Application.DTOs.Common
+@model PagedResponse<PackageDTO>
+
+
+@if (Model.Items.Count() > 0)
+{
+    <thead>
+        <tr>
+            <th style="width: 10%">
+                S.No
+            </th>
+
+            <th style="width: 20%">
+                Title
+            </th>
+
+            <th style="width: 15%">
+                Price
+            </th>
+            <th style="width: 15%">
+                 Discount
+            </th>
+           <th style="width:20%">
+               Duration
+           </th>
+            <th style="width: 10%" class="text-center">
+                Actions
+            </th>
+           <th style="width: 10%" class="text-center">
+                View
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @{ int count = 1;}
+        @foreach (var Package in Model.Items)
+        {
+            <tr>
+                <td>
+                    @(count++)
+                    <input type="hidden" class="hdn-id" value="@Package.Id" />
+
+                </td>
+
+                <td>@Package.Title</td>
+
+                <td>@Package.Price </td>
+               <td>@Package.Discount</td>
+               <td>@Package.Duration</td>
+                <td class="project-actions text-center">
+
+                    <a asp-controller="Package" asp-action="Edit" asp-route-id="@Package.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn btn-danger btn-sm btn-delete" href="#" data-toggle="modal" data-target="#modal-delete" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+                  <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                            data-id="@Package.Id"
+                            data-title="@Package.Title"
+                            data-itinerary="@Package.Itinerary"
+                            data-price="@Package.Price"
+                            data-discount="@Package.Discount"
+                            data-distance="@Package.Distance"
+                            data-duration="@Package.Duration"
+                            data-inclusions="@Package.Inclusions"
+                            data-places="@Package.PlacesCovered"
+                            data-route="@Package.Route"
+                            data-image="@Package.ImageUrl"
+                           >
+                        View
+                    </button>
+                    </td>
+            </tr>
+        }
+
+
+
+    </tbody>
+}
+else
+{
+    <tr>
+        <td>Sorry! No Packages found</td>
+    </tr>}

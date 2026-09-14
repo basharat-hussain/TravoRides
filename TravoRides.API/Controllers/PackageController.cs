@@ -26,14 +26,13 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
         {
             var r = await _service.GetByIdAsync(id, cancellationToken);
-            if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "Package not found." });
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Package retrieved.", Data = r });
+            if (r == null) return NotFound(new ApiResponse<object> { IsSuccess = false, Message = "Not found." });
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Retrieved.", Data = r });
         }
-
         [HttpGet("{packageId:guid}/cabs")]
-        public async Task<IActionResult> GetCabsWithRates( Guid packageId, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCabsWithRates(Guid packageId, CancellationToken cancellationToken)
         {
-            var result = await _service .GetCabsWithRatesAsync(packageId, cancellationToken);
+            var result = await _service.GetCabsWithRatesAsync(packageId, cancellationToken);
 
             return Ok(new ApiResponse<List<PackageCabRateDTO>>
             {
@@ -57,7 +56,7 @@ namespace TravoRides.API.Controllers
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Package updated.", Data = id });
+            return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Package updated.", Data = id });
         }
 
         [HttpDelete("{id:guid}")]
@@ -65,7 +64,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Package deleted.", Data = id });
+            return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Package deleted.", Data = id });
         }
 
         [HttpGet("{id:guid}/rates/{cabid:guid}")]
@@ -81,3 +80,4 @@ namespace TravoRides.API.Controllers
         }
     }
 }
+

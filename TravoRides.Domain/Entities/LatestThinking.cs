@@ -36,7 +36,7 @@ namespace TravoRides.Domain.Entities
         public string? KeyTakeaways { get; set; }
 
         // Publishing
-        public DateTime? PublishedOn { get; set; }
+       // public DateTime? PublishedOn { get; set; }
 
         public DateTime? ModifiedOn { get; set; }
 

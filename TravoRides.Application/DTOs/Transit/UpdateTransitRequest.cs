@@ -12,7 +12,7 @@ namespace TravoRides.Application.DTOs.Transit
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
 
-        public IFormFile? ImageFile { get; set; }
+        public IFormFile? Image { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
     }
 }

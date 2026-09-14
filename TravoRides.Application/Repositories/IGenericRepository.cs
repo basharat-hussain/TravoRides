@@ -12,8 +12,7 @@ namespace TravoRides.Application.Repositories
 
         Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Task<List<TEntity>> FindAsync(
-            Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+        Task<List<TEntity>> FindAsync( Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
         Task<TEntity?> FirstOrDefaultAsync(
             Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);

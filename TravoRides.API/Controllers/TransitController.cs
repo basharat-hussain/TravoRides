@@ -78,7 +78,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> GetTransitRates(Guid id, Guid cabid, CancellationToken cancellationToken)
         {
             var rates = await _service.GetTransitRateAsync(cabid, id, cancellationToken);
-            return Ok(new ApiResponse<object>
+            return Ok(new ApiResponse<TransitCabRateDTO>
             {
                 IsSuccess = true,
                 Data = rates,

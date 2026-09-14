@@ -99,7 +99,6 @@ namespace TravoRides.Application.Services
                 CanonicalUrl = request.CanonicalUrl,
                 Summary = request.Summary,
                 KeyTakeaways = request.KeyTakeaways,
-                PublishedOn = request.PublishedOn
             };
 
             await _unitOfWork.LatestThinkings.AddAsync(entity, cancellationToken);
@@ -145,7 +144,6 @@ namespace TravoRides.Application.Services
             entity.CanonicalUrl = request.CanonicalUrl;
             entity.Summary = request.Summary;
             entity.KeyTakeaways = request.KeyTakeaways;
-            entity.PublishedOn = request.PublishedOn;
 
             _unitOfWork.LatestThinkings.Update(entity);
 

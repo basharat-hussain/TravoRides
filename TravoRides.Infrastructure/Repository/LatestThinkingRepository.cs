@@ -36,7 +36,7 @@ namespace TravoRides.Infrastructure.Repository
             var totalCount = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderByDescending(p => p.PublishedOn ?? p.CreatedAt)
+                .OrderByDescending(p => p.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
