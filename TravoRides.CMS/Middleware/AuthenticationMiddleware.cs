@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 
-namespace AlArwaSolutions.CMS.Middleware
+namespace TravoRides.CMS.Middleware
 {
     public class AuthenticationMiddleware
     {

@@ -1,9 +1,9 @@
-﻿using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.CMS.Interface;
-using AlArwaSolutions.CMS.Models;
+﻿using TravoRides.Application.Common.Responses;
+using TravoRides.CMS.Interface;
+using TravoRides.CMS.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AlArwaSolutions.CMS.Controllers
+namespace TravoRides.CMS.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,4 +1,4 @@
-﻿@using AlArwaSolutions.CMS.Models
+﻿@using TravoRides.CMS.Models
 
 @model DashboardModel
 @* Breadcrumb *@
@@ -27,7 +27,7 @@
             <div class="col-lg-3 col-6">
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>@Model.Clients</h3>
+                        <h3>@Model.Categories</h3>
 
                         <p>Clients</p>
                     </div>
@@ -57,7 +57,7 @@
                 <!-- small box -->
                 <div class="small-box bg-gradient-green">
                     <div class="inner">
-                        <h3>@Model.Enquiry</h3>
+                        <h3>@Model.Enquiries</h3>
 
                         <p>Enquiries</p>
                     </div>
@@ -71,21 +71,21 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>@Model.Portfolios</h3>
+                        <h3>@Model.Packages</h3>
 
-                        <p>Portfolios</p>
+                        <p>Packages</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-desktop"></i>
                     </div>
-                    <a asp-controller="Portfolio" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Package" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
                 <!-- small box -->
                 <div class="small-box bg-gradient-green">
                     <div class="inner">
-                        <h3>@Model.LatestThinking</h3>
+                        <h3>@Model.LatestThinkings</h3>
 
                         <p>Latest Thinkings</p>
                     </div>
@@ -99,7 +99,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>@Model.Subscribe</h3>
+                        <h3>@Model.Subscribes</h3>
 
                         <p>Subscribes</p>
                     </div>
@@ -113,7 +113,7 @@
                 <!-- small box -->
                 <div class="small-box bg-gradient-green">
                     <div class="inner">
-                        <h3>@Model.Quote</h3>
+                        <h3>@Model.Quotes</h3>
 
                         <p>Quotes</p>
                     </div>

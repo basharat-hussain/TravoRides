@@ -1,13 +1,12 @@
-using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Common;
-using AlArwaSolutions.Application.DTOs.LatestThinking;
-using AlArwaSolutions.Application.DTOs.Portfolio;
-using AlArwaSolutions.CMS.Interface;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.LatestThinking;
+using TravoRides.CMS.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net.Http.Headers;
 
-namespace AlArwaSolutions.CMS.Controllers
+namespace TravoRides.CMS.Controllers
 {
     public class LatestThinkingController : Controller
     {

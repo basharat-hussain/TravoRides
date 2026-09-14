@@ -1,12 +1,12 @@
-﻿using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Authentication;
-using AlArwaSolutions.Application.DTOs.Common;
-using AlArwaSolutions.CMS.Interface;
-using AlArwaSolutions.CMS.Models;
+﻿using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Authentication;
+using TravoRides.Application.DTOs.Common;
+using TravoRides.CMS.Interface;
+using TravoRides.CMS.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 
-namespace AlArwaSolutions.CMS.Services
+namespace TravoRides.CMS.Services
 {
     public class ApiService : IApiService
     {
@@ -38,8 +38,7 @@ namespace AlArwaSolutions.CMS.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content
-                .ReadFromJsonAsync<ApiResponse<LoginResponse>>();
+            return await response.Content.ReadFromJsonAsync<ApiResponse<LoginResponse>>();
         }
 
         // ============================================================
@@ -172,13 +171,12 @@ namespace AlArwaSolutions.CMS.Services
         // ============================================================
 
         public async Task<T> PostAsync<T>(
-            string url,
-            T model)
+            string url,object obj)
         {
             AddAuthorizationHeader();
 
             var response = await _httpClient
-                .PostAsJsonAsync(url, model);
+                .PostAsJsonAsync(url, obj);
 
             response.EnsureSuccessStatusCode();
 
@@ -221,13 +219,12 @@ namespace AlArwaSolutions.CMS.Services
         // ============================================================
 
         public async Task<T> PutAsync<T>(
-            string url,
-            T model)
+            string url,object obj)
         {
             AddAuthorizationHeader();
 
             var response = await _httpClient
-                .PutAsJsonAsync(url, model);
+                .PutAsJsonAsync(url, obj);
 
             response.EnsureSuccessStatusCode();
 
@@ -271,7 +268,7 @@ namespace AlArwaSolutions.CMS.Services
         }
 
         /// <summary>
-        /// Helper method to add Bearer token from session to HttpClient default headers
+        /// Helper method to add Bearer token from session to HttpCab default headers
         /// </summary>
         private void AddAuthorizationHeader()
         {

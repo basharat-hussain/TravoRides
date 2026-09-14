@@ -1,9 +1,8 @@
-﻿using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Authentication;
-using AlArwaSolutions.Application.DTOs.Common;
-using AlArwaSolutions.CMS.Models;
+﻿using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Authentication;
+using TravoRides.CMS.Models;
 
-namespace AlArwaSolutions.CMS.Interface
+namespace TravoRides.CMS.Interface
 {
     public interface IApiService
     {
@@ -11,11 +10,11 @@ namespace AlArwaSolutions.CMS.Interface
 
         Task<T> GetAsync<T>(string url);
 
-        Task<T> PostAsync<T>(string url, T model);
+        Task<T> PostAsync<T>(string url, object model);
 
         Task<T> PostAsync<T>(string url, HttpContent content);
 
-        Task<T> PutAsync<T>(string url, T model);
+        Task<T> PutAsync<T>(string url,  object obj);
 
         Task<T> PutAsync<T>(string url, HttpContent content);
 

@@ -1,11 +1,11 @@
-﻿using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Common;
-using AlArwaSolutions.Application.DTOs.Subscription;
-using AlArwaSolutions.CMS.Interface;
+﻿using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.Subscription;
+using TravoRides.CMS.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 
-namespace AlArwaSolutions.CMS.Controllers
+namespace TravoRides.CMS.Controllers
 {
     public class SubscriptionController : Controller
     {

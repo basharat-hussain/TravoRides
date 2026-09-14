@@ -1,0 +1,78 @@
+﻿@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.Category
+@model PagedResponse<CategoryDTO>
+
+@if (Model.Items.Count() > 0)
+{
+    <thead>
+        <tr>
+            <th style="width: 10%">
+                S.No
+            </th>
+
+            
+
+            <th style="width: 20%">
+                Title
+            </th>
+
+            <th style="width: 50%" class="text-center">
+                Description
+            </th>
+            <th style="width: 10%" class="text-center">
+                Actions
+            </th>
+            <th style="width: 10%" class="text-center">
+                View
+        </tr>
+    </thead>
+
+    <tbody>
+        @{ int count = 1;}
+        @foreach (var Category in Model.Items)
+        {
+            <tr>
+                <td>
+                    @(count++)
+                    <input type="hidden" class="hdn-id" value="@Category.Id" />
+
+                </td>
+
+                <td class="name">@Category.Name</td>
+
+               <td>
+                    @{ var fb = Category.Description ?? string.Empty; }
+                    @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
+                </td>
+
+                <td class="project-actions text-center">
+
+                    <a asp-controller="Category" asp-action="Edit" asp-route-id="@Category.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn btn-danger btn-sm btn-delete" href="#" data-toggle="modal" data-target="#modal-delete" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                            data-id="@Category.Id"
+                            data-title="@Category.Name"
+                           
+                            data-description="@Category.Description"
+                           >
+                        View
+                    </button>
+                    </td>
+            </tr>
+        }
+
+
+
+    </tbody>
+}
+else
+{
+    <tr>
+        <td>Sorry! No Cabs found</td>
+    </tr>}

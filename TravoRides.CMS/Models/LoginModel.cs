@@ -1,4 +1,4 @@
-﻿namespace AlArwaSolutions.CMS.Models
+﻿namespace TravoRides.CMS.Models
 {
     public class LoginModel
     {

@@ -1,12 +1,12 @@
-﻿using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Authentication;
-using AlArwaSolutions.CMS.Interface;
-using AlArwaSolutions.CMS.Models;
-using AlArwaSolutions.CMS.Services;
+﻿using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Authentication;
+using TravoRides.CMS.Interface;
+using TravoRides.CMS.Models;
+using TravoRides.CMS.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 
-namespace AlArwaSolutions.CMS.Controllers
+namespace TravoRides.CMS.Controllers
 {
 
     public class LoginController : Controller

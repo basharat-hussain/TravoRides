@@ -1,5 +1,5 @@
-@using AlArwaSolutions.Application.DTOs.Common
-@using AlArwaSolutions.Application.DTOs.Quote
+@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.Quote
 @model PagedResponse<QuoteDTO>
 
 @if (Model.Items.Count() > 0)
@@ -24,7 +24,7 @@
                     @(count++)
                     <input type="hidden" class="hdn-id" value="@q.Id" />
                 </td>
-                <td class="name">@q.Purpose</td>
+              
                 <td>@q.Name</td>
                 <td>@q.Phone</td>
                 <td>@q.Email</td>

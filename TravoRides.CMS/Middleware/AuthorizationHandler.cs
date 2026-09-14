@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace AlArwaSolutions.CMS.Middleware
+namespace TravoRides.CMS.Middleware
 {
     public class AuthorizationHandler : DelegatingHandler
     {

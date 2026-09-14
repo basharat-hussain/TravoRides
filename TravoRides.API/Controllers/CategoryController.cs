@@ -34,7 +34,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Category created.", Data = id });
+            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<Guid> { IsSuccess = true, Message = "Category created.", Data = id });
         }
 
         [HttpPut("{id:guid}")]
@@ -43,7 +43,7 @@ namespace TravoRides.API.Controllers
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Category updated.", Data = id });
+            return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Category updated.", Data = id });
         }
 
         [HttpDelete("{id:guid}")]
@@ -51,7 +51,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Category deleted.", Data = id });
+            return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Category deleted.", Data = id });
         }
     }
 }

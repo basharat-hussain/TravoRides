@@ -1,11 +1,11 @@
-using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Common;
-using AlArwaSolutions.Application.DTOs.Enquirer;
-using AlArwaSolutions.CMS.Interface;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.Enquirer;
+using TravoRides.CMS.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
-namespace AlArwaSolutions.CMS.Controllers
+namespace TravoRides.CMS.Controllers
 {
     public class EnquiryController : Controller
     {
@@ -41,21 +41,21 @@ namespace AlArwaSolutions.CMS.Controllers
             return View(new CreateEnquiryRequest());
         }
         [HttpPost]
-        public async Task<IActionResult> Create(EnquiryDTO model)
-        {
-            var response = new string[] { };
+        //public async Task<IActionResult> Create(EnquiryDTO model)
+        //{
+        //    var response = new string[] { };
 
-            if (!ModelState.IsValid)
-            {
-                response = new[] { "False", "Validation Failed" };
-                return Json(response);
-            }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        response = new[] { "False", "Validation Failed" };
+        //        return Json(response);
+        //    }
 
-            await _apiService.PostAsync("api/Enquiry", model);
+        //    await _apiService.PostAsync("api/Enquiry", model);
 
-            response = new[] { "True", "Enquiry created successfully." };
-            return Json(response);
-        }
+        //    response = new[] { "True", "Enquiry created successfully." };
+        //    return Json(response);
+        //}
 
       
         [HttpPost]

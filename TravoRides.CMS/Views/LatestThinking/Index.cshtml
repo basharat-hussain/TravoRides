@@ -1,6 +1,6 @@
-﻿@using AlArwaSolutions.Application.Common.Responses
-@using AlArwaSolutions.Application.DTOs.Common
-@using AlArwaSolutions.Application.DTOs.LatestThinking
+﻿@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.LatestThinking
 
 @model ApiResponse<PagedResponse<LatestThinkingDTO>>
 @* Breadcrumb *@
@@ -25,7 +25,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Portfolios</h3>
+            <h3 class="card-title">Packages</h3>
 
             <div class="card-tools">
                 <a asp-controller="LatestThinking" asp-action="Create" class="btn btn-primary btn-sm">
@@ -50,7 +50,7 @@
 <partial name="_ValidationScriptsPartial" />
 
 <script>
-    var module = "Portfolio";
+    var module = "LatestThinking";
 </script>
 
 <script>

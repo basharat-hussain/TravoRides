@@ -1,14 +1,18 @@
-﻿namespace AlArwaSolutions.CMS.Models
+﻿namespace TravoRides.CMS.Models
 {
     public class DashboardModel
     {
-        public int Clients { get; set; }
-        public int Reviews { get; set; }
-        public int Portfolios { get; set; }
-        public int Enquiry { get; set; }
-        public int LatestThinking { get; set; }
-        public int Subscribe { get; set; }
+        public int  Categories { get; set; }
+        public int Cabs { get; set; }
+        public int Transits { get; set; }
+        public int Packages { get; set; }
+         public int SelfDrives { get; set; }
 
-        public int Quote { get; set; }
+        public int Reviews { get; set; }
+        public int Enquiries { get; set; }
+        public int LatestThinkings { get; set; }
+        public int Subscribes { get; set; }
+
+        public int Quotes { get; set; }
     }
 }

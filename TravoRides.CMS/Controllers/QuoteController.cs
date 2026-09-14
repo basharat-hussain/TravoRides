@@ -1,11 +1,11 @@
-using AlArwaSolutions.Application.Common.Responses;
-using AlArwaSolutions.Application.DTOs.Common;
-using AlArwaSolutions.Application.DTOs.Quote;
-using AlArwaSolutions.Application.DTOs.Review;
-using AlArwaSolutions.CMS.Interface;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.Quote;
+using TravoRides.Application.DTOs.Review;
+using TravoRides.CMS.Interface;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AlArwaSolutions.CMS.Controllers
+namespace TravoRides.CMS.Controllers
 {
     public class QuoteController : Controller
     {
