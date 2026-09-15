@@ -1,12 +1,14 @@
 using AutoMapper;
 using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Common.Models;
-using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.DTOs.PackageRate;
 using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TravoRides.Application.Services
 {
@@ -37,25 +39,47 @@ namespace TravoRides.Application.Services
                     "No cabs are available for this package.");
             }
 
-            return packageRates.Select(x => new PackageCabRateDTO
+            return packageRates.Select(x => 
             {
-                CabId = x.CabId,
-                CabName = x.Cab.Name,
-                ImageUrl = x.Cab.ImageUrl,
-                SeatingCapacity = x.Cab.SeatingCapacity,
-                LuggageCapacity = x.Cab.LuggageCapacity,
-                Fuel = x.Cab.Fuel,
-                Transmission = x.Cab.Transmission,
+                // Get both discounts
+            decimal packageDiscount = x.Package.Discount ?? 0;
+            decimal packageRateDiscount = x.Discount ?? 0;
 
-                Rate = x.Rate,
-                Discount = x.Discount,
+            // Use the greater discount
+            decimal applicableDiscount = Math.Max(packageDiscount, packageRateDiscount);
 
-                FinalRate = x.Rate -
-                            (x.Discount ?? 0)
+            // Calculate final price
+            decimal finalRate = x.Rate - applicableDiscount;
+
+                // Prevent negative price
+
+
+                if (finalRate < 0)
+                {
+                    throw new ValidationException("Package discount cannot be greater than the package rate.");
+                }
+                return new PackageCabRateDTO
+                {
+                    CabId = x.CabId,
+                    CabName = x.Cab.Name,
+                    ImageUrl = x.Cab.ImageUrl,
+                    SeatingCapacity = x.Cab.SeatingCapacity,
+                    LuggageCapacity = x.Cab.LuggageCapacity,
+                    Fuel = x.Cab.Fuel,
+                    Transmission = x.Cab.Transmission,
+
+                    Rate = x.Rate,
+
+                    // Return the applicable discount
+                    Discount = applicableDiscount,
+
+                    FinalRate = finalRate
+                }
+               ;
             }).ToList();
         }
 
-        public async Task<object> GetPackageRateAsync(Guid cabId, Guid packageId, CancellationToken cancellationToken)
+        public async Task<PackageCabRateDTO> GetPackageRateAsync(Guid cabId, Guid packageId, CancellationToken cancellationToken)
         {
             var packageRate = await _unitOfWork.PackageRates.GetByCabAndPackageAsync(cabId, packageId, cancellationToken);
 
@@ -81,11 +105,103 @@ namespace TravoRides.Application.Services
                 {
                     throw new ValidationException("Package discount cannot be greater than the package rate.");
                 }
-            
 
-            return new { FinalRate = finalRate, OriginalRate = packageRate.Rate, Discount = applicableDiscount };
+
+            return new PackageCabRateDTO
+            {
+                Rate = packageRate.Rate,
+                Discount = applicableDiscount,
+                FinalRate = finalRate
+
+            };
         }
+        public async Task AddCabsToPackageAsync( Guid packageId,AddCabsToPackageRequest request,  CancellationToken cancellationToken = default)
+        {
+            // 1. Check whether package exists
+            var package = await _unitOfWork.Packages .GetByIdAsync(packageId, cancellationToken);
 
+            if (package == null || package.IsDeleted)
+            {
+                throw new ResourceNotFoundException("Package not found.");
+            }
+
+            // 2. Check whether cabs were selected
+            if (request.Cabs == null || !request.Cabs.Any())
+            {
+                throw new ValidationException( "At least one cab must be selected.");
+            }
+
+            // 3. Check duplicate CabIds in request
+            var duplicateCabIds = request.Cabs
+                .GroupBy(x => x.CabId)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.Key)
+                .ToList();
+
+            if (duplicateCabIds.Any())
+            {
+                throw new ValidationException("Duplicate cabs are not allowed.");
+            }
+
+            // 4. Add each selected cab
+            foreach (var cabRequest in request.Cabs)
+            {
+                // Check whether cab exists
+                var cab = await _unitOfWork.Cabs.GetByIdAsync( cabRequest.CabId,cancellationToken);
+
+                if (cab == null || cab.IsDeleted)
+                {
+                    throw new ResourceNotFoundException($"Cab not found.");
+                }
+
+                // Check whether this cab is already associated with this package
+                var exists = await _unitOfWork.PackageRates
+                    .ExistsAsync(x => x.PackageId == packageId && x.CabId == cabRequest.CabId,
+                        cancellationToken);
+                if (exists)
+                {
+                    continue;
+                }
+
+                // Create PackageRate
+                var packageRate = new PackageRate
+                {
+                    PackageId = packageId,
+                    CabId = cabRequest.CabId,
+                    Rate = cabRequest.Rate,
+                    Discount = cabRequest.Discount
+                };
+
+                await _unitOfWork.PackageRates.AddAsync(
+                    packageRate,
+                    cancellationToken);
+            }
+
+            // 5. Save everything
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        public async Task UpdatePackageCabAsync( Guid packageId,Guid cabId, UpdatePackageCabRequest request, CancellationToken cancellationToken = default)
+        {
+            // Check package
+            var package = await _unitOfWork.Packages .GetByIdAsync(packageId, cancellationToken);
+
+            if (package == null || package.IsDeleted)
+                throw new ResourceNotFoundException("Package not found.");
+
+            // Find PackageRate
+            var packageRate = await _unitOfWork.PackageRates.GetByCabAndPackageAsync(cabId, packageId, cancellationToken);
+
+            if (packageRate == null)
+                throw new ResourceNotFoundException( "The selected cab is not associated with this package.");
+
+            // Update rate and discount
+            packageRate.Rate = request.Rate;
+            packageRate.Discount = request.Discount;
+
+            _unitOfWork.PackageRates.Update(packageRate);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
         public async Task<PagedResponse<PackageDTO>> GetAllAsync(SearchPackageRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
@@ -244,7 +360,29 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+        public async Task RemoveCabFromPackageAsync( Guid packageId, Guid cabId, CancellationToken cancellationToken = default)
+        {
+            // Check package
+            var package = await _unitOfWork.Packages.GetByIdAsync(packageId, cancellationToken);
 
+            if (package == null || package.IsDeleted)throw new ResourceNotFoundException("Package not found.");
+
+            // Find PackageRate
+            var packageRate = await _unitOfWork.PackageRates
+                .GetByCabAndPackageAsync( cabId, packageId, cancellationToken);
+
+            if (packageRate == null)
+                throw new ResourceNotFoundException("The selected cab is not associated with this package.");
+           
+            packageRate.IsDeleted = true;
+            packageRate.ModifiedAt = DateTime.UtcNow;
+            packageRate.ModifiedBy = "System"; // You
+
+            // Remove relationship
+            _unitOfWork.PackageRates.Update(packageRate);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
         /// <summary>
         /// Converts relative file paths in a PackageDTO to absolute URLs
         /// </summary>

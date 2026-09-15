@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.DTOs.PackageRate;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
 
@@ -15,6 +16,7 @@ namespace TravoRides.API.Controllers
         private readonly IPackageService _service;
         public PackageController(IPackageService service) => _service = service;
 
+        //================================ GET ========================================
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] SearchPackageRequest request, CancellationToken cancellationToken = default)
         {
@@ -41,6 +43,31 @@ namespace TravoRides.API.Controllers
                 Data = result
             });
         }
+      
+        [HttpGet("{id:guid}/rates/{cabid:guid}")]
+        public async Task<IActionResult> GetPackageRates(Guid id, Guid cabid, CancellationToken cancellationToken)
+        {
+            var rates = await _service.GetPackageRateAsync(cabid, id, cancellationToken);
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Data = rates,
+                Message = "Package rates fetched successfully",
+            });
+        }
+
+       //======================================== POST =====================================
+        [HttpPost("{packageId:guid}/cabs")]
+        public async Task<IActionResult> AddCabsToPackage( Guid packageId,[FromBody] AddCabsToPackageRequest request, CancellationToken cancellationToken)
+        {
+            await _service.AddCabsToPackageAsync( packageId, request, cancellationToken);
+
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Cabs added to package successfully."
+            });
+        }
 
         [HttpPost]
         //[Authorize]
@@ -49,6 +76,8 @@ namespace TravoRides.API.Controllers
             var id = await _service.CreateAsync(request, cancellationToken);
             return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Package created.", Data = id });
         }
+
+        //========================================= PUT ==============================================
 
         [HttpPut("{id:guid}")]
         //[Authorize]
@@ -59,6 +88,20 @@ namespace TravoRides.API.Controllers
             return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Package updated.", Data = id });
         }
 
+        [HttpPut("{packageId:guid}/cabs/{cabId:guid}")]
+        public async Task<IActionResult> UpdatePackageCab( Guid packageId, Guid cabId, [FromBody] UpdatePackageCabRequest request, CancellationToken cancellationToken)
+        {
+            await _service.UpdatePackageCabAsync( packageId, cabId, request, cancellationToken);
+
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Package cab rate updated successfully."
+            });
+        }
+       
+        //========================================== DELETE ==============================
+
         [HttpDelete("{id:guid}")]
         //[Authorize]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
@@ -67,17 +110,18 @@ namespace TravoRides.API.Controllers
             return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Package deleted.", Data = id });
         }
 
-        [HttpGet("{id:guid}/rates/{cabid:guid}")]
-        public async Task<IActionResult> GetPackageRates(Guid id, Guid cabid, CancellationToken cancellationToken)
+        [HttpDelete("{packageId:guid}/cabs/{cabId:guid}")]
+        public async Task<IActionResult> RemoveCabFromPackage( Guid packageId, Guid cabId, CancellationToken cancellationToken)
         {
-            var rates = await _service.GetPackageRateAsync(cabid, id, cancellationToken);
+            await _service.RemoveCabFromPackageAsync( packageId, cabId, cancellationToken);
+
             return Ok(new ApiResponse<object>
             {
                 IsSuccess = true,
-                Data = rates,
-                Message = "Transit rates fetched successfully",
+                Message = "Cab removed from package successfully."
             });
         }
+       
     }
 }
 

@@ -4,8 +4,8 @@ using TravoRides.Application.Common.Models;
 using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Common;
-using TravoRides.Application.DTOs.Package;
 using TravoRides.Application.DTOs.Transit;
+using TravoRides.Application.DTOs.TransitRate;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
@@ -39,24 +39,105 @@ namespace TravoRides.Application.Services
                     "No cabs are available for this transit.");
             }
 
-            return transitRates.Select(x => new TransitCabRateDTO
+            return transitRates.Select(x =>
             {
-                CabId = x.CabId,
-                CabName = x.Cab.Name,
-                ImageUrl = x.Cab.ImageUrl,
-                SeatingCapacity = x.Cab.SeatingCapacity,
-                LuggageCapacity = x.Cab.LuggageCapacity,
-                Fuel = x.Cab.Fuel,
-                Transmission = x.Cab.Transmission,
+                decimal transitDiscount = x.Transit.Discount ?? 0;
+                decimal transitRateDiscount = x.Discount ?? 0;
 
-                Rate = x.Rate,
-                Discount = x.Discount,
+                // Use the greater discount
+                decimal applicableDiscount = Math.Max( transitDiscount, transitRateDiscount);
 
-                FinalRate = x.Rate -
-                            (x.Discount ?? 0)
+                decimal finalRate = x.Rate - applicableDiscount;
+                if (finalRate < 0)
+                {
+                    throw new ValidationException("Transit discount cannot be greater than the Transit rate.");
+                }
+                return new TransitCabRateDTO
+                {
+                    CabId = x.CabId,
+                    CabName = x.Cab.Name,
+                    ImageUrl = x.Cab.ImageUrl,
+                    SeatingCapacity = x.Cab.SeatingCapacity,
+                    LuggageCapacity = x.Cab.LuggageCapacity,
+                    Fuel = x.Cab.Fuel,
+                    Transmission = x.Cab.Transmission,
+
+                    Rate = x.Rate,
+
+                    // Return the applicable discount
+                    Discount = applicableDiscount,
+
+                    FinalRate = finalRate
+                };
             }).ToList();
         }
 
+        public async Task AddCabsToTransitAsync(Guid transitId, AddCabsToTransitRequest request,CancellationToken cancellationToken = default)
+        {
+            // 1. Check whether transit exists
+            var transit = await _unitOfWork.Transit
+                .GetByIdAsync(transitId, cancellationToken);
+
+            if (transit == null || transit.IsDeleted)
+                throw new ResourceNotFoundException("Transit not found.");
+
+            // 2. Validate request
+            if (request.Cabs == null || !request.Cabs.Any())
+                throw new ValidationException(
+                    "At least one cab must be selected.");
+
+            // 3. Check duplicate cabs in the same request
+            var duplicateCabIds = request.Cabs
+                .GroupBy(x => x.CabId)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.Key)
+                .ToList();
+
+            if (duplicateCabIds.Any())
+                throw new ValidationException(
+                    "Duplicate cabs are not allowed.");
+
+            // 4. Process each cab
+            foreach (var cabRequest in request.Cabs)
+            {
+                // Check cab exists
+                var cab = await _unitOfWork.Cabs
+                    .GetByIdAsync(
+                        cabRequest.CabId,
+                        cancellationToken);
+
+                if (cab == null || cab.IsDeleted)
+                {
+                    throw new ResourceNotFoundException(
+                        $"Cab with ID {cabRequest.CabId} not found.");
+                }
+
+                // Check whether this cab is already assigned
+                // to this transit
+                var exists = await _unitOfWork.TransitRates
+                    .ExistsAsync(
+                        x => x.TransitId == transitId &&
+                             x.CabId == cabRequest.CabId,
+                        cancellationToken);
+
+                if (exists)
+                    continue;
+
+                // Create TransitRate
+                var transitRate = new TransitRate
+                {
+                    TransitId = transitId,
+                    CabId = cabRequest.CabId,
+                    Rate = cabRequest.Rate,
+                    Discount = cabRequest.Discount
+                };
+
+                await _unitOfWork.TransitRates .AddAsync( transitRate, cancellationToken);
+            }
+
+            // 5. Save all changes
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
         public async Task<PagedResponse<TransitDTO>> GetAllAsync( SearchTransitRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
@@ -85,7 +166,27 @@ namespace TravoRides.Application.Services
                 TotalPages = pagedResponse.TotalPages
             };
         }
+        public async Task UpdateTransitCabAsync( Guid TransitId,Guid cabId, UpdateTransitCabRequest request,CancellationToken cancellationToken = default)
+        {
+            // Check Transit
+            var Transit = await _unitOfWork.Transit .GetByIdAsync(TransitId, cancellationToken);
 
+            if (Transit == null || Transit.IsDeleted) throw new ResourceNotFoundException("Transit not found.");
+
+            // Find TransitRate
+            var TransitRate = await _unitOfWork.TransitRates.GetByCabAndTransitAsync( cabId, TransitId, cancellationToken);
+
+            if (TransitRate == null)
+                throw new ResourceNotFoundException("The selected cab is not associated with this Transit.");
+
+            // Update rate and discount
+            TransitRate.Rate = request.Rate;
+            TransitRate.Discount = request.Discount;
+
+            _unitOfWork.TransitRates.Update(TransitRate);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
         public async Task<TransitDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var Transit = await _unitOfWork.Transit
@@ -242,6 +343,29 @@ namespace TravoRides.Application.Services
                 Discount = applicableDiscount
             };
            }
+        public async Task RemoveCabFromTransitAsync(Guid TransitId, Guid cabId, CancellationToken cancellationToken = default)
+        {
+            // Check Transit
+            var Transit = await _unitOfWork.Transit.GetByIdAsync(TransitId, cancellationToken);
+
+            if (Transit == null || Transit.IsDeleted) throw new ResourceNotFoundException("Transit not found.");
+
+            // Find TransitRate
+            var TransitRate = await _unitOfWork.TransitRates
+                .GetByCabAndTransitAsync(cabId, TransitId, cancellationToken);
+
+            if (TransitRate == null)
+                throw new ResourceNotFoundException("The selected cab is not associated with this Transit.");
+
+            TransitRate.IsDeleted = true;
+            TransitRate.ModifiedAt = DateTime.UtcNow;
+            TransitRate.ModifiedBy = "System"; // You
+
+            // Remove relationship
+            _unitOfWork.TransitRates.Update(TransitRate);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Converts relative file paths in a TransitDTO to absolute URLs

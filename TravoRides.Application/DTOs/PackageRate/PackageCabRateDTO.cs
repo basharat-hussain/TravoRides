@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Domain.Enums;
 
-namespace TravoRides.Application.DTOs.Transit
+namespace TravoRides.Application.DTOs.PackageRate
 {
-    public class TransitCabRateDTO
+    public class PackageCabRateDTO
     {
         public Guid CabId { get; set; }
 

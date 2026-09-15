@@ -5,7 +5,7 @@ using TravoRides.Domain.Entities;
 
 namespace TravoRides.Application.Repositories
 {
-    public interface IPackageRateRepository
+    public interface IPackageRateRepository :IGenericRepository<PackageRate>
     {
 
         Task<List<PackageRate>> GetByPackageIdAsync(

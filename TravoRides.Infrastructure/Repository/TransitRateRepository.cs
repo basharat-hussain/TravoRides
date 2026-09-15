@@ -8,11 +8,11 @@ using TravoRides.Infrastructure.Context;
 
 namespace TravoRides.Infrastructure.Repository
 {
-    public class TransitRateRepository : ITransitRateRepository
+    public class TransitRateRepository :GenericRepository<TransitRate>, ITransitRateRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public TransitRateRepository(ApplicationDbContext context)
+        public TransitRateRepository(ApplicationDbContext context):base(context) 
         {
             _context = context;
         }

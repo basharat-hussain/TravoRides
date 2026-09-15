@@ -8,11 +8,11 @@ using TravoRides.Infrastructure.Context;
 
 namespace TravoRides.Infrastructure.Repository
 {
-    public class PackageRateRepository : IPackageRateRepository
+    public class PackageRateRepository :GenericRepository<PackageRate>, IPackageRateRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public PackageRateRepository(ApplicationDbContext context)
+        public PackageRateRepository(ApplicationDbContext context):base(context) 
         {
             _context = context;
         }

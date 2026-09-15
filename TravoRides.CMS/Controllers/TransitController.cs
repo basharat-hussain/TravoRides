@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Transit;
+using TravoRides.Application.DTOs.TransitRate;
 using TravoRides.CMS.Interface;
 
 namespace TravoRides.CMS.Controllers

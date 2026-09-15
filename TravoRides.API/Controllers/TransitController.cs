@@ -4,7 +4,9 @@ using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.DTOs.PackageRate;
 using TravoRides.Application.DTOs.Transit;
+using TravoRides.Application.DTOs.TransitRate;
 using TravoRides.Application.Interfaces;
 
 namespace TravoRides.API.Controllers
@@ -14,14 +16,13 @@ namespace TravoRides.API.Controllers
     public class TransitController : ControllerBase
     {
         private readonly ITransitService _service;
-        private readonly IBookingService bookingService;
 
         public TransitController(ITransitService service, IBookingService bookingService)
         {
             _service = service;
-            this.bookingService = bookingService;
+           
         }
-
+        ///----------------==========  GET APIS -------------------------
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] SearchTransitRequest request, CancellationToken cancellationToken = default)
         {
@@ -49,31 +50,7 @@ namespace TravoRides.API.Controllers
                 Data = result
             });
         }
-        [HttpPost]
-        //[Authorize]
-        public async Task<IActionResult> Create([FromForm] CreateTransitRequest request, CancellationToken cancellationToken)
-        {
-            var id = await _service.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Created.", Data = id });
-        }
-
-        [HttpPut("{id:guid}")]
-        // [Authorize]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateTransitRequest request, CancellationToken cancellationToken)
-        {
-            request.Id = id;
-            await _service.UpdateAsync(request, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Updated.", Data = id });
-        }
-
-        [HttpDelete("{id:guid}")]
-        //[Authorize]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
-        {
-            await _service.DeleteAsync(id, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Deleted.", Data = id });
-        }
-
+       
         [HttpGet("{id:guid}/rates/{cabid:guid}")]
         public async Task<IActionResult> GetTransitRates(Guid id, Guid cabid, CancellationToken cancellationToken)
         {
@@ -85,5 +62,73 @@ namespace TravoRides.API.Controllers
                 Message = "Transit rates fetched successfully",
             });
         }
+
+        //========================== POST APIs ========================================
+       
+        [HttpPost]
+        //[Authorize]
+        public async Task<IActionResult> Create([FromForm] CreateTransitRequest request, CancellationToken cancellationToken)
+        {
+            var id = await _service.CreateAsync(request, cancellationToken);
+            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Created.", Data = id });
+        }
+       
+        [HttpPost("{transitId:guid}/cabs")]
+        public async Task<IActionResult> AddCabsToTransit( Guid transitId, [FromBody] AddCabsToTransitRequest request,  CancellationToken cancellationToken)
+        {
+            await _service.AddCabsToTransitAsync( transitId,  request, cancellationToken);
+
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Cabs added to transit successfully."
+            });
+        }
+        
+        //=============================== PUT APIs =============================
+
+        [HttpPut("{id:guid}")]
+        // [Authorize]
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateTransitRequest request, CancellationToken cancellationToken)
+        {
+            request.Id = id;
+            await _service.UpdateAsync(request, cancellationToken);
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Updated.", Data = id });
+        }
+
+        [HttpPut("{packageId:guid}/cabs/{cabId:guid}")]
+        public async Task<IActionResult> UpdateTransitCab( Guid packageId, Guid cabId,[FromBody] UpdateTransitCabRequest request, CancellationToken cancellationToken)
+        {
+            await _service.UpdateTransitCabAsync( packageId, cabId, request,  cancellationToken);
+
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Transit cab rate updated successfully."
+            });
+        }
+
+        //====================================== DELETE =============================
+       
+        [HttpDelete("{id:guid}")]
+        //[Authorize]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        {
+            await _service.DeleteAsync(id, cancellationToken);
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Deleted.", Data = id });
+        }
+
+        [HttpDelete("{transitId:guid}/cabs/{cabId:guid}")]
+        public async Task<IActionResult> RemoveCabFromTransit(Guid packageId, Guid cabId, CancellationToken cancellationToken)
+        {
+            await _service.RemoveCabFromTransitAsync(packageId, cabId, cancellationToken);
+
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Cab removed from transit successfully."
+            });
+        }
+      
     }
 }
