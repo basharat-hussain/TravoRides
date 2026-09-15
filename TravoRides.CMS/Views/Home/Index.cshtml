@@ -29,12 +29,68 @@
                     <div class="inner">
                         <h3>@Model.Categories</h3>
 
-                        <p>Clients</p>
+                        <p>Category</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <a asp-controller="Client" asp-action="Index" asp- class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Category" asp-action="Index" asp- class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+             <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@Model.Cabs</h3>
+
+                        <p>Cabs</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <a asp-controller="Cab" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-gradient-green">
+                    <div class="inner">
+                        <h3>@Model.Transits</h3>
+
+                        <p>Transits</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <a asp-controller="Transit" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+                 <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>@Model.Packages</h3>
+
+                        <p>Packages</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <a asp-controller="Package" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+             <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@Model.Features</h3>
+
+                        <p>Features</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <a asp-controller="FeatureMaster" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -67,20 +123,7 @@
                     <a asp-controller="Enquiry" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>@Model.Packages</h3>
-
-                        <p>Packages</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-desktop"></i>
-                    </div>
-                    <a asp-controller="Package" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
+           
             <div class="col-lg-3 col-6">
                 <!-- small box -->
                 <div class="small-box bg-gradient-green">

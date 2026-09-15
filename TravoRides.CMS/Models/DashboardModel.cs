@@ -7,7 +7,7 @@
         public int Transits { get; set; }
         public int Packages { get; set; }
          public int SelfDrives { get; set; }
-
+        public int Features { get; set; }
         public int Reviews { get; set; }
         public int Enquiries { get; set; }
         public int LatestThinkings { get; set; }

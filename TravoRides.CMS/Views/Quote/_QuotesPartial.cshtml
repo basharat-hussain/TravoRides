@@ -6,12 +6,10 @@
 {
     <thead>
         <tr>
-            <th style="width:5%">S.No</th>
-            <th style="width:15%">Purpose</th>
-            <th style="width:15%">Name</th>
-            <th style="width:15%">Phone</th>
-            <th style="width:15%">Email</th>
-            <th style="width:25%">Requirements</th>
+            <th style="width:10%">S.No</th>
+            <th style="width:20%">Name</th>
+            <th style="width:20%">Phone</th>
+            <th style="width:40%">Requirements</th>
             <th style="width:10%" class="text-center">Actions</th>
         </tr>
     </thead>
@@ -27,7 +25,6 @@
               
                 <td>@q.Name</td>
                 <td>@q.Phone</td>
-                <td>@q.Email</td>
                     <td>
                     @{ var fb = q.Requirements ?? string.Empty; }
                     @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
@@ -38,6 +35,9 @@
                             data-name="@q.Name"
                             data-phone="@q.Phone"
                             data-email="@q.Email"
+                             data-startDate="@q.StartDate"
+                            data-endDate="@q.EndDate"
+                            data-passengers="@q.Passengers"
                             data-description="@q.Requirements">
                         View
                     </button>

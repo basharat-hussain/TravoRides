@@ -53,6 +53,12 @@
         var name = $btn.data('name') || '';
         var phone = $btn.data('phone') || '';
         var email = $btn.data('email') || '';
+       var startDate = $btn.data('startDate') || '';
+
+        var endDate = $btn.data('endDate') || '';
+
+        var passengers = $btn.data('passengers') || '';
+
         var requirements = $btn.data('requirements') || '';
 
         var html = '<div class="row">';
@@ -65,6 +71,12 @@
         html += '<p><strong>Purpose:</strong> ' + $('<div/>').text(purpose).html() + '</p>';
         html += '<p><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
         html += '<p><strong>Phone:</strong> ' + $('<div/>').text(phone).html() + '</p>';
+       html += '<p><strong>StartDate:</strong> ' + $('<div/>').text(startDate).html() + '</p>';
+
+     html += '<p><strong>EndDate:</strong> ' + $('<div/>').text(endDate).html() + '</p>';
+
+        html += '<p><strong>Passengers:</strong> ' + $('<div/>').text(Passengers).html() + '</p>';
+
         html += '<p><strong>Email:</strong> ' + $('<div/>').text(email).html() + '</p>';
         html += '<p><strong>Requirements:</strong><br />' + $('<div/>').text(requirements).html().replace(/\n/g, '<br/>') + '</p>';
         html += '</div>';

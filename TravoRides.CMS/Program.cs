@@ -1,8 +1,20 @@
+using TravoRides.CMS.Interface;
+using TravoRides.CMS.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+// Add services to the container.
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
+builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+{
+    client.BaseAddress = new Uri(
+        builder.Configuration["ApiSettings:BaseUrl"]!
+    );
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

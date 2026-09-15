@@ -46,7 +46,7 @@
 
                 </td>
 
-                <td class="name">@Cab.Category</td>
+                <td class="name">@Cab.Category.Name</td>
 
                 <td>@Cab.Name</td>
 
@@ -67,7 +67,7 @@
                     <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
                             data-id="@Cab.Id"
                             data-name="@Cab.Name"
-                            data-category="@Cab.Category"
+                            data-category="@Cab.Category.Name"
                             data-price="@Cab.PricePerDay"
                             data-discount="@Cab.Discount"
                             data-fuel="@Cab.Fuel"

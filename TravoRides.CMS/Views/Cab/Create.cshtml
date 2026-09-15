@@ -54,11 +54,34 @@
                                     <span asp-validation-for="CategoryId" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                             <div class="col-md-6">
+
+                                    <label asp-for="Fuel" class="form-label">Fuel Type</label>
+
+                                    <select asp-for="Fuel"
+                                            asp-items="Html.GetEnumSelectList<FuelType>()"
+                                            class="form-select">
+                                        <option value="">-- Select Fuel Type --</option>
+                                    </select>
+
+                                    <span asp-validation-for="Fuel" class="text-danger"></span>
+
+                                </div>
+                            
+                           </div>
+                           <div class="row">
+                               <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Name</label>
                                     <input asp-for="Name" class="form-control" />
                                     <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                              <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Transmission</label>
+                                    <input asp-for="Transmission" class="form-control" rows="4" />
+                                    <span asp-validation-for="Transmission" class="text-danger"></span>
                                 </div>
                             </div>
                            </div>
@@ -78,7 +101,6 @@
                                         <span asp-validation-for="Discount" class="text-danger"></span>
                                     </div>
                                 </div>
-
                             </div>
                         <div class="row">
                                 <div class="col-md-6">
@@ -96,33 +118,7 @@
                                         <span asp-validation-for="LuggageCapacity" class="text-danger"></span>
                                     </div>
                                 </div>
-
                             </div>
-                        <div class="row">
-                                <div class="col-md-6">
-
-                                    <label asp-for="Fuel" class="form-label">Fuel Type</label>
-
-                                    <select asp-for="Fuel"
-                                            asp-items="Html.GetEnumSelectList<FuelType>()"
-                                            class="form-select">
-                                        <option value="">-- Select Fuel Type --</option>
-                                    </select>
-
-                                    <span asp-validation-for="Fuel" class="text-danger"></span>
-
-                                </div>
-                           
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Transmission</label>
-                                    <input asp-for="Transmission" class="form-control" rows="4" />
-                                    <span asp-validation-for="Transmission" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
 
                         <div class="row">
                             <div class="col-md-6">

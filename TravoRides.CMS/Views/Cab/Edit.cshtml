@@ -10,7 +10,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Cab</a></li>
+                    <li class="breadcrumb-item"><a href="/Cab/Index">Cab</a></li>
                     <li class="breadcrumb-item active">Edit</li>
                 </ol>
             </div>
@@ -48,7 +48,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label asp-for="CategoryId" class="form-label">Category</label>
+                                        <label>Category</label>
 
                                         <select asp-for="CategoryId" class="form-select">
                                             <option value="">-- Select Category --</option>
@@ -64,11 +64,34 @@
                                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                                     </div>
                                 </div>
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                    <label>Fuel Type</label>
+
+                                    <select asp-for="Fuel"
+                                            asp-items="Html.GetEnumSelectList<FuelType>()"
+                                            class="form-select">
+                                        <option value="">-- Select Fuel Type --</option>
+                                    </select>
+
+                                    <span asp-validation-for="Fuel" class="text-danger"></span>
+                                   </div>
+                              </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Name</label>
                                         <input asp-for="Name" class="form-control" />
                                         <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                 <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Transmission</label>
+                                        <input asp-for="Transmission" class="form-control" rows="4" />
+                                        <span asp-validation-for="Transmission" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
@@ -104,31 +127,6 @@
                                         <label>Luggage</label>
                                         <input asp-for="LuggageCapacity" class="form-control" rows="4" />
                                         <span asp-validation-for="LuggageCapacity" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-
-                                    <label asp-for="Fuel" class="form-label">Fuel Type</label>
-
-                                    <select asp-for="Fuel"
-                                            asp-items="Html.GetEnumSelectList<FuelType>()"
-                                            class="form-select">
-                                        <option value="">-- Select Fuel Type --</option>
-                                    </select>
-
-                                    <span asp-validation-for="Fuel" class="text-danger"></span>
-
-                                </div>
-
-                           
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Transmission</label>
-                                        <input asp-for="Transmission" class="form-control" rows="4" />
-                                        <span asp-validation-for="Transmission" class="text-danger"></span>
                                     </div>
                                 </div>
 

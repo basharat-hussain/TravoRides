@@ -1,0 +1,82 @@
+﻿@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.FeaturesMaster
+@model ApiResponse<PagedResponse<FeaturesMasterDTO>>
+@* Breadcrumb *@
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Feature</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Features</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+@* Content *@
+<section class="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Features</h3>
+
+            <div class="card-tools">
+                <a asp-controller="FeatureMaster" asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> &nbsp; Create Feature
+                </a>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-responsive dataTable" id="data-grid">
+                @await Html.PartialAsync("_FeaturesPartial", Model.Data)
+            </table>
+        </div>
+        <div class="card-footer clearfix">
+            @await Html.PartialAsync("~/Views/Shared/_PaginationPartial.cshtml", Model.Data)
+        </div>
+    </div>
+
+</section>
+
+<partial name="_ManageModalsPartial" />
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    var module = "Feature";
+</script>
+
+<script>
+    function showReviewDetails(btn) {
+        var $btn = $(btn);
+        var id = $btn.data('id');
+        var title = $btn.data('title') || '';
+                var icon = $btn.data('icon') || '';
+
+        var description = $btn.data('description') || '';
+       
+
+        var html = '<div class="row">';
+        html += '<div class="col-md-4">';
+      
+        html += '</div>';
+        html += '<div class="col-md-8">';
+        html += '<p><strong>Name:</strong> ' + $('<div/>').text(title).html() + '</p>';
+         html += '<p><strong>icon:</strong> ' + $('<div/>').text(icon).html() + '</p>';
+
+        html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#modal-getbyid .lbl-module').text('Feature');
+        $('#modal-getbyid #modal-body').html(html);
+        $('#modal-getbyid').modal('show');
+    }
+</script>
+<script src="~/js/managemodule.js"></script>

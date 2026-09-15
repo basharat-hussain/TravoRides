@@ -28,6 +28,7 @@ namespace TravoRides.Application.Services
             _fileStorage = fileStorage;
         }
 
+        //==================================== GET METHODS =======================================
         public async Task<List<PackageCabRateDTO>> GetCabsWithRatesAsync( Guid packageId,  CancellationToken cancellationToken = default)
         {
             var packageRates = await _unitOfWork.PackageRates
@@ -115,93 +116,6 @@ namespace TravoRides.Application.Services
 
             };
         }
-        public async Task AddCabsToPackageAsync( Guid packageId,AddCabsToPackageRequest request,  CancellationToken cancellationToken = default)
-        {
-            // 1. Check whether package exists
-            var package = await _unitOfWork.Packages .GetByIdAsync(packageId, cancellationToken);
-
-            if (package == null || package.IsDeleted)
-            {
-                throw new ResourceNotFoundException("Package not found.");
-            }
-
-            // 2. Check whether cabs were selected
-            if (request.Cabs == null || !request.Cabs.Any())
-            {
-                throw new ValidationException( "At least one cab must be selected.");
-            }
-
-            // 3. Check duplicate CabIds in request
-            var duplicateCabIds = request.Cabs
-                .GroupBy(x => x.CabId)
-                .Where(x => x.Count() > 1)
-                .Select(x => x.Key)
-                .ToList();
-
-            if (duplicateCabIds.Any())
-            {
-                throw new ValidationException("Duplicate cabs are not allowed.");
-            }
-
-            // 4. Add each selected cab
-            foreach (var cabRequest in request.Cabs)
-            {
-                // Check whether cab exists
-                var cab = await _unitOfWork.Cabs.GetByIdAsync( cabRequest.CabId,cancellationToken);
-
-                if (cab == null || cab.IsDeleted)
-                {
-                    throw new ResourceNotFoundException($"Cab not found.");
-                }
-
-                // Check whether this cab is already associated with this package
-                var exists = await _unitOfWork.PackageRates
-                    .ExistsAsync(x => x.PackageId == packageId && x.CabId == cabRequest.CabId,
-                        cancellationToken);
-                if (exists)
-                {
-                    continue;
-                }
-
-                // Create PackageRate
-                var packageRate = new PackageRate
-                {
-                    PackageId = packageId,
-                    CabId = cabRequest.CabId,
-                    Rate = cabRequest.Rate,
-                    Discount = cabRequest.Discount
-                };
-
-                await _unitOfWork.PackageRates.AddAsync(
-                    packageRate,
-                    cancellationToken);
-            }
-
-            // 5. Save everything
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-        public async Task UpdatePackageCabAsync( Guid packageId,Guid cabId, UpdatePackageCabRequest request, CancellationToken cancellationToken = default)
-        {
-            // Check package
-            var package = await _unitOfWork.Packages .GetByIdAsync(packageId, cancellationToken);
-
-            if (package == null || package.IsDeleted)
-                throw new ResourceNotFoundException("Package not found.");
-
-            // Find PackageRate
-            var packageRate = await _unitOfWork.PackageRates.GetByCabAndPackageAsync(cabId, packageId, cancellationToken);
-
-            if (packageRate == null)
-                throw new ResourceNotFoundException( "The selected cab is not associated with this package.");
-
-            // Update rate and discount
-            packageRate.Rate = request.Rate;
-            packageRate.Discount = request.Discount;
-
-            _unitOfWork.PackageRates.Update(packageRate);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
         public async Task<PagedResponse<PackageDTO>> GetAllAsync(SearchPackageRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Guard against malicious or invalid page values
@@ -240,7 +154,8 @@ namespace TravoRides.Application.Services
             PackageDto = EnrichPackageDtoWithAbsoluteUrls(PackageDto);
             return PackageDto;
         }
-
+      
+        //=========================================CREATE METHODS ==========================================
         public async Task<Guid> CreateAsync(CreatePackageRequest request, CancellationToken cancellationToken = default)
         {
             if (request.Image == null)
@@ -296,7 +211,73 @@ namespace TravoRides.Application.Services
 
             return package.Id;
         }
+        public async Task AddCabsToPackageAsync(Guid packageId, AddCabsToPackageRequest request, CancellationToken cancellationToken = default)
+        {
+            // 1. Check whether package exists
+            var package = await _unitOfWork.Packages.GetByIdAsync(packageId, cancellationToken);
 
+            if (package == null || package.IsDeleted)
+            {
+                throw new ResourceNotFoundException("Package not found.");
+            }
+
+            // 2. Check whether cabs were selected
+            if (request.Cabs == null || !request.Cabs.Any())
+            {
+                throw new ValidationException("At least one cab must be selected.");
+            }
+
+            // 3. Check duplicate CabIds in request
+            var duplicateCabIds = request.Cabs
+                .GroupBy(x => x.CabId)
+                .Where(x => x.Count() > 1)
+                .Select(x => x.Key)
+                .ToList();
+
+            if (duplicateCabIds.Any())
+            {
+                throw new ValidationException("Duplicate cabs are not allowed.");
+            }
+
+            // 4. Add each selected cab
+            foreach (var cabRequest in request.Cabs)
+            {
+                // Check whether cab exists
+                var cab = await _unitOfWork.Cabs.GetByIdAsync(cabRequest.CabId, cancellationToken);
+
+                if (cab == null || cab.IsDeleted)
+                {
+                    throw new ResourceNotFoundException($"Cab not found.");
+                }
+
+                // Check whether this cab is already associated with this package
+                var exists = await _unitOfWork.PackageRates
+                    .ExistsAsync(x => x.PackageId == packageId && x.CabId == cabRequest.CabId,
+                        cancellationToken);
+                if (exists)
+                {
+                    continue;
+                }
+
+                // Create PackageRate
+                var packageRate = new PackageRate
+                {
+                    PackageId = packageId,
+                    CabId = cabRequest.CabId,
+                    Rate = cabRequest.Rate,
+                    Discount = cabRequest.Discount
+                };
+
+                await _unitOfWork.PackageRates.AddAsync(
+                    packageRate,
+                    cancellationToken);
+            }
+
+            // 5. Save everything
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        //=================================== UPDATE METHODS ============================================
         public async Task UpdateAsync(UpdatePackageRequest request, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.Title))
@@ -343,7 +324,30 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+        public async Task UpdatePackageCabAsync(Guid packageId, Guid cabId, UpdatePackageCabRequest request, CancellationToken cancellationToken = default)
+        {
+            // Check package
+            var package = await _unitOfWork.Packages.GetByIdAsync(packageId, cancellationToken);
 
+            if (package == null || package.IsDeleted)
+                throw new ResourceNotFoundException("Package not found.");
+
+            // Find PackageRate
+            var packageRate = await _unitOfWork.PackageRates.GetByCabAndPackageAsync(cabId, packageId, cancellationToken);
+
+            if (packageRate == null)
+                throw new ResourceNotFoundException("The selected cab is not associated with this package.");
+
+            // Update rate and discount
+            packageRate.Rate = request.Rate;
+            packageRate.Discount = request.Discount;
+
+            _unitOfWork.PackageRates.Update(packageRate);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        
+        //==================================== DELETE METHODS =========================================
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var package = await _unitOfWork.Packages
@@ -383,6 +387,7 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+     
         /// <summary>
         /// Converts relative file paths in a PackageDTO to absolute URLs
         /// </summary>

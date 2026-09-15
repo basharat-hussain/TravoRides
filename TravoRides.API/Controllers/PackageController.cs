@@ -48,7 +48,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> GetPackageRates(Guid id, Guid cabid, CancellationToken cancellationToken)
         {
             var rates = await _service.GetPackageRateAsync(cabid, id, cancellationToken);
-            return Ok(new ApiResponse<object>
+            return Ok(new ApiResponse<PackageCabRateDTO>
             {
                 IsSuccess = true,
                 Data = rates,
@@ -85,7 +85,7 @@ namespace TravoRides.API.Controllers
         {
             request.Id = id;
             await _service.UpdateAsync(request, cancellationToken);
-            return Ok(new ApiResponse<Guid> { IsSuccess = true, Message = "Package updated.", Data = id });
+            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Package updated.", Data = id });
         }
 
         [HttpPut("{packageId:guid}/cabs/{cabId:guid}")]

@@ -21,9 +21,9 @@ namespace TravoRides.Infrastructure.Repository
             CancellationToken cancellationToken = default)
         {
             return await _context.PackageRates
-        .Include(x => x.Cab)
-        .Include(x => x.Package)
-        .FirstOrDefaultAsync(x =>
+           .Include(x => x.Cab)
+          .Include(x => x.Package)
+          .FirstOrDefaultAsync(x =>
             x.CabId == cabId &&
             x.PackageId == packageId &&
             !x.IsDeleted,
