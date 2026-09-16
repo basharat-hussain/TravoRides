@@ -74,7 +74,7 @@ namespace TravoRides.API.Controllers
         }
        
         [HttpPost("{transitId:guid}/cabs")]
-        public async Task<IActionResult> AddCabsToTransit( Guid transitId, [FromBody] AddCabsToTransitRequest request,  CancellationToken cancellationToken)
+        public async Task<IActionResult> AddCabsToTransit( Guid transitId, [FromBody] TransitCabRequest request,  CancellationToken cancellationToken)
         {
             await _service.AddCabsToTransitAsync( transitId,  request, cancellationToken);
 

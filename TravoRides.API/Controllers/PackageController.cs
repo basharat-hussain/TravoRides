@@ -58,7 +58,7 @@ namespace TravoRides.API.Controllers
 
        //======================================== POST =====================================
         [HttpPost("{packageId:guid}/cabs")]
-        public async Task<IActionResult> AddCabsToPackage( Guid packageId,[FromBody] AddCabsToPackageRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddCabsToPackage( Guid packageId,[FromBody] PackageCabRequest request, CancellationToken cancellationToken)
         {
             await _service.AddCabsToPackageAsync( packageId, request, cancellationToken);
 

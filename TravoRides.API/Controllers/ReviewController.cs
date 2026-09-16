@@ -39,14 +39,7 @@ namespace TravoRides.API.Controllers
         {
             var review = await _service.GetAllApprovedAsync(request, cancellationToken);
 
-            if (review == null)
-                return NotFound(new ApiResponse<object>
-                {
-                    IsSuccess = false,
-                    Message = "Reviews not found.",
-                    Data = null
-                });
-            return Ok(new ApiResponse <object>
+            return Ok(new ApiResponse <PagedResponse<ReviewDTO>>
             {
                 IsSuccess = true,
                 Message = "Approved reviews retrieved successfully.",

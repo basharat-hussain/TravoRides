@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.TransitRate;
+
 using TravoRides.CMS.Interface;
 
 namespace TravoRides.CMS.Controllers
@@ -76,57 +78,154 @@ namespace TravoRides.CMS.Controllers
             response = new[] { "True", "Created successfully." };
             return Json(response);
         }
+        // =========================================================
+        // EDIT Transit
+        // =========================================================
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response = await _apiService.GetAsync<ApiResponse<TransitDTO>>($"api/Transit/{id}");
-            var item = response?.Data;
-            if (item == null) return NotFound();
+            // 1. Get Transit
+            var TransitResponse =
+                await _apiService.GetAsync<ApiResponse<TransitDTO>>(
+                    $"api/Transit/{id}");
 
-            var model = new UpdateTransitRequest
+            var Transit = TransitResponse?.Data;
+
+            if (Transit == null)
+                return NotFound();
+
+            // 2. Get ALL cabs from Cab API
+            var cabResponse =
+                await _apiService.GetAsync<ApiResponse<PagedResponse<CabDTO>>>(
+                    "api/Cab?pageNumber=1&pageSize=100");
+
+            var allCabs = cabResponse?.Data?.Items ?? new List<CabDTO>();
+
+            // 3. Get cabs already added to this Transit
+            var TransitCabsResponse =
+                await _apiService.GetAsync<ApiResponse<List<TransitCabRateDTO>>>(
+                    $"api/Transit/{id}/cabs");
+
+            var TransitCabs = TransitCabsResponse?.Data
+                ?? new List<TransitCabRateDTO>();
+
+            // 4. Get IDs of already-added cabs
+            var addedCabIds = TransitCabs
+                .Select(x => x.CabId)
+                .ToHashSet();
+
+            // 5. Only keep cabs that are NOT already added
+            var availableCabs = allCabs
+                .Where(x => !addedCabIds.Contains(x.Id))
+                .ToList();
+
+            // 6. Build MasterUpdate
+            var model = new MasterUpdate
             {
-                Id = item.Id,
-                Title = item.Title,
-                Price = item.Price,
-                Discount = item.Discount,
-               Description = item.Description,
-                ImageUrl = item.ImageUrl
+                // Section 1 - Transit details
+                UpdateTransit = new UpdateTransitRequest
+                {
+                    Id = Transit.Id,
+                    Title = Transit.Title,
+                    Price = Transit.Price,
+                    Discount = Transit.Discount,
+                    Description = Transit.Description,
+                    ImageUrl = Transit.ImageUrl
+                },
+
+                // Section 2 - Add new cab
+                TransitCabRequest = new TransitCabRequest(),
+
+                // Available cabs for dropdown
+                AvailableCabs = availableCabs,
+
+                // Section 3 - Already added cabs
+                TransitCabRates = TransitCabs,
+
+                // Section 4 - Edit existing Transit cab
+                UpdateTransitCab = new UpdateTransitCabRequest()
             };
 
             return View(model);
         }
 
+        // =========================================================
+        // UPDATE Transit
+        // =========================================================
+
         [HttpPost]
-        public async Task<IActionResult> Edit(Guid id, UpdateTransitRequest model)
+        [HttpPost]
+        public async Task<IActionResult> Edit(Guid id, MasterUpdate model)
         {
-            var response = new string[] { };
+            if (model?.UpdateTransit == null)
+            {
+                return Json(new[]
+                {
+            "False",
+            "Transit data is required."
+        });
+            }
 
             if (!ModelState.IsValid)
             {
-                response = new[] { "False", "Validation Failed" };
-                return Json(response);
+                return Json(new[]
+                {
+            "False",
+            "Validation Failed"
+        });
             }
+
+            var Transit = model.UpdateTransit;
 
             using var formData = new MultipartFormDataContent();
 
-            formData.Add(new StringContent(model.Title ?? string.Empty), nameof(model.Title));
-            formData.Add(new StringContent(model.Price.ToString() ?? string.Empty), nameof(model.Price));
-            formData.Add(new StringContent(model.Discount.ToString() ?? string.Empty), nameof(model.Discount));
-            formData.Add(new StringContent(model.Description ?? string.Empty), nameof(model.Description));
-           
+            // Transit fields
+            formData.Add(
+                new StringContent(Transit.Title ?? string.Empty),
+                nameof(Transit.Title));
 
-            if (model.Image != null && model.Image.Length > 0)
+            formData.Add(
+                new StringContent(Transit.Price.ToString()),
+                nameof(Transit.Price));
+
+            formData.Add(
+                new StringContent(Transit.Discount.ToString() ?? string.Empty),
+                nameof(Transit.Discount));
+
+            formData.Add(
+               new StringContent(Transit.Description.ToString() ?? string.Empty),
+               nameof(Transit.Description));
+            // Image
+            if (Transit.Image != null && Transit.Image.Length > 0)
             {
-                var imageContent = new StreamContent(model.Image.OpenReadStream());
-                imageContent.Headers.ContentType = new MediaTypeHeaderValue(model.Image.ContentType);
-                formData.Add(imageContent, nameof(model.Image), model.Image.FileName);
+                var imageContent = new StreamContent(
+                    Transit.Image.OpenReadStream());
+
+                imageContent.Headers.ContentType =
+                    new MediaTypeHeaderValue(Transit.Image.ContentType);
+
+                formData.Add(
+                    imageContent,
+                    nameof(Transit.Image),
+                    Transit.Image.FileName);
             }
 
-            await _apiService.PutAsync<ApiResponse<Guid>>($"api/Transit/{id}", formData);
+            // Update Transit
+            await _apiService.PutAsync<ApiResponse<Guid>>(
+                $"api/Transit/{id}",
+                formData);
 
-            response = new[] { "True", "Updated successfully." };
-            return Json(response);
+            return Json(new[]
+            {
+        "True",
+        "Updated successfully."
+    });
         }
+
+
+        // =========================================================
+        // DELETE Transit
+        // =========================================================
 
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
@@ -135,43 +234,266 @@ namespace TravoRides.CMS.Controllers
 
             try
             {
-                var success = await _apiService.DeleteAsync($"api/Transit/{id}");
+                var success =
+                    await _apiService.DeleteAsync(
+                        $"api/Transit/{id}");
+
                 if (!success)
                 {
-                    response = new[] { "False", "Deletion failed" };
+                    response = new[]
+                    {
+                    "False",
+                    "Deletion failed"
+                };
+
                     return Json(response);
                 }
 
-                response = new[] { "True", "Deleted successfully" };
+
+                response = new[]
+                {
+                "True",
+                "Deleted successfully"
+            };
+
                 return Json(response);
             }
             catch (Exception ex)
             {
-                response = new[] { "False", ex.Message };
+                response = new[]
+                {
+                "False",
+                ex.Message
+            };
+
                 return Json(response);
             }
         }
 
-        public async Task<IActionResult> GetTransitRates(Guid id, Guid cabid)
-        {
-            var response = await _apiService.GetAsync<ApiResponse<TransitCabRateDTO>>(
-                $"api/Transit/{id}/rates/{cabid}"
-            );
 
-            if (response == null || !response.IsSuccess)
-            {
+        // =========================================================
+        // Transit + CAB
+        // =========================================================
+
+
+        // ---------------------------------------------------------
+        // GET AVAILABLE CABS
+        // API:
+        // GET /api/Transit/{TransitId}/available-cabs
+        // ---------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableCabs(
+            Guid TransitId)
+        {
+            var response =
+                await _apiService.GetAsync<
+                    ApiResponse<List<CabDTO>>>(
+                    $"api/Transit/{TransitId}/availableCabs");
+
+            if (response?.Data == null)
                 return NotFound();
-            }
 
             return Json(response.Data);
         }
 
-        public async Task<IActionResult> GetCabsWithRates(Guid transitId)
-        {
-            var response = await _apiService.GetAsync<ApiResponse<List<TransitCabRateDTO>>>(
-                    $"api/Transit/{transitId}/cabs");
 
-            return Json(response);
+        // ---------------------------------------------------------
+        // GET ALL CABS ASSIGNED TO Transit
+        // API:
+        // GET /api/Transit/{TransitId}/cabs
+        // ---------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> GetTransitCabs(
+            Guid TransitId)
+        {
+            var response =
+                await _apiService.GetAsync<
+                    ApiResponse<List<TransitCabRateDTO>>>(
+                    $"api/Transit/{TransitId}/cabs");
+
+            if (response?.Data == null)
+                return NotFound();
+
+            return Json(response.Data);
+        }
+
+
+        // ---------------------------------------------------------
+        // GET RATE OF ONE CAB FOR Transit
+        // API:
+        // GET /api/Transit/{TransitId}/rates/{cabId}
+        // ---------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> GetTransitCabRate(
+            Guid TransitId,
+            Guid cabId)
+        {
+            var response =
+                await _apiService.GetAsync<
+                    ApiResponse<TransitCabRateDTO>>(
+                    $"api/Transit/{TransitId}/rates/{cabId}");
+
+            if (response?.Data == null)
+                return NotFound();
+
+            return Json(response.Data);
+        }
+
+        // =========================================================
+        // API:
+        // POST /api/Transit/{TransitId}/cabs
+        // ADD ONE CAB TO Transit
+        // =========================================================
+
+        [HttpPost]
+        public async Task<IActionResult> AddCab(Guid TransitId, [FromBody] TransitCabRequest model)
+        {
+            try
+            {
+                if (model == null || model.CabId == Guid.Empty)
+                {
+                    return Json(new[]
+                    {
+                        "False",
+                        "A valid cab must be selected."
+                    });
+                }
+
+                var response = await _apiService.PostAsync<ApiResponse<object>>(
+                        $"api/Transit/{TransitId}/cabs", model);
+
+                if (response == null || !response.IsSuccess)
+                {
+                    return Json(new[]
+                    {
+                        "False", response?.Message ?? "Failed to add cab."
+                    });
+                }
+
+                return Json(new[]
+                {
+                    "True", "Cab added to Transit successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new[]
+                {
+                    "False", ex.Message
+                });
+            }
+        }
+
+        // ---------------------------------------------------------
+        // UPDATE CAB RATE/DISCOUNT
+        // API:
+        // PUT /api/Transit/{TransitId}/cabs/{cabId}
+        // ---------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTransitCab(Guid TransitId, Guid cabId, UpdateTransitCabRequest model)
+        {
+            var response = new string[] { };
+
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    response = new[]
+                    {
+                    "False",  "Validation Failed"
+                };
+
+                    return Json(response);
+                }
+
+
+                var apiResponse =
+                    await _apiService.PutAsync<ApiResponse<object>>($"api/Transit/{TransitId}/cabs/{cabId}",
+                        model);
+
+
+                if (apiResponse == null ||
+                    !apiResponse.IsSuccess)
+                {
+                    response = new[]
+                    {
+                    "False",
+                    apiResponse?.Message ??
+                    "Failed to update Transit cab."
+                };
+
+                    return Json(response);
+                }
+
+
+                response = new[]
+                {
+                "True",
+                "Transit cab updated successfully."
+            };
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                response = new[]
+                {
+                "False",
+                ex.Message
+            };
+
+                return Json(response);
+            }
+        }
+
+
+        // ---------------------------------------------------------
+        // REMOVE CAB FROM Transit
+        // API:
+        // DELETE /api/Transit/{TransitId}/cabs/{cabId}
+        // ---------------------------------------------------------
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveCabFromTransit(Guid TransitId, Guid cabId)
+        {
+            var response = new string[] { };
+
+            try
+            {
+                var success = await _apiService.DeleteAsync($"api/Transit/{TransitId}/cabs/{cabId}");
+
+                if (!success)
+                {
+                    response = new[]
+                    {
+                    "False", "Failed to remove cab from Transit."
+                };
+
+                    return Json(response);
+                }
+
+
+                response = new[]
+                {
+                "True", "Cab removed from Transit successfully."
+            };
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                response = new[]
+                {
+                "False",
+                ex.Message
+            };
+
+                return Json(response);
+            }
         }
     }
 }

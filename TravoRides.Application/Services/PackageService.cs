@@ -40,26 +40,7 @@ namespace TravoRides.Application.Services
                     "No cabs are available for this package.");
             }
 
-            return packageRates.Select(x => 
-            {
-                // Get both discounts
-            decimal packageDiscount = x.Package.Discount ?? 0;
-            decimal packageRateDiscount = x.Discount ?? 0;
-
-            // Use the greater discount
-            decimal applicableDiscount = Math.Max(packageDiscount, packageRateDiscount);
-
-            // Calculate final price
-            decimal finalRate = x.Rate - applicableDiscount;
-
-                // Prevent negative price
-
-
-                if (finalRate < 0)
-                {
-                    throw new ValidationException("Package discount cannot be greater than the package rate.");
-                }
-                return new PackageCabRateDTO
+            return packageRates.Select(x =>  new PackageCabRateDTO
                 {
                     CabId = x.CabId,
                     CabName = x.Cab.Name,
@@ -68,15 +49,10 @@ namespace TravoRides.Application.Services
                     LuggageCapacity = x.Cab.LuggageCapacity,
                     Fuel = x.Cab.Fuel,
                     Transmission = x.Cab.Transmission,
-
                     Rate = x.Rate,
-
-                    // Return the applicable discount
-                    Discount = applicableDiscount,
-
-                    FinalRate = finalRate
-                }
-               ;
+                    Discount = x.Discount,
+                    FinalRate = x.Rate - (x.Discount ?? 0)
+                             
             }).ToList();
         }
 
@@ -211,70 +187,69 @@ namespace TravoRides.Application.Services
 
             return package.Id;
         }
-        public async Task AddCabsToPackageAsync(Guid packageId, AddCabsToPackageRequest request, CancellationToken cancellationToken = default)
+        public async Task AddCabsToPackageAsync(Guid packageId, PackageCabRequest request, CancellationToken cancellationToken = default)
         {
             // 1. Check whether package exists
-            var package = await _unitOfWork.Packages.GetByIdAsync(packageId, cancellationToken);
+            var package = await _unitOfWork.Packages
+                .GetByIdAsync(packageId, cancellationToken);
 
             if (package == null || package.IsDeleted)
             {
                 throw new ResourceNotFoundException("Package not found.");
             }
 
-            // 2. Check whether cabs were selected
-            if (request.Cabs == null || !request.Cabs.Any())
+            // 2. Validate cab selection
+            if (request == null || request.CabId == Guid.Empty)
             {
-                throw new ValidationException("At least one cab must be selected.");
+                throw new ValidationException("A valid cab must be selected.");
             }
 
-            // 3. Check duplicate CabIds in request
-            var duplicateCabIds = request.Cabs
-                .GroupBy(x => x.CabId)
-                .Where(x => x.Count() > 1)
-                .Select(x => x.Key)
-                .ToList();
+            // 3. Check whether cab exists
+            var cab = await _unitOfWork.Cabs
+                .GetByIdAsync(request.CabId, cancellationToken);
 
-            if (duplicateCabIds.Any())
+            if (cab == null || cab.IsDeleted)
             {
-                throw new ValidationException("Duplicate cabs are not allowed.");
+                throw new ResourceNotFoundException("Cab not found.");
             }
 
-            // 4. Add each selected cab
-            foreach (var cabRequest in request.Cabs)
+            // 4. Check whether this cab is already associated with the package
+            var existingPackageRate = await _unitOfWork.PackageRates
+                .GetByCabAndPackageAsync( request.CabId, packageId,  cancellationToken);
+
+            // 5. If active association already exists, don't add again
+            if (existingPackageRate != null && !existingPackageRate.IsDeleted)
             {
-                // Check whether cab exists
-                var cab = await _unitOfWork.Cabs.GetByIdAsync(cabRequest.CabId, cancellationToken);
-
-                if (cab == null || cab.IsDeleted)
-                {
-                    throw new ResourceNotFoundException($"Cab not found.");
-                }
-
-                // Check whether this cab is already associated with this package
-                var exists = await _unitOfWork.PackageRates
-                    .ExistsAsync(x => x.PackageId == packageId && x.CabId == cabRequest.CabId,
-                        cancellationToken);
-                if (exists)
-                {
-                    continue;
-                }
-
-                // Create PackageRate
-                var packageRate = new PackageRate
-                {
-                    PackageId = packageId,
-                    CabId = cabRequest.CabId,
-                    Rate = cabRequest.Rate,
-                    Discount = cabRequest.Discount
-                };
-
-                await _unitOfWork.PackageRates.AddAsync(
-                    packageRate,
-                    cancellationToken);
+                throw new ValidationException(
+                    "This cab is already added to the package.");
             }
 
-            // 5. Save everything
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            // 6. If previously deleted, reactivate it
+            if (existingPackageRate != null && existingPackageRate.IsDeleted)
+            {
+                existingPackageRate.IsDeleted = false;
+                existingPackageRate.Rate = request.Rate;
+                existingPackageRate.Discount = request.Discount;
+                existingPackageRate.ModifiedAt = DateTime.UtcNow;
+                existingPackageRate.ModifiedBy = "System";
+
+                _unitOfWork.PackageRates.Update(existingPackageRate);
+
+                return;
+            }
+
+            // 7. Create new PackageRate
+            var packageRate = new PackageRate
+            {
+                PackageId = packageId,
+                CabId = request.CabId,
+                Rate = request.Rate,
+                Discount = request.Discount
+            };
+
+            await _unitOfWork.PackageRates.AddAsync(
+                packageRate,
+                cancellationToken);
         }
 
         //=================================== UPDATE METHODS ============================================

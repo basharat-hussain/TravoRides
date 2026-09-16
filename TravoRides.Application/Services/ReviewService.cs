@@ -9,7 +9,6 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TravoRides.Application.Repositories;
 using TravoRides.Application.DTOs.Common;
 
 namespace TravoRides.Application.Services
@@ -52,10 +51,22 @@ namespace TravoRides.Application.Services
         }
 
         // Method 2: For the Public Frontend (See Only Approved/Active)
-        public async Task<IEnumerable<ReviewDTO>> GetAllApprovedAsync(SearchReviewRequest request, CancellationToken cancellationToken = default)
+        public async Task<PagedResponse<ReviewDTO>> GetAllApprovedAsync(SearchReviewRequest request, CancellationToken cancellationToken = default)
         {
-           var reviews = await _unitOfWork.Reviews.GetAllApprovedAsync(cancellationToken);
-           return _mapper.Map<IEnumerable<ReviewDTO>>(reviews);
+            if (request.PageNumber < 1) request.PageNumber = 1;
+            if (request.PageSize < 1) request.PageSize = 10;
+            if (request.PageSize > 100) request.PageSize = 100;
+            var reviews = await _unitOfWork.Reviews.GetAllApprovedAsync(request.PageNumber, request.PageSize, request.Keyword, cancellationToken);
+           
+            var review =  _mapper.Map<List<ReviewDTO>>(reviews.Items);
+            return new PagedResponse<ReviewDTO>
+            {
+                Items = review,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
+                TotalCount = reviews.TotalCount,
+                TotalPages = reviews.TotalPages
+            };
         }
         public async Task<ReviewDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {

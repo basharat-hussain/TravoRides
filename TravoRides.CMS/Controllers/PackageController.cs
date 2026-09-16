@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Cabs;
+using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
 using TravoRides.Application.DTOs.PackageRate;
@@ -9,7 +11,8 @@ using TravoRides.CMS.Interface;
 namespace TravoRides.CMS.Controllers
 {
     
-     public class PackageController : Controller
+    
+public class PackageController : Controller
     {
         private readonly IApiService _apiService;
 
@@ -18,17 +21,21 @@ namespace TravoRides.CMS.Controllers
             _apiService = apiService;
         }
 
+
         // =========================================================
         // PACKAGE CRUD
         // =========================================================
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? pageNumber, int? pageSize)
+        public async Task<IActionResult> Index(
+            int? pageNumber,
+            int? pageSize)
         {
             var page = pageNumber ?? 1;
             var size = pageSize ?? 10;
 
-            var url = $"api/Package?pageNumber={page}&pageSize={size}";
+            var url =
+                $"api/Package?pageNumber={page}&pageSize={size}";
 
             var items =
                 await _apiService.GetAllAsync<
@@ -42,7 +49,8 @@ namespace TravoRides.CMS.Controllers
         public async Task<IActionResult> Details(Guid id)
         {
             var response =
-                await _apiService.GetAsync<ApiResponse<PackageDTO>>(
+                await _apiService.GetAsync<
+                    ApiResponse<PackageDTO>>(
                     $"api/Package/{id}");
 
             var item = response?.Data;
@@ -82,52 +90,65 @@ namespace TravoRides.CMS.Controllers
                 return Json(response);
             }
 
-            using var formData = new MultipartFormDataContent();
+            using var formData =
+                new MultipartFormDataContent();
 
             formData.Add(
-                new StringContent(model.Title ?? string.Empty),
+                new StringContent(
+                    model.Title ?? string.Empty),
                 nameof(model.Title));
 
             formData.Add(
-                new StringContent(model.Price.ToString()),
+                new StringContent(
+                    model.Price.ToString()),
                 nameof(model.Price));
 
             formData.Add(
-                new StringContent(model.Discount.ToString()),
+                new StringContent(
+                    model.Discount.ToString() ?? string.Empty),
                 nameof(model.Discount));
 
             formData.Add(
-                new StringContent(model.Itinerary ?? string.Empty),
+                new StringContent(
+                    model.Itinerary ?? string.Empty),
                 nameof(model.Itinerary));
 
             formData.Add(
-                new StringContent(model.Inclusions ?? string.Empty),
+                new StringContent(
+                    model.Inclusions ?? string.Empty),
                 nameof(model.Inclusions));
 
             formData.Add(
-                new StringContent(model.Distance.ToString()),
+                new StringContent(
+                    model.Distance.ToString()),
                 nameof(model.Distance));
 
             formData.Add(
-                new StringContent(model.Route ?? string.Empty),
+                new StringContent(
+                    model.Route ?? string.Empty),
                 nameof(model.Route));
 
             formData.Add(
-                new StringContent(model.PlacesCovered ?? string.Empty),
+                new StringContent(
+                    model.PlacesCovered ?? string.Empty),
                 nameof(model.PlacesCovered));
 
             formData.Add(
-                new StringContent(model.Duration ?? string.Empty),
+                new StringContent(
+                    model.Duration ?? string.Empty),
                 nameof(model.Duration));
 
 
-            if (model.Image != null && model.Image.Length > 0)
+            if (model.Image != null &&
+                model.Image.Length > 0)
             {
                 var imageContent =
-                    new StreamContent(model.Image.OpenReadStream());
+                    new StreamContent(
+                        model.Image.OpenReadStream());
 
                 imageContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(model.Image.ContentType);
+                    new MediaTypeHeaderValue(
+                        model.Image.ContentType);
 
                 formData.Add(
                     imageContent,
@@ -153,121 +174,171 @@ namespace TravoRides.CMS.Controllers
         // =========================================================
         // EDIT PACKAGE
         // =========================================================
-
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response =
+            // 1. Get package
+            var packageResponse =
                 await _apiService.GetAsync<ApiResponse<PackageDTO>>(
                     $"api/Package/{id}");
 
-            var item = response?.Data;
+            var package = packageResponse?.Data;
 
-            if (item == null)
+            if (package == null)
                 return NotFound();
 
-            var model = new UpdatePackageRequest
+            // 2. Get ALL cabs from Cab API
+            var cabResponse =
+                await _apiService.GetAsync<ApiResponse<PagedResponse<CabDTO>>>(
+                    "api/Cab?pageNumber=1&pageSize=100");
+
+            var allCabs = cabResponse?.Data?.Items ?? new List<CabDTO>();
+
+            // 3. Get cabs already added to this package
+            var packageCabsResponse =
+                await _apiService.GetAsync<ApiResponse<List<PackageCabRateDTO>>>(
+                    $"api/Package/{id}/cabs");
+
+            var packageCabs = packageCabsResponse?.Data
+                ?? new List<PackageCabRateDTO>();
+
+            // 4. Get IDs of already-added cabs
+            var addedCabIds = packageCabs
+                .Select(x => x.CabId)
+                .ToHashSet();
+
+            // 5. Only keep cabs that are NOT already added
+            var availableCabs = allCabs
+                .Where(x => !addedCabIds.Contains(x.Id))
+                .ToList();
+
+            // 6. Build MasterUpdate
+            var model = new MasterUpdate
             {
-                Id = item.Id,
-                Title = item.Title,
-                Price = item.Price,
-                Discount = item.Discount,
-                Distance = item.Distance,
-                PlacesCovered = item.PlacesCovered,
-                Itinerary = item.Itinerary,
-                Route = item.Route,
-                Inclusions = item.Inclusions,
-                Duration = item.Duration,
-                ImageUrl = item.ImageUrl
+                // Section 1 - Package details
+                UpdatePackage = new UpdatePackageRequest
+                {
+                    Id = package.Id,
+                    Title = package.Title,
+                    Price = package.Price,
+                    Discount = package.Discount,
+                    Itinerary = package.Itinerary,
+                    Inclusions = package.Inclusions,
+                    Distance = package.Distance,
+                    Route = package.Route,
+                    PlacesCovered = package.PlacesCovered,
+                    Duration = package.Duration,
+                    ImageUrl = package.ImageUrl
+                },
+
+                // Section 2 - Add new cab
+                PackageCabRequest = new PackageCabRequest(),
+
+                // Available cabs for dropdown
+                AvailableCabs = availableCabs,
+
+                // Section 3 - Already added cabs
+                PackageCabRates = packageCabs,
+
+                // Section 4 - Edit existing package cab
+                UpdatePackageCab = new UpdatePackageCabRequest()
             };
 
             return View(model);
         }
 
+        // =========================================================
+        // UPDATE PACKAGE
+        // =========================================================
 
         [HttpPost]
-        public async Task<IActionResult> Edit(
-            Guid id,
-            UpdatePackageRequest model)
+        [HttpPost]
+        public async Task<IActionResult> Edit(Guid id, MasterUpdate model)
         {
-            var response = new string[] { };
+            if (model?.UpdatePackage == null)
+            {
+                return Json(new[]
+                {
+            "False",
+            "Package data is required."
+        });
+            }
 
             if (!ModelState.IsValid)
             {
-                response = new[]
+                return Json(new[]
                 {
-                "False",
-                "Validation Failed"
-            };
-
-                return Json(response);
+            "False",
+            "Validation Failed"
+        });
             }
+
+            var package = model.UpdatePackage;
 
             using var formData = new MultipartFormDataContent();
 
+            // Package fields
             formData.Add(
-                new StringContent(model.Title ?? string.Empty),
-                nameof(model.Title));
-
-            formData.Add(
-                new StringContent(model.Price.ToString()),
-                nameof(model.Price));
+                new StringContent(package.Title ?? string.Empty),
+                nameof(package.Title));
 
             formData.Add(
-                new StringContent(model.Discount.ToString()),
-                nameof(model.Discount));
+                new StringContent(package.Price.ToString()),
+                nameof(package.Price));
 
             formData.Add(
-                new StringContent(model.Itinerary ?? string.Empty),
-                nameof(model.Itinerary));
+                new StringContent(package.Discount.ToString() ?? string.Empty),
+                nameof(package.Discount));
 
             formData.Add(
-                new StringContent(model.Inclusions ?? string.Empty),
-                nameof(model.Inclusions));
+                new StringContent(package.Itinerary ?? string.Empty),
+                nameof(package.Itinerary));
 
             formData.Add(
-                new StringContent(model.Distance.ToString()),
-                nameof(model.Distance));
+                new StringContent(package.Inclusions ?? string.Empty),
+                nameof(package.Inclusions));
 
             formData.Add(
-                new StringContent(model.Route ?? string.Empty),
-                nameof(model.Route));
+                new StringContent(package.Distance.ToString()),
+                nameof(package.Distance));
 
             formData.Add(
-                new StringContent(model.PlacesCovered ?? string.Empty),
-                nameof(model.PlacesCovered));
+                new StringContent(package.Route ?? string.Empty),
+                nameof(package.Route));
 
             formData.Add(
-                new StringContent(model.Duration ?? string.Empty),
-                nameof(model.Duration));
+                new StringContent(package.PlacesCovered ?? string.Empty),
+                nameof(package.PlacesCovered));
 
+            formData.Add(
+                new StringContent(package.Duration ?? string.Empty),
+                nameof(package.Duration));
 
-            if (model.Image != null && model.Image.Length > 0)
+            // Image
+            if (package.Image != null && package.Image.Length > 0)
             {
-                var imageContent =
-                    new StreamContent(model.Image.OpenReadStream());
+                var imageContent = new StreamContent(
+                    package.Image.OpenReadStream());
 
                 imageContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(model.Image.ContentType);
+                    new MediaTypeHeaderValue(package.Image.ContentType);
 
                 formData.Add(
                     imageContent,
-                    nameof(model.Image),
-                    model.Image.FileName);
+                    nameof(package.Image),
+                    package.Image.FileName);
             }
 
-
+            // Update package
             await _apiService.PutAsync<ApiResponse<Guid>>(
                 $"api/Package/{id}",
                 formData);
 
-            response = new[]
+            return Json(new[]
             {
-            "True",
-            "Updated successfully."
-        };
-
-            return Json(response);
+        "True",
+        "Updated successfully."
+    });
         }
 
 
@@ -297,6 +368,7 @@ namespace TravoRides.CMS.Controllers
                     return Json(response);
                 }
 
+
                 response = new[]
                 {
                 "True",
@@ -321,6 +393,29 @@ namespace TravoRides.CMS.Controllers
         // =========================================================
         // PACKAGE + CAB
         // =========================================================
+
+
+        // ---------------------------------------------------------
+        // GET AVAILABLE CABS
+        // API:
+        // GET /api/Package/{packageId}/available-cabs
+        // ---------------------------------------------------------
+
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableCabs(
+            Guid packageId)
+        {
+            var response =
+                await _apiService.GetAsync<
+                    ApiResponse<List<CabDTO>>>(
+                    $"api/Package/{packageId}/available-cabs");
+
+            if (response?.Data == null)
+                return NotFound();
+
+            return Json(response.Data);
+        }
+
 
         // ---------------------------------------------------------
         // GET ALL CABS ASSIGNED TO PACKAGE
@@ -366,85 +461,59 @@ namespace TravoRides.CMS.Controllers
             return Json(response.Data);
         }
 
-
-        // ---------------------------------------------------------
-        // ADD MULTIPLE CABS TO PACKAGE
+        // =========================================================
         // API:
         // POST /api/Package/{packageId}/cabs
-        // ---------------------------------------------------------
+        // ADD ONE CAB TO PACKAGE
+        // =========================================================
 
         [HttpPost]
-        public async Task<IActionResult> AddCabsToPackage(
-            Guid packageId,
-            AddCabsToPackageRequest model)
+        public async Task<IActionResult> AddCab(  Guid packageId, [FromBody] PackageCabRequest model)
         {
-            var response = new string[] { };
-
             try
             {
-                if (model == null ||
-                    model.Cabs == null ||
-                    !model.Cabs.Any())
+                if (model == null || model.CabId == Guid.Empty)
                 {
-                    response = new[]
+                    return Json(new[]
                     {
-                    "False",
-                    "At least one cab must be selected."
-                };
-
-                    return Json(response);
+                        "False",
+                        "A valid cab must be selected."
+                    });
                 }
 
-                var apiResponse =
-                    await _apiService.PostAsync<
-                        ApiResponse<object>>(
-                        $"api/Package/{packageId}/cabs",
-                        model);
+                var response = await _apiService.PostAsync<ApiResponse<object>>(
+                        $"api/Package/{packageId}/cabs", model);
 
-                if (apiResponse == null || !apiResponse.IsSuccess)
+                if (response == null || !response.IsSuccess)
                 {
-                    response = new[]
+                    return Json(new[]
                     {
-                    "False",
-                    apiResponse?.Message ??
-                    "Failed to add cabs."
-                };
-
-                    return Json(response);
+                        "False", response?.Message ?? "Failed to add cab."
+                    });
                 }
 
-                response = new[]
+                return Json(new[]
                 {
-                "True",
-                "Cabs added to package successfully."
-            };
-
-                return Json(response);
+                    "True", "Cab added to package successfully."
+                });
             }
             catch (Exception ex)
             {
-                response = new[]
+                return Json(new[]
                 {
-                "False",
-                ex.Message
-            };
-
-                return Json(response);
+                    "False", ex.Message
+                });
             }
         }
 
-
         // ---------------------------------------------------------
-        // UPDATE CAB RATE/DISCOUNT FOR PACKAGE
+        // UPDATE CAB RATE/DISCOUNT
         // API:
         // PUT /api/Package/{packageId}/cabs/{cabId}
         // ---------------------------------------------------------
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePackageCab(
-            Guid packageId,
-            Guid cabId,
-            UpdatePackageCabRequest model)
+        public async Task<IActionResult> UpdatePackageCab( Guid packageId, Guid cabId, UpdatePackageCabRequest model)
         {
             var response = new string[] { };
 
@@ -454,20 +523,20 @@ namespace TravoRides.CMS.Controllers
                 {
                     response = new[]
                     {
-                    "False",
-                    "Validation Failed"
+                    "False",  "Validation Failed"
                 };
 
                     return Json(response);
                 }
 
+
                 var apiResponse =
-                    await _apiService.PutAsync<
-                        ApiResponse<object>>(
-                        $"api/Package/{packageId}/cabs/{cabId}",
+                    await _apiService.PutAsync< ApiResponse<object>>(  $"api/Package/{packageId}/cabs/{cabId}",
                         model);
 
-                if (apiResponse == null || !apiResponse.IsSuccess)
+
+                if (apiResponse == null ||
+                    !apiResponse.IsSuccess)
                 {
                     response = new[]
                     {
@@ -478,6 +547,7 @@ namespace TravoRides.CMS.Controllers
 
                     return Json(response);
                 }
+
 
                 response = new[]
                 {
@@ -507,33 +577,28 @@ namespace TravoRides.CMS.Controllers
         // ---------------------------------------------------------
 
         [HttpPost]
-        public async Task<IActionResult> RemoveCabFromPackage(
-            Guid packageId,
-            Guid cabId)
+        public async Task<IActionResult> RemoveCabFromPackage( Guid packageId, Guid cabId)
         {
             var response = new string[] { };
 
             try
             {
-                var success =
-                    await _apiService.DeleteAsync(
-                        $"api/Package/{packageId}/cabs/{cabId}");
+                var success = await _apiService.DeleteAsync( $"api/Package/{packageId}/cabs/{cabId}");
 
                 if (!success)
                 {
                     response = new[]
                     {
-                    "False",
-                    "Failed to remove cab from package."
+                    "False", "Failed to remove cab from package."
                 };
 
                     return Json(response);
                 }
 
+
                 response = new[]
                 {
-                "True",
-                "Cab removed from package successfully."
+                "True", "Cab removed from package successfully."
             };
 
                 return Json(response);
@@ -550,5 +615,4 @@ namespace TravoRides.CMS.Controllers
             }
         }
     }
-
 }

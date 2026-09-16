@@ -63,7 +63,7 @@
         var distance = $btn.data('distance') || '';
         var duration = $btn.data('duration') || '';
         var places = $btn.data('places') || '';
-
+            var itinerary = $btn.data('itinerary');
         var route = $btn.data('route') || '';
         var description = $btn.data('description')|| '';
 
@@ -80,7 +80,7 @@
         html += '<p><strong>Price:</strong> ' + $('<div/>').text(price).html() + '</p>';
         html += '<p><strong>Discount:</strong> ' + $('<div/>').text(discount).html() + '</p>';
         html += '<p><strong>Inclusions:</strong> ' + $('<div/>').text(inclusions).html() + '</p>';
-        html += '<p><strong>Itenarary:</strong> ' + $('<div/>').text(itenarary).html() + '</p>';
+        html += '<p><strong>Itinerary:</strong> ' + $('<div/>').text(itinerary).html() + '</p>';
         html += '<p><strong>Distance:</strong> ' + $('<div/>').text(distance).html() + '</p>';
         html += '<p><strong>Duration:</strong> ' + $('<div/>').text(duration).html() + '</p>';
         html += '<p><strong>Route:</strong> ' + $('<div/>').text(route).html() + '</p>';

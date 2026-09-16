@@ -1,5 +1,5 @@
-﻿@using TravoRides.Application.DTOs.Package
-@model UpdatePackageRequest
+﻿@using TravoRides.Application.DTOs.PackageRate
+@model MasterUpdate
 
 <section class="content-header">
     <div class="container-fluid">
@@ -9,7 +9,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Package</a></li>
+                    <li class="breadcrumb-item"><a href="/Package/Index">Package</a></li>
                     <li class="breadcrumb-item active">Edit</li>
                 </ol>
             </div>
@@ -20,149 +20,430 @@
 <!-- Main content -->
 <section class="content">
     <div class="row">
+
         @if (Model is null)
         {
             <div class="offset-md-2 col-md-8 mt-4">
-                <div class="alert alert-warning text-center"><i class="fas fa-frown fa-4x"></i><h3 class="mt-2">Sorry! Package Details not found</h3></div>
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-frown fa-4x"></i>
+                    <h3 class="mt-2">Sorry! Package Details not found</h3>
+                </div>
             </div>
         }
         else
         {
+            <!-- ====================================================== -->
+            <!-- SECTION 1 : PACKAGE DETAILS -->
+            <!-- ====================================================== -->
 
-            <div class="offset-md-2 col-md-8">
+            <div class="col-md-10 offset-md-1">
+
                 <div class="card card-primary">
+
                     <div class="card-header">
                         <h3 class="card-title">Edit Package</h3>
 
                         <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                            <button type="button"
+                                    class="btn btn-tool"
+                                    data-card-widget="collapse"
+                                    title="Collapse">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <form id="editform" enctype="multipart/form-data" asp-controller="Package" asp-action="Edit" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
-                            <input type="hidden" asp-for="Id" />
 
+                    <div class="card-body">
+
+                        <form id="editform"
+                              enctype="multipart/form-data"
+                              asp-controller="Package"
+                              asp-action="Edit"
+                              asp-antiforgery="false"
+                              data-ajax="true"
+                              data-ajax-method="post"
+                              data-ajax-success="onSuccess"
+                              data-ajax-failure="onFailure"
+                              data-ajax-begin="onBegin">
+
+                            <input type="hidden"
+                                   asp-for="UpdatePackage.Id" />
+
+                            <!-- Row 1 -->
                             <div class="row">
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Title</label>
-                                        <input asp-for="Title" class="form-control" />
-                                        <span asp-validation-for="Title" class="text-danger"></span>
+
+                                        <input asp-for="UpdatePackage.Title"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Title"
+                                              class="text-danger"></span>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Route</label>
-                                        <input asp-for="Route" class="form-control" />
-                                        <span asp-validation-for="Route" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Price</label>
-                                        <input asp-for="Price" class="form-control" />
-                                        <span asp-validation-for="Price" class="text-danger"></span>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Discount</label>
-                                        <input asp-for="Discount" class="form-control" rows="4" />
-                                        <span asp-validation-for="Discount" class="text-danger"></span>
+                                        <input asp-for="UpdatePackage.Route"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Route"
+                                              class="text-danger"></span>
                                     </div>
                                 </div>
-
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Inclusions</label>
-                                        <input asp-for="Inclusions" class="form-control" />
-                                        <span asp-validation-for="Inclusions" class="text-danger"></span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Distance</label>
-                                        <input asp-for="Distance" class="form-control" rows="4" />
-                                        <span asp-validation-for="Distance" class="text-danger"></span>
+
+                                        <input asp-for="UpdatePackage.Distance"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Distance"
+                                              class="text-danger"></span>
                                     </div>
                                 </div>
-
                             </div>
+
+
+                            <!-- Row 2 -->
                             <div class="row">
-                                <div class="col-md-6">
+
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>PlacesCovered</label>
-                                        <input asp-for="PlacesCovered" class="form-control" rows="4" />
-                                        <span asp-validation-for="PlacesCovered" class="text-danger"></span>
+                                        <label>Price</label>
+
+                                        <input asp-for="UpdatePackage.Price"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Price"
+                                              class="text-danger"></span>
                                     </div>
                                 </div>
 
-                           
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Discount</label>
 
-                                <div class="col-md-6">
+                                        <input asp-for="UpdatePackage.Discount"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Discount"
+                                              class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Duration</label>
-                                        <input asp-for="Duration" class="form-control" rows="4" />
-                                        <span asp-validation-for="Duration" class="text-danger"></span>
+
+                                        <input asp-for="UpdatePackage.Duration"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Duration"
+                                              class="text-danger"></span>
                                     </div>
                                 </div>
-
                             </div>
 
+
+                            <!-- Row 3 -->
                             <div class="row">
-                                <div class="col-md-6">
+
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Logo</label>
-                                        <input asp-for="Image" class="form-control img-uploader" accept=".png, .jpeg, .jpg" />
-                                        <span asp-validation-for="Image" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <img src="@Model.ImageUrl" class="image-previewer" style="height: 80px; width:200px" />
+                                        <label>Inclusions</label>
+
+                                        <input asp-for="UpdatePackage.Inclusions"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.Inclusions"
+                                              class="text-danger"></span>
                                     </div>
                                 </div>
 
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
+                                        <label>Places Covered</label>
+
+                                        <input asp-for="UpdatePackage.PlacesCovered"
+                                               class="form-control" />
+
+                                        <span asp-validation-for="UpdatePackage.PlacesCovered"
+                                              class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Image</label>
+
+                                        <input asp-for="UpdatePackage.Image"
+                                               class="form-control img-uploader"
+                                               accept=".png,.jpeg,.jpg" />
+
+                                        <span asp-validation-for="UpdatePackage.Image"
+                                              class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 5 : Image -->
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+
                                         <label>Itinerary</label>
-                                        <textarea asp-for="Itinerary" class="form-control text-editor"></textarea>
-                                        <span asp-validation-for="Itinerary" class="text-danger"></span>
+
+                                        <textarea asp-for="UpdatePackage.Itinerary"
+                                                  class="form-control text-editor"></textarea>
+
+                                        <span asp-validation-for="UpdatePackage.Itinerary"
+                                              class="text-danger"></span>
+
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+
+                                        <img src="@Model.UpdatePackage.ImageUrl"
+                                             class="image-previewer"
+                                             style="height:100px;width:200px" />
+
+                                    </div>
+                                </div>
+
                             </div>
-
-
+                            <!-- Package buttons -->
                             <div class="form-group">
-                                <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save"></i> Save</button>
-                                <button type="reset" class="btn btn-danger"><i class="fas fa-recycle"></i> Reset</button>
+
+                                <button type="submit"
+                                        class="btn btn-success save-btn">
+
+                                    <i class="fas fa-save"></i>
+                                    Save Package
+
+                                </button>
+
+                                <button type="reset"
+                                        class="btn btn-danger">
+
+                                    <i class="fas fa-recycle"></i>
+                                    Reset
+
+                                </button>
+
                             </div>
+
                         </form>
 
                     </div>
                 </div>
+
             </div>
+
+
+            <!-- ====================================================== -->
+            <!-- SECTION 2 + SECTION 3 -->
+            <!-- ====================================================== -->
+
+            <div class="row w-100">
+                <!-- ================================================== -->
+                <!-- SECTION 2 : ADD / UPDATE CAB -->
+                <!-- ================================================== -->
+                <div class="col-md-4 offset-md-1">
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <h3 class="card-title"
+                                id="cabSectionTitle">
+                                Add Cab to Package
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="cabForm">
+                                <!-- Package Id -->
+                                <input type="hidden"
+                                       id="PackageId"
+                                       value="@Model.UpdatePackage.Id" />
+                                <!-- Editing Cab Id -->
+                                <input type="hidden"
+                                       id="EditingCabId"
+                                       value="" />
+                                <!-- Cab -->
+                                <div class="form-group">
+                                    <label asp-for="PackageCabRequest.CabId">
+                                        Cab
+                                    </label>
+                                    <select asp-for="PackageCabRequest.CabId"
+                                            id="CabId"
+                                            class="form-control">
+                                        <option value="">
+                                            -- Select Cab -
+                                        </option>
+                                        1
+                                        @foreach (var cab in Model.AvailableCabs)
+                                        {
+                                            <option value="@cab.Id">
+                                                @cab.Name
+                                            </option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="PackageCabRequest.CabId"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                                <!-- Rate -->
+                                <div class="form-group">
+                                    <label asp-for="PackageCabRequest.Rate">
+                                        Price
+                                    </label>
+                                    <input asp-for="PackageCabRequest.Rate"
+                                           id="CabRate"
+                                           type="number"
+                                           class="form-control"
+                                           step="0.01"
+                                           min="0"
+                                           placeholder="Enter price" />
+                                    <span asp-validation-for="PackageCabRequest.Rate"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                                <!-- Discount -->
+                                <div class="form-group">
+                                    <label asp-for="PackageCabRequest.Discount">
+                                        Discount
+                                    </label>
+                                    <input asp-for="PackageCabRequest.Discount"
+                                           id="CabDiscount"
+                                           2
+                                           type="number"
+                                           class="form-control"
+                                           step="0.01"
+                                           min="0"
+                                           placeholder="Enter discount" />
+                                    <span asp-validation-for="PackageCabRequest.Discount"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                                <!-- Buttons -->
+                                <div class="form-group">
+                                    <button type="button"
+                                            id="cabSubmitBtn"
+                                            class="btn btn-success">
+                                        <i class="fas fa-plus"
+                                           id="cabSubmitIcon"></i>
+                                        <span id="cabSubmitText">
+                                            Add Cab
+                                        </span>
+                                    </button>
+                                    <button type="button"
+                                            id="cabCancelBtn"
+                                            class="btn btn-secondary"
+                                            style="display:none;">
+                                        <i class="fas fa-times"></i>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- ================================================== -->
+                <!-- SECTION 3 : ADDED CABS -->
+                <!-- ================================================== -->
+                <div class="col-md-6">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                Added Cabs
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Cab</th>
+                                            <th>Price</th>
+                                            <th>Discount</th>
+                                            <th style="width:120px;">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cabTableBody">
+                                        @if (Model.PackageCabRates != null &&
+                                             Model.PackageCabRates.Any())
+                                        {
+                                            foreach (var cab in Model.PackageCabRates)
+                                            {
+                                                <tr id="cab-row-@cab.CabId">
+                                                    
+                                                    <td>
+                                                        @cab.CabName
+                                                    </td>
+                                                    <td>
+                                                        @cab.Rate
+                                                    </td>
+                                                    <td>
+                                                        @(cab.Discount?.ToString() ?? "-")
+                                                    </td>
+                                                    <td>
+                                                        <!-- Edit -->
+                                                        <button type="button"
+                                                                class="btn btn-sm btn
+                                                            primary edit-cab-btn"
+                                                                data-cab-id="@cab.CabId"
+                                                                data-cab-name="@cab.CabName"
+                                                                data-rate="@cab.Rate"
+                                                                data
+                                                                discount="@cab.Discount">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <!-- Delete -->
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-danger
+                                                            delete-cab-btn"
+                                                                data-cab-id="@cab.CabId">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr id="noCabsRow">
+                                                5
+                                                <td colspan="4"
+                                                    class="text-center text-muted">
+                                                    No cabs added to this package.
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         }
 
-
-
     </div>
-
 </section>
 
-<partial name="_ValidationScriptsPartial" />
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <!-- Keep your package/cab JavaScript in a separate file -->
+    <script src="~/js/package-edit.js"></script>
+}
 
 <script>
     var module = "Package";
