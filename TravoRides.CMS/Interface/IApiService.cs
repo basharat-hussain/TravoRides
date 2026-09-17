@@ -10,12 +10,11 @@ namespace TravoRides.CMS.Interface
 
         Task<T> GetAsync<T>(string url);
 
-        Task<T> PostAsync<T>(string url, object model);
-
+        Task<TResponse> PostAsync<TRequest, TResponse>(string url, TRequest obj);
         Task<T> PostAsync<T>(string url, HttpContent content);
 
-        Task<T> PutAsync<T>(string url,  object obj);
-
+        Task<TResponse> PutAsync<TRequest,TResponse>(string url,  TRequest obj);
+        Task<T> PutAsync<T>(string url, T model);
         Task<T> PutAsync<T>(string url, HttpContent content);
 
         Task<bool> DeleteAsync(string url);

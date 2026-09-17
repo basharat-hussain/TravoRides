@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Cabs;
+using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.TransitRate;
@@ -114,10 +115,6 @@ namespace TravoRides.CMS.Controllers
                 .Select(x => x.CabId)
                 .ToHashSet();
 
-            // 5. Only keep cabs that are NOT already added
-            var availableCabs = allCabs
-                .Where(x => !addedCabIds.Contains(x.Id))
-                .ToList();
 
             // 6. Build MasterUpdate
             var model = new MasterUpdate
@@ -137,7 +134,7 @@ namespace TravoRides.CMS.Controllers
                 TransitCabRequest = new TransitCabRequest(),
 
                 // Available cabs for dropdown
-                AvailableCabs = availableCabs,
+                AvailableCabs = (List<CabDTO>)allCabs,
 
                 // Section 3 - Already added cabs
                 TransitCabRates = TransitCabs,
@@ -361,8 +358,8 @@ namespace TravoRides.CMS.Controllers
                         "A valid cab must be selected."
                     });
                 }
-
-                var response = await _apiService.PostAsync<ApiResponse<object>>(
+               
+                var response = await _apiService.PostAsync<TransitCabRequest, ApiResponse<object>>(
                         $"api/Transit/{TransitId}/cabs", model);
 
                 if (response == null || !response.IsSuccess)
@@ -412,7 +409,7 @@ namespace TravoRides.CMS.Controllers
 
 
                 var apiResponse =
-                    await _apiService.PutAsync<ApiResponse<object>>($"api/Transit/{TransitId}/cabs/{cabId}",
+                    await _apiService.PutAsync<UpdateTransitCabRequest,ApiResponse<object>>($"api/Transit/{TransitId}/cabs/{cabId}",
                         model);
 
 

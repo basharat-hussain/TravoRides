@@ -170,8 +170,8 @@ namespace TravoRides.CMS.Services
         // POST WITH MODEL
         // ============================================================
 
-        public async Task<T> PostAsync<T>(
-            string url,object obj)
+        public async Task<TResponse> PostAsync<TRequest,TResponse>(
+            string url,TRequest obj)
         {
            // AddAuthorizationHeader();
 
@@ -181,7 +181,7 @@ namespace TravoRides.CMS.Services
             response.EnsureSuccessStatusCode();
 
             return await response.Content
-                .ReadFromJsonAsync<T>();
+                .ReadFromJsonAsync<TResponse>();
         }
 
 
@@ -217,9 +217,8 @@ namespace TravoRides.CMS.Services
         // ============================================================
         // PUT WITH MODEL
         // ============================================================
-
         public async Task<T> PutAsync<T>(
-            string url,object obj)
+           string url, T obj)
         {
             //AddAuthorizationHeader();
 
@@ -230,6 +229,19 @@ namespace TravoRides.CMS.Services
 
             return await response.Content
                 .ReadFromJsonAsync<T>();
+        }
+        public async Task<TResponse> PutAsync<TRequest,TResponse>(
+            string url,TRequest obj)
+        {
+            //AddAuthorizationHeader();
+
+            var response = await _httpClient
+                .PutAsJsonAsync(url, obj);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content
+                .ReadFromJsonAsync<TResponse>();
         }
 
 

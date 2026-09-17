@@ -6,6 +6,7 @@ using TravoRides.Application.DTOs.Package;
 using TravoRides.Application.DTOs.PackageRate;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
+using TravoRides.Domain.Entities;
 
 namespace TravoRides.API.Controllers
 {
@@ -42,6 +43,7 @@ namespace TravoRides.API.Controllers
                 Message = "Available cabs retrieved successfully.",
                 Data = result
             });
+
         }
       
         [HttpGet("{id:guid}/rates/{cabid:guid}")]

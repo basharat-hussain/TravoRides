@@ -16,4 +16,8 @@
     <ProjectReference Include="..\TravoRides.Domain\TravoRides.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\NewFolder\" />
+  </ItemGroup>
+
 </Project>

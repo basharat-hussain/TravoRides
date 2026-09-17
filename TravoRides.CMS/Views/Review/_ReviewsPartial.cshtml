@@ -93,12 +93,19 @@
                         @(review.IsActive ? "Approve" : "Unapprove")
                     </span>
                 </td> *@
-                <td>
+               @*  <td>
                     <button class="btn btn-sm @(review.IsActive ? "btn-danger ml-1" : "btn-success ml-1")"
                             onclick="toggleReviewStatus('@review.Id')">
                         @(review.IsActive ? "Unapprove" : "Approve")
                     </button>
-                </td>
+                </td> *@
+                <td>
+    <button type="button"
+            class="btn btn-sm @(review.IsActive ? "btn-danger ml-1" : "btn-success ml-1")"
+            onclick="toggleReviewStatus('@review.Id', this)">
+        @(review.IsActive ? "Unapprove" : "Approve")
+    </button>
+</td>
                 <td class="text-center">
                     <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
                             data-id="@review.Id"

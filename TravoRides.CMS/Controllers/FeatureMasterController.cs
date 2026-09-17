@@ -54,7 +54,7 @@ namespace TravoRides.CMS.Controllers
             }
 
 
-            var apiResponse = await _apiService.PostAsync<ApiResponse<Guid>>(
+            var apiResponse = await _apiService.PostAsync<CreateFeaturesMasterRequest,ApiResponse<object>>(
                    "api/FeatureMaster", model);
 
 
@@ -102,7 +102,7 @@ namespace TravoRides.CMS.Controllers
             //    Description = model.Description
             //};
 
-            await _apiService.PutAsync<ApiResponse<Guid>>($"api/FeatureMaster/{id}", model);
+            await _apiService.PutAsync<UpdateFeaturesMasterRequest,ApiResponse<object>>($"api/FeatureMaster/{id}", model);
 
             response = new[] { "True", "Updated successfully." };
             return Json(response);

@@ -62,10 +62,8 @@
         var statusText = isActive ? 'Approved' : 'Unapproved';
 
         var html = '<div class="row">';
-        html += '<div class="col-md-4">';
-        if (image) {
-            html += '<img src="' + image + '" class="img-fluid" />';
-        }
+       
+       
         html += '</div>';
         html += '<div class="col-md-8">';
         html += '<p><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
@@ -83,47 +81,56 @@
     }
 </script>
 <script src="~/js/managemodule.js"></script>
-<script>
-    function toggleReviewStatus(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you want to change the review status?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, change it',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
+// <script>
+//     function toggleReviewStatus(id) {
+//         Swal.fire({
+//             title: 'Are you sure?',
+//             text: 'Do you want to change the review status?',
+//             icon: 'warning',
+//             showCancelButton: true,
+//             confirmButtonColor: '#28a745',
+//             cancelButtonColor: '#d33',
+//             confirmButtonText: 'Yes, change it',
+//             cancelButtonText: 'Cancel'
+//         }).then((result) => {
+//             if (result.isConfirmed) {
 
-                $.ajax({
-                    url: '/Review/ToggleReviewStatus',
-                    type: 'POST',
-                    data: { id: id },
-                    success: function (res) {
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Updated!',
-                                text: 'Review status updated successfully.',
-                                timer: 2000,
-                                showConfirmButton: false
-                            }).then(() => {
-                                location.reload(); // or refresh partial
-                            });
-                        }
-                    },
-                    error: function () {
-                        Swal.fire(
-                            'Error!',
-                            'Something went wrong.',
-                            'error'
-                        );
-                    }
-                });
+//                 $.ajax({
+//                     url: '/Review/ToggleReviewStatus',
+//                     type: 'POST',
+//                     data: { id: id },
+//                     success: function (res) {
+//                         if (res.success) {
+//                             Swal.fire({
+//                                 icon: 'success',
+//                                 title: 'Updated!',
+//                                 text: 'Review status updated successfully.',
+//                                 timer: 2000,
+//                                 showConfirmButton: false
+//                             }).then(() => {
+//                                 location.reload(); // or refresh partial
+//                             });
+//                         }
+//                     },
+//                     error: function () {
+//                         Swal.fire(
+//                             'Error!',
+//                             'Something went wrong.',
+//                             'error'
+//                         );
+//                     }
+//                 });
 
-            }
-        });
-    }
-</script>
+//             }
+//         });
+//     }
+// </script>
+
+<script> function toggleReviewStatus(id, button) { const $button = $(button);
+    // Current state comes from the button's current text/class
+    const isActive = $button.hasClass("btn-danger"); const action = isActive ? "unapprove" : "approve"; Swal.fire({ title: 'Are you sure?', text: `Do you want to ${action} this review?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#28a745', cancelButtonColor: '#d33', confirmButtonText: `Yes, ${action} it`, cancelButtonText: 'Cancel' }).then((result) => { if (!result.isConfirmed) { return; } $.ajax({ url: '/Review/ToggleReviewStatus', type: 'POST', data: { id: id }, beforeSend: function () { $button.prop('disabled', true); }, success: function (res) { if (res.success) { 
+        /* * Toggle the UI state * * false -> true * true -> false */ 
+        if (isActive) { // Currently Active -> now Unapproved
+            $button .removeClass('btn-danger') .addClass('btn-success') .text('Approve'); toastr.success( 'Review unapproved successfully.' ); } else { 
+                // Currently Inactive -> now Approved 
+                $button .removeClass('btn-success') .addClass('btn-danger') .text('Unapprove'); toastr.success( 'Review approved successfully.' ); } } else { toastr.error( res.message || 'Unable to update review status.' ); } }, error: function () { toastr.error( 'Something went wrong while updating the review status.' ); }, complete: function () { $button.prop( 'disabled', false ); } }); }); } </script>

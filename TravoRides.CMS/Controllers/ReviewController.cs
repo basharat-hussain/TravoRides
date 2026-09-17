@@ -54,7 +54,7 @@ namespace TravoRides.CMS.Controllers
 
                 // send only status update to the API status endpoint
                 var statusPayload = new { IsActive = dto.IsActive };
-              //  await _apiService.PutAsync($"api/Review/{id}/status", statusPayload);
+                await _apiService.PutAsync($"api/Review/{id}/status", statusPayload);
 
                 return Json(new
                 {

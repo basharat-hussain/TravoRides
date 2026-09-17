@@ -37,8 +37,9 @@ namespace TravoRides.Application.Services
 
             if (!transitRates.Any())
             {
-                throw new ResourceNotFoundException(
-                    "No cabs are available for this transit.");
+                return new List<TransitCabRateDTO>();
+                //throw new ResourceNotFoundException(
+                //    "No cabs are available for this transit.");
             }
 
             return transitRates.Select(x => new TransitCabRateDTO

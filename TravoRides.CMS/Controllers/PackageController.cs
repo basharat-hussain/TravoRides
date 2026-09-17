@@ -157,7 +157,7 @@ public class PackageController : Controller
             }
 
 
-            await _apiService.PostAsync<ApiResponse<Guid>>(
+            await _apiService.PostAsync<ApiResponse<object>>(
                 "api/Package",
                 formData);
 
@@ -187,35 +187,34 @@ public class PackageController : Controller
             if (package == null)
                 return NotFound();
 
+
             // 2. Get ALL cabs from Cab API
             var cabResponse =
                 await _apiService.GetAsync<ApiResponse<PagedResponse<CabDTO>>>(
                     "api/Cab?pageNumber=1&pageSize=100");
 
-            var allCabs = cabResponse?.Data?.Items ?? new List<CabDTO>();
+            var allCabs =
+                cabResponse?.Data?.Items
+                ?? new List<CabDTO>();
+
 
             // 3. Get cabs already added to this package
             var packageCabsResponse =
                 await _apiService.GetAsync<ApiResponse<List<PackageCabRateDTO>>>(
                     $"api/Package/{id}/cabs");
 
-            var packageCabs = packageCabsResponse?.Data
+            var packageCabs =
+                packageCabsResponse?.Data
                 ?? new List<PackageCabRateDTO>();
 
-            // 4. Get IDs of already-added cabs
-            var addedCabIds = packageCabs
-                .Select(x => x.CabId)
-                .ToHashSet();
 
-            // 5. Only keep cabs that are NOT already added
-            var availableCabs = allCabs
-                .Where(x => !addedCabIds.Contains(x.Id))
-                .ToList();
-
-            // 6. Build MasterUpdate
+            // 4. Build MasterUpdate
             var model = new MasterUpdate
             {
-                // Section 1 - Package details
+                // =====================================================
+                // SECTION 1 - PACKAGE DETAILS
+                // =====================================================
+
                 UpdatePackage = new UpdatePackageRequest
                 {
                     Id = package.Id,
@@ -231,16 +230,31 @@ public class PackageController : Controller
                     ImageUrl = package.ImageUrl
                 },
 
-                // Section 2 - Add new cab
+
+                // =====================================================
+                // SECTION 2 - ADD / UPDATE CAB
+                // =====================================================
+
                 PackageCabRequest = new PackageCabRequest(),
 
-                // Available cabs for dropdown
-                AvailableCabs = availableCabs,
+                // IMPORTANT:
+                // Keep ALL cabs here so the dropdown has options.
+                // This also allows an existing cab to be selected
+                // when editing it.
+                AvailableCabs = (List<CabDTO>)allCabs,
 
-                // Section 3 - Already added cabs
+
+                // =====================================================
+                // SECTION 3 - ALREADY ADDED CABS
+                // =====================================================
+
                 PackageCabRates = packageCabs,
 
-                // Section 4 - Edit existing package cab
+
+                // =====================================================
+                // SECTION 4 - UPDATE EXISTING PACKAGE CAB
+                // =====================================================
+
                 UpdatePackageCab = new UpdatePackageCabRequest()
             };
 
@@ -251,7 +265,7 @@ public class PackageController : Controller
         // UPDATE PACKAGE
         // =========================================================
 
-        [HttpPost]
+
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, MasterUpdate model)
         {
@@ -330,7 +344,7 @@ public class PackageController : Controller
             }
 
             // Update package
-            await _apiService.PutAsync<ApiResponse<Guid>>(
+            await _apiService.PutAsync<ApiResponse<object>>(
                 $"api/Package/{id}",
                 formData);
 
@@ -468,10 +482,13 @@ public class PackageController : Controller
         // =========================================================
 
         [HttpPost]
-        public async Task<IActionResult> AddCab(  Guid packageId, [FromBody] PackageCabRequest model)
+        public async Task<IActionResult> AddCab(  Guid packageId, PackageCabRequest model)
         {
             try
             {
+                Console.WriteLine($"PackageId: {packageId}");
+                Console.WriteLine($"Model: {model}");
+                Console.WriteLine($"CabId: {model?.CabId}");
                 if (model == null || model.CabId == Guid.Empty)
                 {
                     return Json(new[]
@@ -481,7 +498,7 @@ public class PackageController : Controller
                     });
                 }
 
-                var response = await _apiService.PostAsync<ApiResponse<object>>(
+                var response = await _apiService.PostAsync<PackageCabRequest,ApiResponse<object>>(
                         $"api/Package/{packageId}/cabs", model);
 
                 if (response == null || !response.IsSuccess)
@@ -531,7 +548,7 @@ public class PackageController : Controller
 
 
                 var apiResponse =
-                    await _apiService.PutAsync< ApiResponse<object>>(  $"api/Package/{packageId}/cabs/{cabId}",
+                    await _apiService.PutAsync< UpdatePackageCabRequest,ApiResponse<object>>(  $"api/Package/{packageId}/cabs/{cabId}",
                         model);
 
 

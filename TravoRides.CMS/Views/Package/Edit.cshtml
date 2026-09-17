@@ -66,8 +66,7 @@
                               data-ajax-failure="onFailure"
                               data-ajax-begin="onBegin">
 
-                            <input type="hidden"
-                                   asp-for="UpdatePackage.Id" />
+                            <input type="hidden" asp-for="UpdatePackage.Id" />
 
                             <!-- Row 1 -->
                             <div class="row">
@@ -108,7 +107,6 @@
                                 </div>
                             </div>
 
-
                             <!-- Row 2 -->
                             <div class="row">
 
@@ -147,7 +145,6 @@
                                     </div>
                                 </div>
                             </div>
-
 
                             <!-- Row 3 -->
                             <div class="row">
@@ -261,94 +258,123 @@
                             </h3>
                         </div>
                         <div class="card-body">
-                            <form id="cabForm">
+
+                           
+                            <form id="cabForm" asp-controller="Package"
+                                  asp-action="AddCab" asp-antiforgery="false">
+
                                 <!-- Package Id -->
                                 <input type="hidden"
                                        id="PackageId"
+                                       name="PackageId"
                                        value="@Model.UpdatePackage.Id" />
+
                                 <!-- Editing Cab Id -->
                                 <input type="hidden"
                                        id="EditingCabId"
+                                       name="EditingCabId"
                                        value="" />
+
+
                                 <!-- Cab -->
                                 <div class="form-group">
                                     <label asp-for="PackageCabRequest.CabId">
                                         Cab
                                     </label>
+
                                     <select asp-for="PackageCabRequest.CabId"
                                             id="CabId"
                                             class="form-control">
+
                                         <option value="">
-                                            -- Select Cab -
+                                            -- Select Cab --
                                         </option>
-                                        1
+
                                         @foreach (var cab in Model.AvailableCabs)
                                         {
                                             <option value="@cab.Id">
                                                 @cab.Name
                                             </option>
                                         }
+
                                     </select>
+
                                     <span asp-validation-for="PackageCabRequest.CabId"
                                           class="text-danger">
                                     </span>
                                 </div>
+
                                 <!-- Rate -->
                                 <div class="form-group">
                                     <label asp-for="PackageCabRequest.Rate">
                                         Price
                                     </label>
+
                                     <input asp-for="PackageCabRequest.Rate"
                                            id="CabRate"
                                            type="number"
                                            class="form-control"
-                                           step="0.01"
-                                           min="0"
+                                           
                                            placeholder="Enter price" />
+
                                     <span asp-validation-for="PackageCabRequest.Rate"
                                           class="text-danger">
                                     </span>
                                 </div>
+
                                 <!-- Discount -->
                                 <div class="form-group">
                                     <label asp-for="PackageCabRequest.Discount">
                                         Discount
                                     </label>
+
                                     <input asp-for="PackageCabRequest.Discount"
                                            id="CabDiscount"
-                                           2
                                            type="number"
                                            class="form-control"
-                                           step="0.01"
-                                           min="0"
+                                          @*  step="1"
+                                           min="0" *@
                                            placeholder="Enter discount" />
+
                                     <span asp-validation-for="PackageCabRequest.Discount"
                                           class="text-danger">
                                     </span>
                                 </div>
+
                                 <!-- Buttons -->
                                 <div class="form-group">
+
                                     <button type="button"
                                             id="cabSubmitBtn"
                                             class="btn btn-success">
+
                                         <i class="fas fa-plus"
                                            id="cabSubmitIcon"></i>
+
                                         <span id="cabSubmitText">
                                             Add Cab
                                         </span>
+
                                     </button>
+
                                     <button type="button"
                                             id="cabCancelBtn"
                                             class="btn btn-secondary"
                                             style="display:none;">
+
                                         <i class="fas fa-times"></i>
                                         Cancel
+
                                     </button>
+
                                 </div>
+
                             </form>
+
+
                         </div>
                     </div>
-                    
+
                 </div>
                 <!-- ================================================== -->
                 <!-- SECTION 3 : ADDED CABS -->
@@ -380,7 +406,7 @@
                                             foreach (var cab in Model.PackageCabRates)
                                             {
                                                 <tr id="cab-row-@cab.CabId">
-                                                    
+
                                                     <td>
                                                         @cab.CabName
                                                     </td>
@@ -391,23 +417,28 @@
                                                         @(cab.Discount?.ToString() ?? "-")
                                                     </td>
                                                     <td>
+
+                                                        <!-- Edit -->
                                                         <!-- Edit -->
                                                         <button type="button"
-                                                                class="btn btn-sm btn
-                                                            primary edit-cab-btn"
+                                                                class="btn btn-sm btn-primary edit-cab-btn"
+                                                                data-package-id="@Model.UpdatePackage.Id"
                                                                 data-cab-id="@cab.CabId"
-                                                                data-cab-name="@cab.CabName"
                                                                 data-rate="@cab.Rate"
-                                                                data
-                                                                discount="@cab.Discount">
+                                                                data-discount="@cab.Discount">
+
                                                             <i class="fas fa-edit"></i>
+
                                                         </button>
+
                                                         <!-- Delete -->
                                                         <button type="button"
-                                                                class="btn btn-sm btn-danger
-                                                            delete-cab-btn"
+                                                                class="btn btn-sm btn-danger delete-cab-btn"
+                                                                data-package-id="@Model.UpdatePackage.Id"
                                                                 data-cab-id="@cab.CabId">
+
                                                             <i class="fas fa-trash"></i>
+
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -416,7 +447,7 @@
                                         else
                                         {
                                             <tr id="noCabsRow">
-                                                5
+
                                                 <td colspan="4"
                                                     class="text-center text-muted">
                                                     No cabs added to this package.
@@ -430,7 +461,7 @@
                     </div>
                 </div>
             </div>
-            
+
         }
 
     </div>

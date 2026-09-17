@@ -19,7 +19,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+      //  [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] SearchQuoteRequest request, CancellationToken cancellationToken)
         {
             var data = await _service.GetAllAsync(request, cancellationToken);

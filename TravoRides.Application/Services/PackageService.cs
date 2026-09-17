@@ -36,8 +36,9 @@ namespace TravoRides.Application.Services
 
             if (!packageRates.Any())
             {
-                throw new ResourceNotFoundException(
-                    "No cabs are available for this package.");
+                //throw new ResourceNotFoundException(
+                //    "No cabs are available for this package.");
+                return new List<PackageCabRateDTO>();
             }
 
             return packageRates.Select(x =>  new PackageCabRateDTO

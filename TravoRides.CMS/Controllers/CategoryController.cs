@@ -46,27 +46,29 @@ namespace TravoRides.CMS.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryRequest model)
         {
-            var response = new string[] { };
-
             if (!ModelState.IsValid)
             {
-                response = new[] { "False", "Validation Failed" };
-                return Json(response);
+                return Json(new[] { "False", "Validation Failed" });
             }
 
-           
-            var apiResponse = await _apiService.PostAsync<ApiResponse<Guid>>(
-                   "api/Category", model);
-
+            var apiResponse = await _apiService.PostAsync<
+                CreateCategoryRequest, ApiResponse<object>>( "api/Category", model);
 
             if (apiResponse == null || !apiResponse.IsSuccess)
             {
-                return Json(new[] { "False", apiResponse?.Message ?? "Category creation failed." });
+                return Json(new[]
+                {
+            "False",
+            apiResponse?.Message ?? "Category creation failed."
+        });
             }
 
-            return Json(new[] { "True", apiResponse.Message ?? "Category created successfully." });
+            return Json(new[]
+            {
+        "True",
+        apiResponse.Message ?? "Category created successfully."
+    });
         }
-
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -102,7 +104,7 @@ namespace TravoRides.CMS.Controllers
             //    Description = model.Description
             //};
 
-            await _apiService.PutAsync<ApiResponse<Guid>>($"api/Category/{id}", model);
+            await _apiService.PutAsync<UpdateCategoryRequest,ApiResponse<object>>($"api/Category/{id}", model);
 
             response = new[] { "True", "Updated successfully." };
             return Json(response);
