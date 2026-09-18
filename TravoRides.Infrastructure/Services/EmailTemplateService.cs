@@ -58,8 +58,8 @@ namespace TravoRides.Infrastructure.Services
             html = html.Replace("{{NAME}}", WebUtility.HtmlEncode(name))
                        .Replace("{{PHONE}}", WebUtility.HtmlEncode(phone))
              .Replace("{{PASSENGERS}}", WebUtility.HtmlEncode(passengers))
-             .Replace("{{STARTDATE}}", startDate.ToString("f"))
-             .Replace("{{ENDDATE}}", endDate.ToString("f"))
+             .Replace("{{STARTDATE}}", startDate.ToString("o"))
+             .Replace("{{ENDDATE}}", endDate.ToString("o"))
              .Replace("{{REQUIREMENTS}}", WebUtility.HtmlEncode(requirements));
 
             return html;

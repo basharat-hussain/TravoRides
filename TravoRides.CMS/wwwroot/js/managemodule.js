@@ -100,15 +100,15 @@ $("#data-grid").on("click", ".btn-delete", function () {
 
     $(".lbl").html("<strong>'" + name + "'</strong>");
 
-    var uModule =
-        module == "Category"
-            ? module.substr(0, module.length - 1) + "ie"
-            : module;
+    // var uModule =
+    //     module == "Category"
+    //         ? module.substr(0, module.length - 1) + "ie"
+    //         : module;
 
     $(".delete-btn-confirm")
         .attr(
             "data-ajax-url",
-            "/" + uModule + "s/Delete/" + id
+            "/" + module + "/Delete/" + id
         );
 });
 
