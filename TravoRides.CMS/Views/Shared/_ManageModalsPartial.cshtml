@@ -11,8 +11,18 @@
                 <p>Are you sure you want to delete <span class="lbl"></span> <span class="lbl-module"></span>?</p>
             </div>
             <div class="modal-footer">
-                <a data-ajax="true" data-ajax-url="" data-ajax-update="#data-grid" data-ajax-begin="onDeleteBegin" data-ajax-success="onDeleteSuccess" data-ajax-failure="onDeleteFailure" class="btn btn-danger delete-btn-confirm"><i class="fas fa-check"></i> &nbsp;Yes</a>
+                             <a data-ajax="true"
+   data-ajax-method="POST"
+   data-ajax-url=""
+ 
+   data-ajax-begin="onDeleteBegin"
+   data-ajax-success="onDeleteSuccess"
+   data-ajax-failure="onDeleteFailure"
+   class="btn btn-danger delete-btn-confirm">
+   <i class="fas fa-check"></i> &nbsp;Yes
+</a>
                 <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-times"></i> No</button>
+   
             </div>
         </div>
     </div>

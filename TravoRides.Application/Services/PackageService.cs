@@ -29,7 +29,7 @@ namespace TravoRides.Application.Services
         }
 
         //==================================== GET METHODS =======================================
-        public async Task<List<PackageCabRateDTO>> GetCabsWithRatesAsync( Guid packageId,  CancellationToken cancellationToken = default)
+        public async Task<List<PackageCabRateDTO>> GetCabsWithRatesAsync(Guid packageId, CancellationToken cancellationToken = default)
         {
             var packageRates = await _unitOfWork.PackageRates
                 .GetByPackageIdAsync(packageId, cancellationToken);
@@ -41,19 +41,19 @@ namespace TravoRides.Application.Services
                 return new List<PackageCabRateDTO>();
             }
 
-            return packageRates.Select(x =>  new PackageCabRateDTO
-                {
-                    CabId = x.CabId,
-                    CabName = x.Cab.Name,
-                    ImageUrl = x.Cab.ImageUrl,
-                    SeatingCapacity = x.Cab.SeatingCapacity,
-                    LuggageCapacity = x.Cab.LuggageCapacity,
-                    Fuel = x.Cab.Fuel,
-                    Transmission = x.Cab.Transmission,
-                    Rate = x.Rate,
-                    Discount = x.Discount,
-                    FinalRate = x.Rate - (x.Discount ?? 0)
-                             
+            return packageRates.Select(x => new PackageCabRateDTO
+            {
+                CabId = x.CabId,
+                CabName = x.Cab.Name,
+                ImageUrl = x.Cab.ImageUrl,
+                SeatingCapacity = x.Cab.SeatingCapacity,
+                LuggageCapacity = x.Cab.LuggageCapacity,
+                Fuel = x.Cab.Fuel,
+                Transmission = x.Cab.Transmission,
+                Rate = x.Rate,
+                Discount = x.Discount,
+                FinalRate = x.Rate - (x.Discount ?? 0)
+
             }).ToList();
         }
 
@@ -77,12 +77,12 @@ namespace TravoRides.Application.Services
             decimal finalRate = packageRate.Rate - applicableDiscount;
 
             // Prevent negative price
-          
-            
-                if (finalRate < 0)
-                {
-                    throw new ValidationException("Package discount cannot be greater than the package rate.");
-                }
+
+
+            if (finalRate < 0)
+            {
+                throw new ValidationException("Package discount cannot be greater than the package rate.");
+            }
 
 
             return new PackageCabRateDTO
@@ -131,7 +131,7 @@ namespace TravoRides.Application.Services
             PackageDto = EnrichPackageDtoWithAbsoluteUrls(PackageDto);
             return PackageDto;
         }
-      
+
         //=========================================CREATE METHODS ==========================================
         public async Task<Guid> CreateAsync(CreatePackageRequest request, CancellationToken cancellationToken = default)
         {
@@ -179,7 +179,7 @@ namespace TravoRides.Application.Services
                 Price = request.Price,
                 Duration = request.Duration,
                 PlacesCovered = request.PlacesCovered
-               
+
             };
 
             await _unitOfWork.Packages.AddAsync(package, cancellationToken);
@@ -216,7 +216,7 @@ namespace TravoRides.Application.Services
 
             // 4. Check whether this cab is already associated with the package
             var existingPackageRate = await _unitOfWork.PackageRates
-                .GetByCabAndPackageAsync( request.CabId, packageId,  cancellationToken);
+                .GetByCabAndPackageAsync(request.CabId, packageId, cancellationToken);
 
             // 5. If active association already exists, don't add again
             if (existingPackageRate != null && !existingPackageRate.IsDeleted)
@@ -251,6 +251,7 @@ namespace TravoRides.Application.Services
             await _unitOfWork.PackageRates.AddAsync(
                 packageRate,
                 cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         //=================================== UPDATE METHODS ============================================
@@ -322,7 +323,7 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        
+
         //==================================== DELETE METHODS =========================================
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
@@ -340,20 +341,20 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        public async Task RemoveCabFromPackageAsync( Guid packageId, Guid cabId, CancellationToken cancellationToken = default)
+        public async Task RemoveCabFromPackageAsync(Guid packageId, Guid cabId, CancellationToken cancellationToken = default)
         {
             // Check package
             var package = await _unitOfWork.Packages.GetByIdAsync(packageId, cancellationToken);
 
-            if (package == null || package.IsDeleted)throw new ResourceNotFoundException("Package not found.");
+            if (package == null || package.IsDeleted) throw new ResourceNotFoundException("Package not found.");
 
             // Find PackageRate
             var packageRate = await _unitOfWork.PackageRates
-                .GetByCabAndPackageAsync( cabId, packageId, cancellationToken);
+                .GetByCabAndPackageAsync(cabId, packageId, cancellationToken);
 
             if (packageRate == null)
                 throw new ResourceNotFoundException("The selected cab is not associated with this package.");
-           
+
             packageRate.IsDeleted = true;
             packageRate.ModifiedAt = DateTime.UtcNow;
             packageRate.ModifiedBy = "System"; // You
@@ -363,7 +364,7 @@ namespace TravoRides.Application.Services
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
-     
+
         /// <summary>
         /// Converts relative file paths in a PackageDTO to absolute URLs
         /// </summary>

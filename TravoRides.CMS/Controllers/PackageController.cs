@@ -592,43 +592,23 @@ public class PackageController : Controller
         // API:
         // DELETE /api/Package/{packageId}/cabs/{cabId}
         // ---------------------------------------------------------
-
         [HttpPost]
-        public async Task<IActionResult> RemoveCabFromPackage( Guid packageId, Guid cabId)
+        public async Task<IActionResult> RemoveCabFromPackage(Guid packageId, Guid cabId)
         {
-            var response = new string[] { };
-
             try
             {
-                var success = await _apiService.DeleteAsync( $"api/Package/{packageId}/cabs/{cabId}");
+                var success = await _apiService.DeleteAsync($"api/Package/{packageId}/cabs/{cabId}");
 
                 if (!success)
                 {
-                    response = new[]
-                    {
-                    "False", "Failed to remove cab from package."
-                };
-
-                    return Json(response);
+                    return Json(new { isSuccess = false, message = "Failed to remove cab from package." });
                 }
 
-
-                response = new[]
-                {
-                "True", "Cab removed from package successfully."
-            };
-
-                return Json(response);
+                return Json(new { isSuccess = true, message = "Cab removed from package successfully." });
             }
             catch (Exception ex)
             {
-                response = new[]
-                {
-                "False",
-                ex.Message
-            };
-
-                return Json(response);
+                return Json(new { isSuccess = false, message = ex.Message });
             }
         }
     }

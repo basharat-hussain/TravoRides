@@ -90,28 +90,21 @@ function onFailure(response) {
    DELETE
    ========================================================= */
 
+var $rowToDelete = null; // module-level variable
+
 $("#data-grid").on("click", ".btn-delete", function () {
-
     var parent = $(this).parent().parent();
-
     var name = parent.find(".name").html();
-
     var id = parent.find(".hdn-id").val();
+
+    $rowToDelete = parent; // remember it
 
     $(".lbl").html("<strong>'" + name + "'</strong>");
 
-    // var uModule =
-    //     module == "Category"
-    //         ? module.substr(0, module.length - 1) + "ie"
-    //         : module;
-
     $(".delete-btn-confirm")
-        .attr(
-            "data-ajax-url",
-            "/" + module + "/Delete/" + id
-        );
+        .attr("data-ajax-url", "/" + module + "/Delete/" + id)
+        .attr("data-ajax-method", "POST");
 });
-
 
 function onDeleteBegin() {
 
@@ -120,25 +113,27 @@ function onDeleteBegin() {
 }
 
 
-function onDeleteSuccess() {
-
-    toastr.success(module + " Deleted Successfully");
-
+function onDeleteSuccess(response) {
+    $(".delete-btn-confirm").html("<i class='fas fa-check'></i> &nbsp;Yes");
     $("#modal-delete").modal("hide");
 
-    $(".delete-btn-confirm")
-        .html("<i class='fas fa-check'></i> &nbsp;Yes");
+    if (response[0] === "True") {
+        toastr.success(response[1] || (module + " Deleted Successfully"));
+        if ($rowToDelete) {
+            $rowToDelete.fadeOut(300, function () {
+                $(this).remove();
+            });
+        }
+    } else {
+        toastr.error(response[1] || (module + " Deletion Failed!"));
+    }
 }
 
 
-function onDeleteFailure() {
-
+function onDeleteFailure(xhr) {
     toastr.error(module + " Deletion Failed!");
-
     $("#modal-delete").modal("hide");
-
-    $(".delete-btn-confirm")
-        .html("<i class='fas fa-check'></i> &nbsp;Yes");
+    $(".delete-btn-confirm").html("<i class='fas fa-check'></i> &nbsp;Yes");
 }
 
 

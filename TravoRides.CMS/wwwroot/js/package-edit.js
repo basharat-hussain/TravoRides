@@ -381,75 +381,99 @@
     /* =========================================================
        DELETE CAB
     ========================================================= */
-    $(document).on("click", ".delete-cab-btn", function () {
-        const button = $(this);
-        const packageId = button.data("package-id");
-        const cabId = button.data("cab-id");
+ $(document).on("click", ".delete-cab-btn", function () {
+    const button = $(this);
+    const packageId = button.data("package-id");
+    const cabId = button.data("cab-id");
 
-        /* -----------------------------------------------------
-           VALIDATION
-        ----------------------------------------------------- */
-        if (!packageId || !cabId) {
-            toastr.error("Package ID or Cab ID is missing.");
-            return;
-        }
+    /* -----------------------------------------------------
+       VALIDATION
+    ----------------------------------------------------- */
+    if (!packageId || !cabId) {
+        toastr.error("Package ID or Cab ID is missing.");
+        return;
+    }
 
-        /* -----------------------------------------------------
-           CONFIRM
-        ----------------------------------------------------- */
-        if (!confirm("Are you sure you want to remove this cab from the package?")) {
-            return;
-        }
+    /* -----------------------------------------------------
+       CONFIRM VIA TOASTR
+    ----------------------------------------------------- */
+    showDeleteConfirmToast(function () {
+        performCabDelete(button, packageId, cabId);
+    });
+});
 
-        /* -----------------------------------------------------
-           DELETE AJAX
-        ----------------------------------------------------- */
-        $.ajax({
-            url: deleteUrl,
-            type: "POST",
-            data: {
-                packageId: packageId,
-                cabId: cabId
-            },
-            beforeSend: function () {
-                button.prop("disabled", true);
-            },
-            success: function (response) {
-                console.log("Delete response:", response);
+function showDeleteConfirmToast(onConfirm) {
+    toastr.options = {
+        closeButton: false,
+        tapToDismiss: false,
+        timeOut: 0,
+        extendedTimeOut: 0,
+        positionClass: "toast-top-right"
+    };
 
-                if (response && response.isSuccess) {
-                    toastr.success(response.message || "Cab removed successfully.");
+    const message =
+        "Are you sure you want to remove this cab from the package?" +
+        '<div class="mt-2">' +
+        '<button type="button" class="btn btn-sm btn-light mr-2 toast-confirm-yes">Yes</button>' +
+        '<button type="button" class="btn btn-sm btn-secondary toast-confirm-no">No</button>' +
+        "</div>";
 
-                    /* -----------------------------------------
-                       REMOVE ROW
-                    ----------------------------------------- */
-                    $("#cab-row-" + cabId).remove();
+    const $toast = toastr.warning(message, "Confirm Removal", { allowHtml: true });
 
-                    /* Make it selectable again. */
-                    disableCabOption(cabId, false);
-
-                    showEmptyRowIfNeeded();
-
-                    /* -----------------------------------------
-                       RESET IF CURRENTLY EDITING DELETED CAB
-                    ----------------------------------------- */
-                    if (editingCabIdInput.val() === cabId.toString()) {
-                        resetCabForm();
-                    }
-                } else {
-                    toastr.error(response?.message || "Failed to remove cab.");
-                    button.prop("disabled", false);
-                }
-            },
-            error: function (xhr) {
-                console.log("Delete failed:", xhr.status);
-                console.log(xhr.responseText);
-                toastr.error("Something went wrong while removing the cab.");
-                button.prop("disabled", false);
-            }
-        });
+    $toast.find(".toast-confirm-yes").on("click", function () {
+        toastr.clear($toast);
+        onConfirm();
     });
 
+    $toast.find(".toast-confirm-no").on("click", function () {
+        toastr.clear($toast);
+    });
+
+    // reset options back to your normal defaults so other toasts aren't affected
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        timeOut: 5000
+    };
+}
+
+function performCabDelete(button, packageId, cabId) {
+    $.ajax({
+        url: deleteUrl,
+        type: "POST",
+        data: {
+            packageId: packageId,
+            cabId: cabId
+        },
+        beforeSend: function () {
+            button.prop("disabled", true);
+        },
+        success: function (response) {
+            console.log("Delete response:", response);
+
+            if (response && response.isSuccess) {
+                toastr.success(response.message || "Cab removed successfully.");
+
+                $("#cab-row-" + cabId).remove();
+                disableCabOption(cabId, false);
+                showEmptyRowIfNeeded();
+
+                if (editingCabIdInput.val() === cabId.toString()) {
+                    resetCabForm();
+                }
+            } else {
+                toastr.error(response?.message || "Failed to remove cab.");
+                button.prop("disabled", false);
+            }
+        },
+        error: function (xhr) {
+            console.log("Delete failed:", xhr.status);
+            console.log(xhr.responseText);
+            toastr.error("Something went wrong while removing the cab.");
+            button.prop("disabled", false);
+        }
+    });
+}
     /* =========================================================
        ON LOAD: DISABLE ALREADY-ADDED CABS IN THE DROPDOWN
     ========================================================= */

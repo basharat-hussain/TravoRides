@@ -250,6 +250,7 @@ namespace TravoRides.Application.Services
             await _unitOfWork.TransitRates.AddAsync(
                 TransitRate,
                 cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
         //====================================== UPDATE METHODS =======================================
         public async Task UpdateAsync(UpdateTransitRequest request, CancellationToken cancellationToken = default)
