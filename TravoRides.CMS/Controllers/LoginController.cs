@@ -1,8 +1,6 @@
-﻿using TravoRides.Application.Common.Responses;
-using TravoRides.Application.DTOs.Authentication;
+﻿
 using TravoRides.CMS.Interface;
 using TravoRides.CMS.Models;
-using TravoRides.CMS.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 

@@ -40,7 +40,7 @@
                                 <div class="form-group">
                                     <label asp-for="CategoryId" class="form-label">Category</label>
 
-                                    <select asp-for="CategoryId" class="form-select">
+                                    <select asp-for="CategoryId" class="form-control">
                                         <option value="">-- Select Category --</option>
 
                                         @foreach (var category in ViewBag.Categories)
@@ -56,11 +56,11 @@
                             </div>
                              <div class="col-md-6">
 
-                                    <label asp-for="Fuel" class="form-label">Fuel Type</label>
+                                    <label asp-for="Fuel" class="form-control">Fuel Type</label>
 
                                     <select asp-for="Fuel"
                                             asp-items="Html.GetEnumSelectList<FuelType>()"
-                                            class="form-select">
+                                            class="form-control">
                                         <option value="">-- Select Fuel Type --</option>
                                     </select>
 

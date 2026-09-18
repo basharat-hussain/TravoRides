@@ -110,10 +110,7 @@ namespace TravoRides.CMS.Controllers
             var TransitCabs = TransitCabsResponse?.Data
                 ?? new List<TransitCabRateDTO>();
 
-            // 4. Get IDs of already-added cabs
-            var addedCabIds = TransitCabs
-                .Select(x => x.CabId)
-                .ToHashSet();
+          
 
 
             // 6. Build MasterUpdate
@@ -150,7 +147,7 @@ namespace TravoRides.CMS.Controllers
         // UPDATE Transit
         // =========================================================
 
-        [HttpPost]
+        
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, MasterUpdate model)
         {
@@ -346,7 +343,7 @@ namespace TravoRides.CMS.Controllers
         // =========================================================
 
         [HttpPost]
-        public async Task<IActionResult> AddCab(Guid TransitId, [FromBody] TransitCabRequest model)
+        public async Task<IActionResult> AddCab(Guid TransitId, TransitCabRequest model)
         {
             try
             {

@@ -49,9 +49,9 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label asp-for="CategoryId" class="form-label">Category</label>
+                                        <label asp-for="CategoryId" class="form-control">Category</label>
 
-                                        <select asp-for="CategoryId" class="form-select">
+                                        <select asp-for="CategoryId" class="form-control">
                                             <option value="">-- Select Category --</option>
 
                                             @foreach (var category in ViewBag.Categories)
@@ -71,7 +71,7 @@
 
                                     <select asp-for="Fuel"
                                             asp-items="Html.GetEnumSelectList<FuelType>()"
-                                            class="form-select">
+                                            class="form-control">
                                         <option value="">-- Select Fuel Type --</option>
                                     </select>
 
@@ -162,10 +162,7 @@
                                 <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save"></i> Save</button>
                                 <button type="reset" class="btn btn-danger"><i class="fas fa-recycle"></i> Reset</button>
                             </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save"></i> Save</button>
-                                <button type="reset" class="btn btn-danger"><i class="fas fa-recycle"></i> Reset</button>
-                            </div>
+                           
                         </form>
 
                     </div>

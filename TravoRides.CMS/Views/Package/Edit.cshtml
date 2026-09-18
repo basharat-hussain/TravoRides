@@ -278,7 +278,7 @@
 
                                 <!-- Cab -->
                                 <div class="form-group">
-                                    <label asp-for="PackageCabRequest.CabId">
+                                    <label>
                                         Cab
                                     </label>
 
@@ -306,7 +306,7 @@
 
                                 <!-- Rate -->
                                 <div class="form-group">
-                                    <label asp-for="PackageCabRequest.Rate">
+                                    <label>
                                         Price
                                     </label>
 
@@ -324,7 +324,7 @@
 
                                 <!-- Discount -->
                                 <div class="form-group">
-                                    <label asp-for="PackageCabRequest.Discount">
+                                    <label>
                                         Discount
                                     </label>
 
@@ -332,8 +332,7 @@
                                            id="CabDiscount"
                                            type="number"
                                            class="form-control"
-                                          @*  step="1"
-                                           min="0" *@
+                                          
                                            placeholder="Enter discount" />
 
                                     <span asp-validation-for="PackageCabRequest.Discount"

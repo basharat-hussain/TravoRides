@@ -138,7 +138,7 @@ namespace TravoRides.CMS.Services
 
         public async Task<T> GetAllAsync<T>(string url)
         {
-          //  AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient.GetAsync(url);
 
@@ -155,7 +155,7 @@ namespace TravoRides.CMS.Services
 
         public async Task<T> GetAsync<T>(string url)
         {
-            //AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient.GetAsync(url);
 
@@ -193,7 +193,7 @@ namespace TravoRides.CMS.Services
             string url,
             HttpContent content)
         {
-            //AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient
                 .PostAsync(url, content);
@@ -220,7 +220,7 @@ namespace TravoRides.CMS.Services
         public async Task<T> PutAsync<T>(
            string url, T obj)
         {
-            //AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient
                 .PutAsJsonAsync(url, obj);
@@ -233,7 +233,7 @@ namespace TravoRides.CMS.Services
         public async Task<TResponse> PutAsync<TRequest,TResponse>(
             string url,TRequest obj)
         {
-            //AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient
                 .PutAsJsonAsync(url, obj);
@@ -253,7 +253,7 @@ namespace TravoRides.CMS.Services
             string url,
             HttpContent content)
         {
-            //AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient
                 .PutAsync(url, content);
@@ -271,7 +271,7 @@ namespace TravoRides.CMS.Services
 
         public async Task<bool> DeleteAsync(string url)
         {
-            //AddAuthorizationHeader();
+            AddAuthorizationHeader();
 
             var response = await _httpClient
                 .DeleteAsync(url);
@@ -279,32 +279,32 @@ namespace TravoRides.CMS.Services
             return response.IsSuccessStatusCode;
         }
 
-        /// <summary>
-        /// Helper method to add Bearer token from session to HttpCab default headers
-        /// </summary>
-        //private void AddAuthorizationHeader()
-        //{
-        //    var session = _httpContextAccessor.HttpContext?.Session;
-            
-        //    var accessToken = session?.GetString("AccessToken");
+        // <summary>
+        // Helper method to add Bearer token from session to HttpCab default headers
+        // </summary>
+        private void AddAuthorizationHeader()
+        {
+            var session = _httpContextAccessor.HttpContext?.Session;
 
-        //    _httpClient.DefaultRequestHeaders.Remove("Authorization");
+            var accessToken = session?.GetString("AccessToken");
 
-        //    if (string.IsNullOrWhiteSpace(accessToken))
-        //    {
-        //        // Remove auth header if no token available
-        //        _httpClient.DefaultRequestHeaders.Authorization = null;
-        //        return;
-        //    }
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
 
-        //    // Add Bearer token to Authorization header
-        //    _httpClient.DefaultRequestHeaders.Authorization =
-        //        new AuthenticationHeaderValue("Bearer", accessToken);
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                // Remove auth header if no token available
+                _httpClient.DefaultRequestHeaders.Authorization = null;
+                return;
+            }
 
-        //    var handler = new JwtSecurityTokenHandler();
-        //    var jwt = handler.ReadJwtToken(accessToken);
+            // Add Bearer token to Authorization header
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", accessToken);
 
-        //}
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(accessToken);
+
+        }
 
 
     }

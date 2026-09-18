@@ -1,14 +1,25 @@
 using TravoRides.CMS.Interface;
+using TravoRides.CMS.Middleware;
 using TravoRides.CMS.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 // Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 builder.Services.AddHttpContextAccessor();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+//builder.Services.AddTransient<AuthorizationHandler>();
+
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     client.BaseAddress = new Uri(
@@ -26,12 +37,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
+// Session MUST come before AuthenticationMiddleware
+app.UseSession();
+// custom authentication middleware
+app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthorization();
-
 app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
@@ -39,3 +52,4 @@ app.MapControllerRoute(
 
 
 app.Run();
+

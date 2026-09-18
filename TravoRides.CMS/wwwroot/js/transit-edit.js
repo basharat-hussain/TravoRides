@@ -4,7 +4,7 @@
        ELEMENTS
     ========================================================= */
     const cabForm = $("#cabForm");
-    const packageIdInput = $("#PackageId");
+    const transitIdInput = $("#TransitId");
     const editingCabIdInput = $("#EditingCabId");
     const cabIdInput = $("#CabId");
     const cabRateInput = $("#CabRate");
@@ -18,18 +18,18 @@
     /* =========================================================
        URLS
     ========================================================= */
-    const addUrl = "/Package/AddCab";
-    const updateUrl = "/Package/UpdatePackageCab";
-    const deleteUrl = "/Package/RemoveCabFromPackage";
+    const addUrl = "/Transit/AddCab";
+    const updateUrl = "/Transit/UpdateTransitCab";
+    const deleteUrl = "/Transit/RemoveCabFromTransit";
 
     /* =========================================================
-       ORIGINAL PACKAGE ID
+       ORIGINAL transit ID
 
        Captured once on load. The old resetCabForm() wrote the
-       literal string "@Model.UpdatePackage.Id", because Razor
+       literal string "@Model.Updatetransit.Id", because Razor
        does not run inside a static .js file.
     ========================================================= */
-    const currentPackageId = packageIdInput.val();
+    const currentTransitId = transitIdInput.val();
 
     /* =========================================================
        HELPERS
@@ -69,7 +69,7 @@
                     <!-- Edit -->
                     <button type="button"
                             class="btn btn-sm btn-primary edit-cab-btn"
-                            data-package-id="${escapeHtml(currentPackageId)}"
+                            data-transit-id="${escapeHtml(currentTransitId)}"
                             data-cab-id="${escapeHtml(cab.id)}"
                             data-rate="${escapeHtml(cab.rate)}"
                             data-discount="${escapeHtml(cab.discount)}">
@@ -79,7 +79,7 @@
                     <!-- Delete -->
                     <button type="button"
                             class="btn btn-sm btn-danger delete-cab-btn"
-                            data-package-id="${escapeHtml(currentPackageId)}"
+                            data-transit-id="${escapeHtml(currentTransitId)}"
                             data-cab-id="${escapeHtml(cab.id)}">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -120,7 +120,7 @@
             cabTableBody.html(`
                 <tr id="noCabsRow">
                     <td colspan="4" class="text-center text-muted">
-                        No cabs added to this package.
+                        No cabs added to this transit.
                     </td>
                 </tr>
             `);
@@ -130,7 +130,7 @@
     /* ---------------------------------------------------------
        DISABLE / ENABLE A CAB IN THE DROPDOWN
 
-       Stops the same cab being added to the package twice.
+       Stops the same cab being added to the transit twice.
     --------------------------------------------------------- */
     function disableCabOption(cabId, disabled) {
         $("#CabId option[value='" + cabId + "']").prop("disabled", disabled);
@@ -161,7 +161,7 @@
     ========================================================= */
     function resetCabForm() {
         cabForm[0].reset();
-        packageIdInput.val(currentPackageId);
+        transitIdInput.val(currentTransitId);
         editingCabIdInput.val("");
         cabForm.attr("action", addUrl);
         setCabFormMode(false);
@@ -175,7 +175,7 @@
         e.stopPropagation();
 
         const button = $(this);
-        const packageId = packageIdInput.val();
+        const transitId = transitIdInput.val();
         const editingCabId = editingCabIdInput.val();
         const isEditMode = !!editingCabId;
 
@@ -191,8 +191,8 @@
         /* ---------------------------------------------------------
            VALIDATION
         --------------------------------------------------------- */
-        if (!packageId) {
-            toastr.error("Package ID is missing.");
+        if (!transitId) {
+            toastr.error("transit ID is missing.");
             return;
         }
         if (!cabId) {
@@ -213,7 +213,7 @@
            DATA
         --------------------------------------------------------- */
         const data = {
-            packageId: packageId,
+            transitId: transitId,
             cabId: cabId,
             rate: rate,
             discount: discount
@@ -312,7 +312,7 @@
     ========================================================= */
     $(document).on("click", ".edit-cab-btn", function () {
         const button = $(this);
-        const packageId = button.data("package-id");
+        const transitId = button.data("transit-id");
         const cabId = button.data("cab-id");
         const rate = button.data("rate");
         const discount = button.data("discount");
@@ -320,8 +320,8 @@
         /* -----------------------------------------------------
            VALIDATION
         ----------------------------------------------------- */
-        if (!packageId || !cabId) {
-            toastr.error("Package ID or Cab ID is missing.");
+        if (!transitId || !cabId) {
+            toastr.error("transit ID or Cab ID is missing.");
             return;
         }
 
@@ -337,13 +337,13 @@
         /* -----------------------------------------------------
            SET IDS
         ----------------------------------------------------- */
-        packageIdInput.val(packageId);
+        transitIdInput.val(transitId);
         editingCabIdInput.val(cabId);
 
         /* -----------------------------------------------------
            SET FIELDS
 
-           The option is disabled (it is already in the package),
+           The option is disabled (it is already in the transit),
            so re-enable it to make it selectable for display.
         ----------------------------------------------------- */
         cabOption.prop("disabled", false);
@@ -371,7 +371,7 @@
 
         const editingCabId = editingCabIdInput.val();
         if (editingCabId) {
-            /* Still in the package, so keep it unselectable. */
+            /* Still in the transit, so keep it unselectable. */
             disableCabOption(editingCabId, true);
         }
 
@@ -383,21 +383,21 @@
     ========================================================= */
     $(document).on("click", ".delete-cab-btn", function () {
         const button = $(this);
-        const packageId = button.data("package-id");
+        const transitId = button.data("transit-id");
         const cabId = button.data("cab-id");
 
         /* -----------------------------------------------------
            VALIDATION
         ----------------------------------------------------- */
-        if (!packageId || !cabId) {
-            toastr.error("Package ID or Cab ID is missing.");
+        if (!transitId || !cabId) {
+            toastr.error("transit ID or Cab ID is missing.");
             return;
         }
 
         /* -----------------------------------------------------
            CONFIRM
         ----------------------------------------------------- */
-        if (!confirm("Are you sure you want to remove this cab from the package?")) {
+        if (!confirm("Are you sure you want to remove this cab from the transit?")) {
             return;
         }
 
@@ -408,7 +408,7 @@
             url: deleteUrl,
             type: "POST",
             data: {
-                packageId: packageId,
+                transitId: transitId,
                 cabId: cabId
             },
             beforeSend: function () {

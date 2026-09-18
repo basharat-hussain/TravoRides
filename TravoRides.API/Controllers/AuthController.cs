@@ -36,7 +36,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-      //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             var result = await _authService.RefreshTokenAsync(request, cancellationToken);
@@ -50,7 +50,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("logout")]
-       // [Authorize]
+        [Authorize]
         public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             await _authService.LogoutAsync(request.RefreshToken, cancellationToken);

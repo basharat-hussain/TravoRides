@@ -12,6 +12,7 @@ using TravoRides.Application.DTOs.LatestThinking;
 using TravoRides.Application.DTOs.Subscription;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.SelfDrive;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TravoRides.API.Controllers
 {
@@ -24,7 +25,7 @@ namespace TravoRides.API.Controllers
     {
 
         [HttpGet]
-        ////[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetCount(CancellationToken cancellationToken)
         {
             var cabs = await cabService.GetAllAsync(new SearchCabRequest());
@@ -53,10 +54,10 @@ namespace TravoRides.API.Controllers
                             Transits = transits.TotalCount,
                             Features = features.TotalCount,
                             Reviews = reviews.TotalCount ,
-                            Enquiry = enquiries.TotalCount,
-                            LatestThinking = latestThinkings.TotalCount,
-                            Subscribe = subscribes.TotalCount,
-                            Quote = quotes.TotalCount }
+                            Enquiries = enquiries.TotalCount,
+                            LatestThinkings = latestThinkings.TotalCount,
+                            Subscribes = subscribes.TotalCount,
+                            Quotes = quotes.TotalCount }
 
             });
         }

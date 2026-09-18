@@ -85,7 +85,7 @@ namespace TravoRides.CMS.Controllers
             var categoryResponse = await _apiService.GetAsync<
             ApiResponse<PagedResponse<CabDTO>>>("api/Cab?pageNumber=1&pageSize=100");
 
-            ViewBag.Cab = categoryResponse.Data?.Items ?? new List<CabDTO>();
+            ViewBag.Cabs = categoryResponse.Data?.Items ?? new List<CabDTO>();
             var model = new UpdateSelfDriveRequest
             {
                 Id = item.Id,
