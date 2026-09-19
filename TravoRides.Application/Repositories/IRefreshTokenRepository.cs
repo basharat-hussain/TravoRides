@@ -9,5 +9,7 @@ namespace TravoRides.Application.Repositories
     {
         Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken cancellationToken = default);
         Task<RefreshToken> GetByUserIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<List<RefreshToken>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+
     }
 }

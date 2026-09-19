@@ -143,7 +143,7 @@ namespace TravoRides.Application.Services
                 _tokenService.GetRefreshTokenExpiration();
 
             // Revoke old refresh token
-            existingToken.RevokedAt = DateTime.Now;
+            existingToken.RevokedDate = DateTime.Now;
             existingToken.ReplacedByToken = newRefreshTokenValue;
 
             _unitOfWork.RefreshTokens.Update(existingToken);
@@ -153,8 +153,8 @@ namespace TravoRides.Application.Services
             {
                 UserId = user.Id,
                 Token = newRefreshTokenValue,
-                CreatedAt = DateTime.UtcNow,
-                ExpiresAt = refreshTokenExpiresAt
+                CreatedDate = DateTime.UtcNow,
+                ExpiryDate = refreshTokenExpiresAt
             };
 
             await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);
@@ -172,7 +172,6 @@ namespace TravoRides.Application.Services
                 RefreshTokenExpiresAt = refreshTokenExpiresAt
             };
         }
-
         public async Task LogoutAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
@@ -197,5 +196,79 @@ namespace TravoRides.Application.Services
                     cancellationToken);
             }
         }
+        public async Task ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken = default)
+        {
+            if (userId == Guid.Empty)
+            {
+                throw new ValidationException("User ID is required.");
+            }
+
+            if (request == null)
+            {
+                throw new ValidationException("Change password request cannot be null.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.CurrentPassword))
+            {
+                throw new ValidationException("Current password is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                throw new ValidationException("New password is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.ConfirmPassword))
+            {
+                throw new ValidationException("Confirm password is required.");
+            }
+
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                throw new ValidationException("New password and confirm password do not match.");
+            }
+
+            if (request.CurrentPassword == request.NewPassword)
+            {
+                throw new ValidationException("New password must be different from current password.");
+            }
+
+            var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+
+            if (user == null)
+            {
+                throw new ResourceNotFoundException("User not found.");
+            }
+
+            var isCurrentPasswordValid = _passwordHasher.VerifyPassword(request.CurrentPassword, user.PasswordHash);
+
+            if (!isCurrentPasswordValid)
+            {
+                throw new AuthenticationException("Current password is incorrect.");
+            }
+
+            var hashedPassword = _passwordHasher.HashPassword(request.NewPassword);
+            user.PasswordHash = hashedPassword;
+
+            _userRepository.Update(user);
+
+            // Invalidate all refresh tokens for this user
+            var refreshTokens = await _refreshTokenRepository.GetAllByUserIdAsync(userId, cancellationToken);
+
+            if (refreshTokens != null && refreshTokens.Count > 0)
+            {
+                foreach (var refreshToken in refreshTokens)
+                {
+                    if (!refreshToken.RevokedAt.HasValue)
+                    {
+                        refreshToken.RevokedAt = DateTime.UtcNow;
+                        _refreshTokenRepository.Update(refreshToken);
+                    }
+                }
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }

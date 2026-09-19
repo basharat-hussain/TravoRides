@@ -1,8 +1,11 @@
 ﻿
-using TravoRides.CMS.Interface;
-using TravoRides.CMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Authentication;
+using TravoRides.CMS.Interface;
+using TravoRides.CMS.Models;
 
 namespace TravoRides.CMS.Controllers
 {
@@ -50,12 +53,74 @@ namespace TravoRides.CMS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Logout(
-       )
+        public async Task<IActionResult> Logout()
         {
             await _apiService.LogoutAsync();
 
             return RedirectToAction("Login", "Index");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+       // [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> SendForgotPasswordOtp(ForgotPasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Please enter a valid email address."
+                });
+            }
+
+            var response = await _apiService.PostAsync<ForgotPasswordRequest,ApiResponse<object>>("api/Auth/send-forgot-password-otp", model
+            );
+
+            return Json(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyPasswordResetOtp(VerifyPasswordResetOtpRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Invalid OTP."
+                });
+            }
+
+            var response = await _apiService.PostAsync<VerifyPasswordResetOtpRequest,ApiResponse<object>>("api/Auth/verify-password-reset-otp", model
+            );
+
+            return Json(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword( ResetPasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Please enter a valid password."
+                });
+            }
+
+            var response = await _apiService.PostAsync<ResetPasswordRequest,ApiResponse<object>>("api/Auth/reset-password", model
+            );
+
+            return Json(response);
         }
     }
 }

@@ -452,41 +452,23 @@ namespace TravoRides.CMS.Controllers
         // ---------------------------------------------------------
 
         [HttpPost]
-        public async Task<IActionResult> RemoveCabFromTransit(Guid TransitId, Guid cabId)
+        public async Task<IActionResult> RemoveCabFromTransit(Guid transitId, Guid cabId)
         {
-            var response = new string[] { };
-
+           
             try
             {
-                var success = await _apiService.DeleteAsync($"api/Transit/{TransitId}/cabs/{cabId}");
+                var success = await _apiService.DeleteAsync($"api/Transit/{transitId}/cabs/{cabId}");
 
                 if (!success)
                 {
-                    response = new[]
-                    {
-                    "False", "Failed to remove cab from Transit."
-                };
-
-                    return Json(response);
+                    return Json(new { isSuccess = false, message = "Failed to remove cab from Transit." });
                 }
 
-
-                response = new[]
-                {
-                "True", "Cab removed from Transit successfully."
-            };
-
-                return Json(response);
+                return Json(new { isSuccess = true, message = "Cab removed from Transit successfully." });
             }
             catch (Exception ex)
             {
-                response = new[]
-                {
-                "False",
-                ex.Message
-            };
-
-                return Json(response);
+                return Json(new { isSuccess = false, message = ex.Message });
             }
         }
     }

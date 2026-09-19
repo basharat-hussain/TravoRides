@@ -28,6 +28,12 @@ namespace TravoRides.Infrastructure.Repository
                 .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
         }
 
-        
+        public async Task<List<RefreshToken>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await _context.RefreshTokens
+                .Include(x => x.User)
+                .Where(x => x.UserId == userId)
+                .ToListAsync(cancellationToken);
+        }
     }
 }
