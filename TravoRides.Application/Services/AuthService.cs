@@ -143,7 +143,7 @@ namespace TravoRides.Application.Services
                 _tokenService.GetRefreshTokenExpiration();
 
             // Revoke old refresh token
-            existingToken.RevokedDate = DateTime.Now;
+            existingToken.RevokedAt = DateTime.Now;
             existingToken.ReplacedByToken = newRefreshTokenValue;
 
             _unitOfWork.RefreshTokens.Update(existingToken);
@@ -153,8 +153,8 @@ namespace TravoRides.Application.Services
             {
                 UserId = user.Id,
                 Token = newRefreshTokenValue,
-                CreatedDate = DateTime.UtcNow,
-                ExpiryDate = refreshTokenExpiresAt
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt= refreshTokenExpiresAt
             };
 
             await _refreshTokenRepository.AddAsync(refreshToken, cancellationToken);

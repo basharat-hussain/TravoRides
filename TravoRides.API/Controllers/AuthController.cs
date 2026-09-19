@@ -63,20 +63,6 @@ namespace TravoRides.API.Controllers
         }
 
 
-        [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
-        {
-            var result = await _authService.RefreshTokenAsync(request, cancellationToken);
-
-            return Ok(new ApiResponse<RefreshTokenResponse>
-            {
-                IsSuccess = true,
-                Message = "Refresh Token Generated Successfully",
-                Data = result
-            });
-        }
-
-
         [HttpPost("send-forgot-password-otp")]
 
         public async Task<IActionResult> SendForgotPasswordOtp([FromBody] ForgotPasswordRequest request)

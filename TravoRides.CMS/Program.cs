@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using TravoRides.CMS.Interface;
 using TravoRides.CMS.Middleware;
 using TravoRides.CMS.Services;
@@ -10,7 +11,22 @@ builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Login/Index";
+        options.LogoutPath = "/Login/Logout";
+        options.AccessDeniedPath = "/Login/AccessDenied";
 
+        // Upper bound. Per-login ExpiresUtc can be shorter, never longer.
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.Name = "MyApp.Auth";
+    });
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -18,7 +34,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-//builder.Services.AddTransient<AuthorizationHandler>();
+
 
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {

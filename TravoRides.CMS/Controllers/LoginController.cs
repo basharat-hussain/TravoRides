@@ -1,7 +1,10 @@
 ﻿
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
+using System.Security.Claims;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Authentication;
 using TravoRides.CMS.Interface;
@@ -22,34 +25,54 @@ namespace TravoRides.CMS.Controllers
 
         [HttpGet]
         public IActionResult Index() => View();
-
+      
         [HttpPost]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            var response = new string[] { };
-
             if (!ModelState.IsValid)
-            {
-                response = new[] { "False", "Validation Failed" };
-                return Json(response);
-            }
+                return Json(new[] { "False", "Validation Failed" });
 
             var result = await _apiService.LoginAsync(model);
 
-            if (result == null || result.Data == null || string.IsNullOrWhiteSpace(result.Data.AccessToken))
+            if (result?.Data == null || string.IsNullOrWhiteSpace(result.Data.AccessToken))
+                return Json(new[] { "False", "Invalid email or password." });
+
+            // 1. Build the identity
+            var claims = new List<Claim>
+    {
+                 new Claim(ClaimTypes.Name,           model.Email),
+               // new Claim(ClaimTypes.NameIdentifier, result.Data.UserId ?? model.Email)
+       
+                 new Claim(ClaimTypes.NameIdentifier, model.Email)
+    };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            // 2. Remember Me logic
+            var authProperties = new AuthenticationProperties
             {
-                response = new string[] { "False", "Invalid username or password." };
-                return Json(response);
-            }
+                IsPersistent = model.RememberMe,
+                ExpiresUtc = model.RememberMe
+                    ? DateTimeOffset.UtcNow.AddDays(30)
+                    : DateTimeOffset.UtcNow.AddHours(1),
+                AllowRefresh = true
+            };
 
-            // Store token in Session
-            HttpContext.Session.SetString("AccessToken", result.Data.AccessToken);
+            // 3. Carry the API token inside the encrypted ticket
+            authProperties.StoreTokens(new[]
+            {
+        new AuthenticationToken { Name = "access_token", Value = result.Data.AccessToken }
+    });
 
-            response = new string[] { "True", "Login successful" };
-            return Json(response);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                authProperties);
 
-            // Login successful → Dashboard
-            //return RedirectToAction("Index", "Home");
+            return Json(new[] { "True", "Login successfull" });
         }
 
         [HttpPost]
@@ -57,9 +80,11 @@ namespace TravoRides.CMS.Controllers
         {
             await _apiService.LogoutAsync();
 
-            return RedirectToAction("Login", "Index");
-        }
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear(); // remove if you're no longer using Session anywhere
 
+            return RedirectToAction("Index", "Login"); 
+        }
         [AllowAnonymous]
         [HttpGet]
 

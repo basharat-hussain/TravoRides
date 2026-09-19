@@ -13,10 +13,10 @@ function sendForgotPasswordOtp() {
     $.ajax({
         url: '/Login/SendForgotPasswordOtp',
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
+       
+        data: {
             email: email
-        }),
+        },
         beforeSend: function () {
             $("#send-otp-btn").prop("disabled", true);
         },
@@ -75,11 +75,10 @@ function verifyPasswordResetOtp() {
     $.ajax({
         url: '/Login/VerifyPasswordResetOtp',
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
+        data: {
             email: email,
             otp: otp
-        }),
+        },
         beforeSend: function () {
             $("#verify-otp-btn").prop("disabled", true);
         },
@@ -150,12 +149,12 @@ function resetPassword() {
     $.ajax({
         url: '/Login/ResetPassword',
         type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
+       
+        data: {
             email: email,
             otp: otp,
             newPassword: newPassword
-        }),
+        },
         beforeSend: function () {
             $("#reset-password-btn").prop("disabled", true);
         },
