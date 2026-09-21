@@ -25,10 +25,11 @@ namespace TravoRides.CMS.Controllers
 
         [HttpGet]
         public IActionResult Index() => View();
-      
+
         [HttpPost]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
             if (!ModelState.IsValid)
@@ -41,12 +42,11 @@ namespace TravoRides.CMS.Controllers
 
             // 1. Build the identity
             var claims = new List<Claim>
-    {
-                 new Claim(ClaimTypes.Name,           model.Email),
-               // new Claim(ClaimTypes.NameIdentifier, result.Data.UserId ?? model.Email)
-       
-                 new Claim(ClaimTypes.NameIdentifier, model.Email)
-    };
+        {
+            new Claim(ClaimTypes.NameIdentifier, result.Data.UserId.ToString() ?? model.Email),
+            new Claim(ClaimTypes.Email, result.Data.Email),
+            new Claim(ClaimTypes.Role, result.Data.Role)
+        };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -61,30 +61,31 @@ namespace TravoRides.CMS.Controllers
                 AllowRefresh = true
             };
 
-            // 3. Carry the API token inside the encrypted ticket
+            // 3. Carry the API tokens inside the encrypted cookie —
+            // access token, refresh token, and absolute expiry of the access token
             authProperties.StoreTokens(new[]
             {
-        new AuthenticationToken { Name = "access_token", Value = result.Data.AccessToken }
-    });
+            new AuthenticationToken { Name = "access_token", Value = result.Data.AccessToken },
+            new AuthenticationToken { Name = "refresh_token", Value = result.Data.RefreshToken },
+            new AuthenticationToken { Name = "expires_at", Value = result.Data.AccessTokenExpiresAt.ToString("O") }
+        });
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal,
-                authProperties);
+            await HttpContext.SignInAsync( CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
-            return Json(new[] { "True", "Login successfull" });
+            return Json(new[] { "True", "Login successful" });
         }
 
-        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _apiService.LogoutAsync();
-
+            // ApiService.LogoutAsync already calls SignOutAsync internally,
+            // but this is a safe no-op if it was already cleared.
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Clear(); // remove if you're no longer using Session anywhere
-
-            return RedirectToAction("Index", "Login"); 
+            return RedirectToAction("Index", "Login");
         }
+
+        public IActionResult AccessDenied() => View();
+
         [AllowAnonymous]
         [HttpGet]
 
@@ -93,7 +94,7 @@ namespace TravoRides.CMS.Controllers
             return View();
         }
 
-       // [AllowAnonymous]
+        // [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> SendForgotPasswordOtp(ForgotPasswordRequest model)
         {
@@ -106,7 +107,7 @@ namespace TravoRides.CMS.Controllers
                 });
             }
 
-            var response = await _apiService.PostAsync<ForgotPasswordRequest,ApiResponse<object>>("api/Auth/send-forgot-password-otp", model
+            var response = await _apiService.PostAsync<ForgotPasswordRequest, ApiResponse<object>>("api/Auth/send-forgot-password-otp", model
             );
 
             return Json(response);
@@ -124,14 +125,14 @@ namespace TravoRides.CMS.Controllers
                 });
             }
 
-            var response = await _apiService.PostAsync<VerifyPasswordResetOtpRequest,ApiResponse<object>>("api/Auth/verify-password-reset-otp", model
+            var response = await _apiService.PostAsync<VerifyPasswordResetOtpRequest, ApiResponse<object>>("api/Auth/verify-password-reset-otp", model
             );
 
             return Json(response);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword( ResetPasswordRequest model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -142,7 +143,7 @@ namespace TravoRides.CMS.Controllers
                 });
             }
 
-            var response = await _apiService.PostAsync<ResetPasswordRequest,ApiResponse<object>>("api/Auth/reset-password", model
+            var response = await _apiService.PostAsync<ResetPasswordRequest, ApiResponse<object>>("api/Auth/reset-password", model
             );
 
             return Json(response);

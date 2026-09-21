@@ -120,7 +120,7 @@ function verifyPasswordResetOtp() {
 // RESET PASSWORD
 // ======================================================
 function resetPassword() {
-
+    
     var email = $("#Email").val().trim();
     var otp = $("#OTP").val().trim();
     var newPassword = $("#NewPassword").val();
@@ -153,7 +153,8 @@ function resetPassword() {
         data: {
             email: email,
             otp: otp,
-            newPassword: newPassword
+            newPassword: newPassword,
+            confirmPassword: confirmPassword
         },
         beforeSend: function () {
             $("#reset-password-btn").prop("disabled", true);

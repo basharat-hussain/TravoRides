@@ -48,92 +48,107 @@ namespace TravoRides.CMS.Services
         // POST: api/Auth/refresh-token
         // ============================================================
 
+        // ============================================================
+        // REFRESH TOKEN
+        // POST: api/Auth/refresh-token
+        // Reads refresh_token from the auth cookie, calls the API, then
+        // re-issues the cookie with the new tokens (preserving Remember Me).
+        // ============================================================
         public async Task<LoginResponse?> RefreshTokenAsync()
         {
-            var session = _httpContextAccessor
-                .HttpContext?
-                .Session;
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+                return null;
 
-            var refreshToken = session?
-                .GetString("RefreshToken");
+            var refreshToken = await httpContext.GetTokenAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, "refresh_token");
 
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return null;
 
-            var request = new RefreshTokenRequest
-            {
-                RefreshToken = refreshToken
-            };
+            var request = new RefreshTokenRequest { RefreshToken = refreshToken };
 
-            // Refresh endpoint does not normally need
-            // the expired access token.
-            var response = await _httpClient.PostAsJsonAsync(
-                "api/Auth/refresh-token",
-                request);
+            // Refresh endpoint does not normally need the expired access token.
+            var response = await _httpClient.PostAsJsonAsync("api/Auth/refresh-token", request);
 
             if (!response.IsSuccessStatusCode)
-                return null;
-
-            var apiResponse =
-                await response.Content
-                    .ReadFromJsonAsync<ApiResponse<LoginResponse>>();
-
-            if (apiResponse == null ||
-                !apiResponse.IsSuccess ||
-                apiResponse.Data == null)
             {
+                // Refresh token itself is invalid/expired — force logout
+                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return null;
+            }
+
+            var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<LoginResponse>>();
+
+            if (apiResponse == null || !apiResponse.IsSuccess || apiResponse.Data == null)
+            {
+                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return null;
             }
 
             var loginResponse = apiResponse.Data;
 
-            // Replace old tokens
-            session?.SetString(
-                "AccessToken",
-                loginResponse.AccessToken);
+            // Re-issue the auth cookie with the new tokens, preserving the
+            // original principal and IsPersistent/ExpiresUtc (Remember Me) settings
+            var authenticateResult = await httpContext.AuthenticateAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
 
-            session?.SetString(
-                "RefreshToken",
-                loginResponse.RefreshToken);
+            if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
+                return null;
 
-            session?.SetString(
-                "AccessTokenExpiresAt",
-                loginResponse.AccessTokenExpiresAt.ToString("O"));
+            var authProperties = authenticateResult.Properties!;
+            authProperties.StoreTokens(new[]
+            {
+            new AuthenticationToken { Name = "access_token", Value = loginResponse.AccessToken },
+            new AuthenticationToken { Name = "refresh_token", Value = loginResponse.RefreshToken },
+            new AuthenticationToken
+{
+    Name = "expires_at",
+    Value = DateTime.SpecifyKind(loginResponse.AccessTokenExpiresAt, DateTimeKind.Utc).ToString("O")
+}
+           // new AuthenticationToken { Name = "expires_at", Value = loginResponse.AccessTokenExpiresAt.ToString("O") }
+        });
 
-            session?.SetString(
-                "RefreshTokenExpiresAt",
-                loginResponse.RefreshTokenExpiresAt.ToString("O"));
+            await httpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                authenticateResult.Principal,
+                authProperties);
 
             return loginResponse;
         }
 
+        // ============================================================
+        // LOGOUT
+        // POST: api/Auth/logout
+        // ============================================================
         public async Task<bool> LogoutAsync()
         {
-            var session = _httpContextAccessor.HttpContext?.Session;
+            var httpContext = _httpContextAccessor.HttpContext;
 
-            var refreshToken = session?.GetString("RefreshToken");
+            var refreshToken = httpContext == null
+                ? null
+                : await httpContext.GetTokenAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, "refresh_token");
 
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
-                session?.Clear();
+                if (httpContext != null)
+                    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return true;
             }
 
-            var request = new RefreshTokenRequest
-            {
-                RefreshToken = refreshToken
-            };
+            var request = new RefreshTokenRequest { RefreshToken = refreshToken };
+            var response = await _httpClient.PostAsJsonAsync("api/Auth/logout", request);
 
-            var response = await _httpClient.PostAsJsonAsync(
-                "api/Auth/logout",
-                request
-                );
-
-            // Clear MVC session after logout
-            session?.Clear();
+            if (httpContext != null)
+                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return response.IsSuccessStatusCode;
         }
+
+
+    
+
         // ============================================================
         // GET ALL
         // ============================================================
@@ -150,7 +165,7 @@ namespace TravoRides.CMS.Services
                 .ReadFromJsonAsync<T>();
         }
 
-
+       
         // ============================================================
         // GET BY ID
         // ============================================================
@@ -307,22 +322,45 @@ namespace TravoRides.CMS.Services
         //    var jwt = handler.ReadJwtToken(accessToken);
 
         //}
-
+        // ============================================================
+        // AUTHORIZATION HEADER
+        // Call this at the top of every other API method (GetAsync, PostAsync, etc.)
+        // before making the request. Proactively refreshes the access token if
+        // it's within 60 seconds of expiring.
+        // ============================================================
         private async Task AddAuthorizationHeader()
         {
-            var accessToken = await _httpContextAccessor.HttpContext.GetTokenAsync(
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext == null)
+                return;
+
+            var accessToken = await httpContext.GetTokenAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme, "access_token");
+            var expiresAtStr = await httpContext.GetTokenAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, "expires_at");
 
             _httpClient.DefaultRequestHeaders.Authorization = null;
 
             if (string.IsNullOrWhiteSpace(accessToken))
                 return;
 
+            // Refresh a little early (60s buffer) so a request never lands
+            // right as the token expires
+            if (DateTimeOffset.TryParse(expiresAtStr, out var expiresAt) &&
+                expiresAt <= DateTimeOffset.UtcNow.AddSeconds(60))
+            {
+                var refreshed = await RefreshTokenAsync();
+
+                if (refreshed == null)
+                    return; // RefreshTokenAsync already signed the user out on failure
+
+                accessToken = refreshed.AccessToken;
+            }
+
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var handler = new JwtSecurityTokenHandler();
-            var jwt = handler.ReadJwtToken(accessToken);
         }
+
+       
     }
 }

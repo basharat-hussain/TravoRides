@@ -86,7 +86,7 @@ namespace TravoRides.Application.Services
                 UserId = user.Id,
                 Email = user.Email,
                 Role = user.Role.ToString(),
-
+                
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenValue,
 

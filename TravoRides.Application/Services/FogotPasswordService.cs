@@ -42,10 +42,11 @@ namespace TravoRides.Application.Services
             if (user == null)
                 throw new ResourceNotFoundException("If this email is registered and eligible for verification, a new OTP has been sent.");
 
-            if (!user.IsEmailVerified)
-                throw new ValidationException("User is not verified yet.");
-
-
+            //if (!user.IsEmailVerified)
+            //    throw new ValidationException("User is not verified yet.");
+            var userExists = await userRepository.EmailExistsAsync(request.Email, cancellationToken);
+            if (!userExists)
+                throw new ResourceNotFoundException("User does not exist.");
             var existingOtp = await verificationRepository.GetActiveByUserIdAsync(user.Id, purpose, cancellationToken);
 
             if (existingOtp != null)

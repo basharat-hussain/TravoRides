@@ -35,6 +35,7 @@ function onBegin(xhr) {
 }
 
 function onSuccess(response) {
+    debugger;
     if (response[0] == "True") {
         toastr.success(response[1]);
 

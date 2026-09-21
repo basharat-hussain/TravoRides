@@ -15,7 +15,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Login/Index";
-        options.LogoutPath = "/Login/Logout";
+       // options.LogoutPath = "/Login/Logout";
         options.AccessDeniedPath = "/Login/AccessDenied";
 
         // Upper bound. Per-login ExpiresUtc can be shorter, never longer.
