@@ -486,9 +486,7 @@ public class PackageController : Controller
         {
             try
             {
-                Console.WriteLine($"PackageId: {packageId}");
-                Console.WriteLine($"Model: {model}");
-                Console.WriteLine($"CabId: {model?.CabId}");
+                
                 if (model == null || model.CabId == Guid.Empty)
                 {
                     return Json(new[]

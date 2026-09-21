@@ -34,6 +34,6 @@ namespace TravoRides.Application.DTOs.LatestThinking
 
         public string? KeyTakeaways { get; set; }
 
-        public DateTime? PublishedOn { get; set; }
+       // public DateTime? PublishedOn { get; set; }
     }
 }

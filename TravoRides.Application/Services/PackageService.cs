@@ -226,7 +226,9 @@ namespace TravoRides.Application.Services
             }
 
             // 6. If previously deleted, reactivate it
-            if (existingPackageRate != null && existingPackageRate.IsDeleted)
+            // 6. Previously deleted association - reactivate
+            if (existingPackageRate != null &&
+                existingPackageRate.IsDeleted)
             {
                 existingPackageRate.IsDeleted = false;
                 existingPackageRate.Rate = request.Rate;
@@ -235,6 +237,8 @@ namespace TravoRides.Application.Services
                 existingPackageRate.ModifiedBy = "System";
 
                 _unitOfWork.PackageRates.Update(existingPackageRate);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return;
             }

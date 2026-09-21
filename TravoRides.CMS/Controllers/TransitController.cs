@@ -471,5 +471,6 @@ namespace TravoRides.CMS.Controllers
                 return Json(new { isSuccess = false, message = ex.Message });
             }
         }
+
     }
 }

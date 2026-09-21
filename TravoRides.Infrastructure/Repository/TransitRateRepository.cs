@@ -25,9 +25,10 @@ namespace TravoRides.Infrastructure.Repository
          .Include(x => x.Transit)
          .FirstOrDefaultAsync(x =>
              x.CabId == cabId &&
-             x.TransitId == transitId &&
-             !x.IsDeleted,
+             x.TransitId == transitId ,
+         
              cancellationToken);
+
         }
 
         public async Task<List<TransitRate>> GetByTransitIdAsync(Guid transitId, CancellationToken cancellationToken = default)

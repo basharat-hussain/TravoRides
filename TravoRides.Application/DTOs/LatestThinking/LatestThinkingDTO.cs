@@ -17,7 +17,7 @@ namespace TravoRides.Application.DTOs.LatestThinking
         public string? CanonicalUrl { get; set; }
         public string? Summary { get; set; }
         public string? KeyTakeaways { get; set; }
-        public DateTime? PublishedOn { get; set; }
+      //  public DateTime? PublishedOn { get; set; }
         public DateTime? ModifiedOn { get; set; }
     }
 }

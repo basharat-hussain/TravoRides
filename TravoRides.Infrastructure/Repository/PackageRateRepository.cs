@@ -17,17 +17,30 @@ namespace TravoRides.Infrastructure.Repository
             _context = context;
         }
 
-        public async Task<PackageRate?> GetByCabAndPackageAsync(Guid cabId, Guid packageId,
-            CancellationToken cancellationToken = default)
+        //public async Task<PackageRate?> GetByCabAndPackageAsync(Guid cabId, Guid packageId,
+        //    CancellationToken cancellationToken = default)
+        //{
+        //    return await _context.PackageRates
+        //   .Include(x => x.Cab)
+        //  .Include(x => x.Package)
+        //  .FirstOrDefaultAsync(x =>
+        //    x.CabId == cabId &&
+        //    x.PackageId == packageId &&
+        //    !x.IsDeleted,
+        //    cancellationToken);
+        //}
+        public async Task<PackageRate?> GetByCabAndPackageAsync(
+    Guid cabId,
+    Guid packageId,
+    CancellationToken cancellationToken = default)
         {
             return await _context.PackageRates
-           .Include(x => x.Cab)
-          .Include(x => x.Package)
-          .FirstOrDefaultAsync(x =>
-            x.CabId == cabId &&
-            x.PackageId == packageId &&
-            !x.IsDeleted,
-            cancellationToken);
+                .Include(x => x.Cab)
+                .Include(x => x.Package)
+                .FirstOrDefaultAsync(
+                    x => x.CabId == cabId &&
+                         x.PackageId == packageId,
+                    cancellationToken);
         }
         public async Task<List<PackageRate>> GetByPackageIdAsync(Guid packageId, CancellationToken cancellationToken = default)
         {

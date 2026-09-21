@@ -390,25 +390,59 @@
            VALIDATION
         ----------------------------------------------------- */
         if (!transitId || !cabId) {
-            toastr.error("transit ID or Cab ID is missing.");
+            toastr.error("Transit ID or Cab ID is missing.");
             return;
         }
 
         /* -----------------------------------------------------
-           CONFIRM
+           CONFIRM VIA TOASTR
         ----------------------------------------------------- */
-        if (!confirm("Are you sure you want to remove this cab from the transit?")) {
-            return;
-        }
+        showDeleteConfirmToast(function () {
+            performCabDelete(button, transitId, cabId);
+        });
+    });
 
-        /* -----------------------------------------------------
-           DELETE AJAX
-        ----------------------------------------------------- */
+    function showDeleteConfirmToast(onConfirm) {
+        toastr.options = {
+            closeButton: false,
+            tapToDismiss: false,
+            timeOut: 0,
+            extendedTimeOut: 0,
+            positionClass: "toast-top-right"
+        };
+
+        const message =
+            "Are you sure you want to remove this cab from the transit?" +
+            '<div class="mt-2">' +
+            '<button type="button" class="btn btn-sm btn-light mr-2 toast-confirm-yes">Yes</button>' +
+            '<button type="button" class="btn btn-sm btn-secondary toast-confirm-no">No</button>' +
+            "</div>";
+
+        const $toast = toastr.warning(message, "Confirm Removal", { allowHtml: true });
+
+        $toast.find(".toast-confirm-yes").on("click", function () {
+            toastr.clear($toast);
+            onConfirm();
+        });
+
+        $toast.find(".toast-confirm-no").on("click", function () {
+            toastr.clear($toast);
+        });
+
+        // reset options back to your normal defaults so other toasts aren't affected
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            timeOut: 5000
+        };
+    }
+
+    function performCabDelete(button, transitId, cabId) {
         $.ajax({
             url: deleteUrl,
             type: "POST",
             data: {
-                transitId: transitId,
+                transitId: tra,
                 cabId: cabId
             },
             beforeSend: function () {
@@ -420,19 +454,10 @@
                 if (response && response.isSuccess) {
                     toastr.success(response.message || "Cab removed successfully.");
 
-                    /* -----------------------------------------
-                       REMOVE ROW
-                    ----------------------------------------- */
                     $("#cab-row-" + cabId).remove();
-
-                    /* Make it selectable again. */
                     disableCabOption(cabId, false);
-
                     showEmptyRowIfNeeded();
 
-                    /* -----------------------------------------
-                       RESET IF CURRENTLY EDITING DELETED CAB
-                    ----------------------------------------- */
                     if (editingCabIdInput.val() === cabId.toString()) {
                         resetCabForm();
                     }
@@ -448,7 +473,7 @@
                 button.prop("disabled", false);
             }
         });
-    });
+    }
 
     /* =========================================================
        ON LOAD: DISABLE ALREADY-ADDED CABS IN THE DROPDOWN

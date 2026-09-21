@@ -26,6 +26,24 @@ namespace TravoRides.Infrastructure.Configuration
             builder.Property(x => x.ImageAltText)
                 .IsRequired(false)
                 .HasMaxLength(255);
+            builder.Property(x => x.CanonicalUrl)
+               .IsRequired(false)
+               .HasMaxLength(255);
+            builder.Property(x => x.MetaTitle)
+              .IsRequired(false)
+              .HasMaxLength(255);
+            builder.Property(x => x.MetaDescription)
+              .IsRequired(false)
+              .HasMaxLength(1000);
+            builder.Property(x => x.Slug)
+              .IsRequired(false)
+              .HasMaxLength(255);
+            builder.Property(x => x.Summary)
+              .IsRequired(false)
+              .HasMaxLength(1000);
+            builder.Property(x => x.KeyTakeaways)
+              .IsRequired(false)
+              .HasMaxLength(255);
 
             builder.Property(x => x.Author)
                 .IsRequired()
