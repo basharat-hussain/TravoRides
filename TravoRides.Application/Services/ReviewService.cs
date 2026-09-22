@@ -20,7 +20,7 @@ namespace TravoRides.Application.Services
         private readonly IFileUrlService _fileUrlService;
 
         public ReviewService(
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IFileUrlService fileUrlService)
         {
@@ -57,8 +57,8 @@ namespace TravoRides.Application.Services
             if (request.PageSize < 1) request.PageSize = 10;
             if (request.PageSize > 100) request.PageSize = 100;
             var reviews = await _unitOfWork.Reviews.GetAllApprovedAsync(request.PageNumber, request.PageSize, request.Keyword, cancellationToken);
-           
-            var review =  _mapper.Map<List<ReviewDTO>>(reviews.Items);
+
+            var review = _mapper.Map<List<ReviewDTO>>(reviews.Items);
             return new PagedResponse<ReviewDTO>
             {
                 Items = review,
@@ -95,8 +95,8 @@ namespace TravoRides.Application.Services
                 Address = request.Address.Trim(),
                 Feedback = request.Feedback.Trim(),
                 Rating = request.Rating,
-              
-                ImageUrl = request.ImageUrl
+                ImageUrl = request.ImageUrl,
+                IsActive = false,
             };
 
             await _unitOfWork.Reviews.AddAsync(review, cancellationToken);
@@ -119,7 +119,7 @@ namespace TravoRides.Application.Services
 
             review.Name = request.Name.Trim();
             review.Address = request.Address.Trim();
-          
+
             review.Feedback = request.Feedback.Trim();
             review.ImageUrl = request.ImageUrl;
 

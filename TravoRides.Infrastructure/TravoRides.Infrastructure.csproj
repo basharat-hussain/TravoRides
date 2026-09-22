@@ -32,4 +32,12 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Templates\Email\Images\headerlogo.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Templates\Email\Images\headerlogo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 </Project>
