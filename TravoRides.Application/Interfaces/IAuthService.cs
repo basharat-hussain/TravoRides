@@ -12,5 +12,7 @@ namespace TravoRides.Application.Interfaces
        Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request, CancellationToken cancellationToken = default);
 
         Task LogoutAsync(string refreshToken, CancellationToken cancellationToken = default);
+        Task ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken = default);
+
     }
 }

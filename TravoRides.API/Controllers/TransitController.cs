@@ -119,9 +119,9 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{transitId:guid}/cabs/{cabId:guid}")]
-        public async Task<IActionResult> RemoveCabFromTransit(Guid packageId, Guid cabId, CancellationToken cancellationToken)
+        public async Task<IActionResult> RemoveCabFromTransit(Guid transitId, Guid cabId, CancellationToken cancellationToken)
         {
-            await _service.RemoveCabFromTransitAsync(packageId, cabId, cancellationToken);
+            await _service.RemoveCabFromTransitAsync(transitId, cabId, cancellationToken);
 
             return Ok(new ApiResponse<object>
             {

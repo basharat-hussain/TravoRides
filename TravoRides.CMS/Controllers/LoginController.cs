@@ -136,6 +136,14 @@ namespace TravoRides.CMS.Controllers
         {
             if (!ModelState.IsValid)
             {
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Any())
+            .Select(x => new
+            {
+                Field = x.Key,
+                Errors = x.Value.Errors.Select(e => e.ErrorMessage)
+            })
+            .ToList();
                 return Json(new
                 {
                     isSuccess = false,
@@ -144,6 +152,26 @@ namespace TravoRides.CMS.Controllers
             }
 
             var response = await _apiService.PostAsync<ResetPasswordRequest, ApiResponse<object>>("api/Auth/reset-password", model
+            );
+
+            return Json(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Please enter valid password details."
+                });
+            }
+
+            var response = await _apiService.PostAsync<ChangePasswordRequest, ApiResponse<object>>(
+                "api/Auth/change-password",
+                model
             );
 
             return Json(response);

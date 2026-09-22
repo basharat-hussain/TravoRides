@@ -68,7 +68,6 @@ namespace TravoRides.CMS.Controllers
             formData.Add(new StringContent(model.CanonicalUrl ?? string.Empty), nameof(model.CanonicalUrl));
             formData.Add(new StringContent(model.Summary ?? string.Empty), nameof(model.Summary));
             formData.Add(new StringContent(model.KeyTakeaways ?? string.Empty), nameof(model.KeyTakeaways));
-            formData.Add(new StringContent(model.PublishedOn?.ToString("o") ?? string.Empty), nameof(model.PublishedOn));
 
             if (model.ImageUrl != null && model.ImageUrl.Length > 0)
             {
@@ -103,7 +102,6 @@ namespace TravoRides.CMS.Controllers
                 CanonicalUrl = item.CanonicalUrl,
                 Summary = item.Summary,
                 KeyTakeaways = item.KeyTakeaways,
-                PublishedOn = item.PublishedOn,
                 ImageUrlUrl = item.ImageUrl
             };
 

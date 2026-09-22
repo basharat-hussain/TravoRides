@@ -442,7 +442,7 @@
             url: deleteUrl,
             type: "POST",
             data: {
-                transitId: tra,
+                transitId: transitId,
                 cabId: cabId
             },
             beforeSend: function () {

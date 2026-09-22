@@ -15,12 +15,15 @@ namespace TravoRides.API.Controllers
         private readonly IAuthService _authService;
         private readonly IOtpVerificationService _otpVerificationService;
         private readonly IForgotPasswordService _forgotPassword;
+        private readonly ICurrentUserService _currentUserService;
 
-        public AuthController(IAuthService authService, IForgotPasswordService forgotPassword, IOtpVerificationService otpVerificationService   )
+        public AuthController(IAuthService authService, IForgotPasswordService forgotPassword, 
+            IOtpVerificationService otpVerificationService, ICurrentUserService currentUserService  )
         {
             _authService = authService;
             _forgotPassword = forgotPassword;
             _otpVerificationService = otpVerificationService;
+            _currentUserService = currentUserService;
         }
 
         [HttpPost("login")]
@@ -101,6 +104,19 @@ namespace TravoRides.API.Controllers
                 Message = "Password reset successfully."
             });
         }
+        [HttpPost("change-password")]
+        [Authorize]
+       // [EnableRateLimiting("password-reset-api")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+        {
+            var userId = _currentUserService.UserId;
+            await _authService.ChangePasswordAsync(userId, request, cancellationToken);
 
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Password changed successfully."
+            });
+        }
     }
 }

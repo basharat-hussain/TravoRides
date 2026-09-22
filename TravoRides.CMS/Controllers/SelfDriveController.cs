@@ -24,7 +24,7 @@ namespace TravoRides.CMS.Controllers
 
             var url = $"api/SelfDrive?pageNumber={page}&pageSize={size}";
 
-            var items = await _apiService.GetAllAsync<ApiResponse<PagedResponse<SelfDriveDTO>>>(url);
+            var items = await _apiService.GetAllAsync<ApiResponse<PagedResponse<CabDTO>>>(url);
             return View(items);
         }
 
