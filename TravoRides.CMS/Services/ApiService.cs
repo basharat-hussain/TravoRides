@@ -187,8 +187,7 @@ namespace TravoRides.CMS.Services
         // POST WITH MODEL
         // ============================================================
 
-        public async Task<TResponse> PostAsync<TRequest,TResponse>(
-            string url,TRequest obj)
+        public async Task<TResponse> PostAsync<TRequest,TResponse>(string url,TRequest obj)
         {
             await AddAuthorizationHeader();
 

@@ -21,5 +21,6 @@ namespace TravoRides.Application.DTOs.Cabs
         public decimal PricePerDay { get; set; }
 
         public decimal Discount { get; set; }
+        public bool IsSelfDrive { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace TravoRides.Infrastructure.Repository
         {
             var query = context.Cabs
                 .Include(c => c.Category)
+                .Include(c => c.SelfDrive)
                 .Where(c => !c.IsDeleted)
                 .AsNoTracking()
                 .AsQueryable();

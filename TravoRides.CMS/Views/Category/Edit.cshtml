@@ -56,7 +56,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Description</label>
-                                        <textarea asp-for="Description" class="form-control text-editor"></textarea>
+                                        <textarea asp-for="Description" class="form-control"></textarea>
                                         <span asp-validation-for="Description" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -82,7 +82,7 @@
 <partial name="_ValidationScriptsPartial" />
 
 <script>
-    var module = "Client";
+    var module = "Category";
     var operation = "Edit";
 </script>
 

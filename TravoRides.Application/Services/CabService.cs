@@ -178,19 +178,31 @@ namespace TravoRides.Application.Services
                 cab,
                 cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(
-                cancellationToken);
+            if (request.IsSelfDrive)
+            {
+                var selfDrive = new SelfDrive
+                {
+                    //Id = Guid.NewGuid(),
+                    CabId = cab.Id,
+                    //PricePerDay = cab.PricePerDay,
+                    //Discount = cab.Discount
+                };
+
+                await _unitOfWork.SelfDrives.AddAsync(selfDrive);
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return cab.Id;
+
+            
         }
 
         // ============================================================
         // UPDATE
         // ============================================================
 
-        public async Task UpdateAsync(
-            UpdateCabRequest request,
-            CancellationToken cancellationToken = default)
+        public async Task UpdateAsync( UpdateCabRequest request, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
                 throw new ValidationException(
@@ -254,7 +266,7 @@ namespace TravoRides.Application.Services
                 if (result == null)
                     throw new ValidationException(
                         "File upload failed.");
-                    
+
                 // Optional:
                 // Delete the old image here if your
                 // FileStorageService supports it.
@@ -286,12 +298,41 @@ namespace TravoRides.Application.Services
             cab.Discount = request.Discount;
             // Update Foreign Key
             cab.CategoryId = request.CategoryId;
+            // SelfDrive handling
+            var selfDrive = await _unitOfWork.SelfDrives
+                .GetByCabIdAsync(cab.Id, cancellationToken);
 
-            _unitOfWork.Cabs.Update(cab);
+            if (request.IsSelfDrive)
+            {
+                // Create SelfDrive record if it doesn't already exist
+                if (selfDrive == null)
+                {
+                    selfDrive = new SelfDrive
+                    {
+                        //Id = Guid.NewGuid(),
+                        CabId = cab.Id,
+                        //Discount = cab.Discount,
+                        //PricePerDay = cab.PricePerDay
+                    };
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                    await _unitOfWork.SelfDrives.AddAsync(selfDrive);
+                }
+            }
+            else
+            {
+                // Cab should not be SelfDrive
+                if (selfDrive != null)
+                {
+                    selfDrive.IsDeleted = true;
+                    selfDrive.ModifiedAt = DateTime.UtcNow;
+                    selfDrive.ModifiedBy = "System";
+                }
+            }
+                _unitOfWork.Cabs.Update(cab);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            
         }
-
         // ============================================================
         // DELETE - SOFT DELETE
         // ============================================================

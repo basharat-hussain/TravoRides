@@ -20,7 +20,7 @@ namespace TravoRides.CMS.Controllers
             var page = pageNumber ?? 1;
             var size = pageSize ?? 10;
 
-            var url = $"api/FeatureMaster?pageNumber={page}&pageSize={size}";
+            var url = $"api/FeaturesMaster?pageNumber={page}&pageSize={size}";
 
             var items = await _apiService.GetAllAsync<ApiResponse<PagedResponse<FeaturesMasterDTO>>>(url);
             return View(items);
@@ -30,7 +30,7 @@ namespace TravoRides.CMS.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            var response = await _apiService.GetAsync<ApiResponse<FeaturesMasterDTO>>($"api/FeatureMaster/{id}");
+            var response = await _apiService.GetAsync<ApiResponse<FeaturesMasterDTO>>($"api/FeaturesMaster/{id}");
             var item = response?.Data;
             if (item == null) return NotFound();
             return View(item);
@@ -55,7 +55,7 @@ namespace TravoRides.CMS.Controllers
 
 
             var apiResponse = await _apiService.PostAsync<CreateFeaturesMasterRequest,ApiResponse<object>>(
-                   "api/FeatureMaster", model);
+                   "api/FeaturesMaster", model);
 
 
             if (apiResponse == null || !apiResponse.IsSuccess)
@@ -69,7 +69,7 @@ namespace TravoRides.CMS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response = await _apiService.GetAsync<ApiResponse<FeaturesMasterDTO>>($"api/FeatureMaster/{id}");
+            var response = await _apiService.GetAsync<ApiResponse<FeaturesMasterDTO>>($"api/FeaturesMaster/{id}");
             var item = response?.Data;
             if (item == null) return NotFound();
 
@@ -102,7 +102,7 @@ namespace TravoRides.CMS.Controllers
             //    Description = model.Description
             //};
 
-            await _apiService.PutAsync<UpdateFeaturesMasterRequest,ApiResponse<object>>($"api/FeatureMaster/{id}", model);
+            await _apiService.PutAsync<UpdateFeaturesMasterRequest,ApiResponse<object>>($"api/FeaturesMaster/{id}", model);
 
             response = new[] { "True", "Updated successfully." };
             return Json(response);
@@ -115,7 +115,7 @@ namespace TravoRides.CMS.Controllers
 
             try
             {
-                var success = await _apiService.DeleteAsync($"api/FeatureMaster/{id}");
+                var success = await _apiService.DeleteAsync($"api/FeaturesMaster/{id}");
                 if (!success)
                 {
                     response = new[] { "False", "Deletion failed" };

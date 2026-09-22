@@ -132,7 +132,8 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6">
+                                 
+                            <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Logo</label>
                                         <input asp-for="Image" class="form-control img-uploader" accept=".png, .jpeg, .jpg" />
@@ -140,7 +141,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <img src="@Model.ImageUrl" class="image-previewer" style="height: 80px; width:200px" />
                                     </div>
@@ -154,6 +155,19 @@
                                         <label>Description</label>
                                         <textarea asp-for="Description" class="form-control"></textarea>
                                         <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="icheck-primary">
+                                            <input type="checkbox"
+                                                   id="isSelfDrive"
+                                                   asp-for="IsSelfDrive" />
+
+                                            <label for="isSelfDrive">
+                                                Self Drive
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

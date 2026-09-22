@@ -69,6 +69,7 @@ namespace TravoRides.CMS.Controllers
             formData.Add(new StringContent(model.Description ?? string.Empty), nameof(model.Description));
             formData.Add(new StringContent(model.LuggageCapacity.ToString() ?? string.Empty), nameof(model.LuggageCapacity));
             formData.Add(new StringContent(model.SeatingCapacity.ToString() ?? string.Empty), nameof(model.SeatingCapacity));
+            formData.Add(new StringContent(model.IsSelfDrive.ToString()), nameof(model.IsSelfDrive));
 
             // Category
             formData.Add( new StringContent(model.CategoryId.ToString()), nameof(model.CategoryId));
@@ -111,7 +112,8 @@ namespace TravoRides.CMS.Controllers
                 Fuel = item.Fuel,
                LuggageCapacity = item.LuggageCapacity,
                SeatingCapacity = item.SeatingCapacity,
-                ImageUrl = item.ImageUrl
+                ImageUrl = item.ImageUrl,
+                IsSelfDrive = item.IsSelfDrive
             };
 
             return View(model);
@@ -139,6 +141,7 @@ namespace TravoRides.CMS.Controllers
             formData.Add(new StringContent(model.Fuel.ToString()), nameof(model.Fuel));
             formData.Add(new StringContent(model.LuggageCapacity.ToString() ?? string.Empty), nameof(model.LuggageCapacity));
             formData.Add(new StringContent(model.SeatingCapacity.ToString() ?? string.Empty), nameof(model.SeatingCapacity));
+            formData.Add(new StringContent(model.IsSelfDrive.ToString()), nameof(model.IsSelfDrive));
 
 
             if (model.Image != null && model.Image.Length > 0)

@@ -25,7 +25,9 @@
             <th style="width: 15%">
                  Discount
             </th>
-           
+            <th style="width: 15%">
+                IsSelfDrive
+            </th>
             <th style="width: 10%" class="text-center">
                 Actions
             </th>
@@ -52,7 +54,7 @@
 
                 <td>@Cab.PricePerDay </td>
                <td>@Cab.Discount</td>
-
+               <td>@Cab.IsSelfDrive</td>
 
                 <td class="project-actions text-center">
 
@@ -73,6 +75,7 @@
                             data-fuel="@Cab.Fuel"
                             data-transmission="@Cab.Transmission"
                             data-description="@Cab.Description"
+                            data-isSelfDrive="@Cab.IsSelfDrive"
                             data-image="@Cab.ImageUrl"
                            >
                         View
