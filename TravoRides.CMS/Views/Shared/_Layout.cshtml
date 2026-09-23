@@ -94,9 +94,9 @@
                             <i class="fas fa-user-tag text-primary mr-2"></i> Update Profile
                         </a>
                         <div class="dropdown-divider"></div>
-                        @* <a asp-controller="Login" asp-action="ChangePassword" class="dropdown-item">
+                        <a href="@Url.Action("ChangePassword", "Login")" class="dropdown-item">
                             <i class="fas fa-key text-green mr-2"></i> Change Password
-                        </a> *@
+                        </a> 
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-cogs text-purple mr-2"></i> Settings
@@ -180,7 +180,15 @@
                             <a asp-controller="SelfDrive" asp-action="Index" class="nav-link">
                                 <i class="nav-icon fas fa-newspaper text-danger"></i>
                                 <p>
-                                    SelfDrive
+                                    Self-Drive
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="FeatureMaster" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-newspaper text-white"></i>
+                                <p>
+                                    Features
                                 </p>
                             </a>
                         </li>

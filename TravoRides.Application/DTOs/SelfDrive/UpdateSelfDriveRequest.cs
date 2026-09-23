@@ -6,6 +6,8 @@ namespace TravoRides.Application.DTOs.SelfDrive
     {
         public Guid Id { get; set; }
         public Guid CabId { get; set; }
+        public string CabName { get; set; }
+        public Guid CategoryId { get; set; }
         public decimal PricePerDay { get; set; }
         public decimal Discount { get; set; }
     }

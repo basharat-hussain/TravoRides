@@ -1,5 +1,5 @@
 ﻿
-@model ApiResponse<PagedResponse<SelfDriveDTO>>
+@model ApiResponse<PagedResponse<CabDTO>>
 @* Breadcrumb *@
 <section class="content-header">
     <div class="container-fluid">
@@ -54,6 +54,7 @@
     function showReviewDetails(btn) {
         var $btn = $(btn);
         var id = $btn.data('id');
+        var category = $btn.data('category')
         var name = $btn.data('name') || '';
         var price = $btn.data('price') || '';
        var discount = $btn.data('discount');
@@ -62,7 +63,9 @@
        
         html += '</div>';
         html += '<div class="col-md-8">';
-        html += '<p><strong>CabName:</strong> ' + $('<div/>').text(name).html() + '</p>';
+        html += '<p><strong>Category:</strong> ' + $('<div/>').text(category).html() + '</p>';
+
+        html += '<p><strong>Cab:</strong> ' + $('<div/>').text(name).html() + '</p>';
         html += '<p><strong>Price:</strong> ' + $('<div/>').text(price).html() + '</p>';
         html += '<p><strong>Discount:</strong> ' + $('<div/>').text(discount).html() + '</p>';
        

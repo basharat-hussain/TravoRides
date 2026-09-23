@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Net.Http;
 using System.Security.Claims;
 using TravoRides.Application.Common.Responses;
@@ -156,6 +157,10 @@ namespace TravoRides.CMS.Controllers
 
             return Json(response);
         }
+
+
+        [HttpGet]
+        public IActionResult ChangePassword() => View();
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)

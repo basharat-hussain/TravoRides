@@ -113,7 +113,6 @@ namespace TravoRides.CMS.Controllers
                LuggageCapacity = item.LuggageCapacity,
                SeatingCapacity = item.SeatingCapacity,
                 ImageUrl = item.ImageUrl,
-                IsSelfDrive = item.IsSelfDrive
             };
 
             return View(model);

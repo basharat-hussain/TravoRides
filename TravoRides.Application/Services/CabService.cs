@@ -90,6 +90,13 @@ namespace TravoRides.Application.Services
 
             return EnrichCabDtoWithAbsoluteUrls(cabDto);
         }
+        // for SelfDrive Create
+        public async Task<List<CabDTO>> GetByCategoryIdAsync(Guid categoryId,CancellationToken cancellationToken = default)
+        {
+            var cabs = await _unitOfWork.SelfDrives.GetByCategoryIdAsync( categoryId, cancellationToken);
+
+            return _mapper.Map<List<CabDTO>>(cabs);
+        }
 
         // ============================================================
         // CREATE
