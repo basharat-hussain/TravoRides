@@ -1,7 +1,8 @@
-﻿using TravoRides.Application.Common.Responses;
+﻿using Microsoft.AspNetCore.Mvc;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Authentication;
 using TravoRides.CMS.Interface;
 using TravoRides.CMS.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace TravoRides.CMS.Controllers
 {
@@ -25,6 +26,29 @@ namespace TravoRides.CMS.Controllers
             }
 
             return View(response.Data);
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    isSuccess = false,
+                    message = "Please enter valid password details."
+                });
+            }
+
+            var response = await _apiService.PostAsync<ChangePasswordRequest, ApiResponse<object>>(
+                "api/Auth/change-password",
+                model
+            );
+
+            return Json(response);
         }
     }
 }

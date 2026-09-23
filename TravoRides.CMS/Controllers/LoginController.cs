@@ -159,28 +159,7 @@ namespace TravoRides.CMS.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult ChangePassword() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    isSuccess = false,
-                    message = "Please enter valid password details."
-                });
-            }
-
-            var response = await _apiService.PostAsync<ChangePasswordRequest, ApiResponse<object>>(
-                "api/Auth/change-password",
-                model
-            );
-
-            return Json(response);
-        }
+        
     }
 }
 

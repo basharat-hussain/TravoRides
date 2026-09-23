@@ -22,7 +22,7 @@ function onBegin(xhr) {
         module == "Cab" ||
         module == "LatestThinking" ||
         module == "Package" ||
-        module == "Transit" ||
+        module == "Transit" 
         
     ) {
 
