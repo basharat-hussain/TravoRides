@@ -97,7 +97,7 @@ namespace TravoRides.Infrastructure.Persistence.Configurations
                 .HasDefaultValue(false);
 
             // Final Booking Rate
-            builder.Property(x => x.Rate)
+            builder.Property(x => x.TotalAmount)
                 .IsRequired()
                 .HasPrecision(18, 2);
 

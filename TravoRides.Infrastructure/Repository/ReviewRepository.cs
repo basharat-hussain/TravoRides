@@ -1,13 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
 using TravoRides.Infrastructure.Context;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-
 
 namespace TravoRides.Infrastructure.Repository
 {
@@ -19,6 +14,7 @@ namespace TravoRides.Infrastructure.Repository
         {
             _context = context;
         }
+
         public async Task<PagedResponse<Review>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, CancellationToken cancellationToken)
         {
             var query = _context.Reviews
@@ -51,6 +47,7 @@ namespace TravoRides.Infrastructure.Repository
                 TotalPages = totalPages
             };
         }
+
         public async Task<PagedResponse<Review>> GetAllApprovedAsync(
             int pageNumber,
             int pageSize,
@@ -77,8 +74,7 @@ namespace TravoRides.Infrastructure.Repository
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
 
-            var totalPages = (int)Math.Ceiling(
-                (double)total / pageSize);
+            var totalPages = (int)Math.Ceiling((double)total / pageSize);
 
             return new PagedResponse<Review>
             {
@@ -91,3 +87,4 @@ namespace TravoRides.Infrastructure.Repository
         }
     }
 }
+

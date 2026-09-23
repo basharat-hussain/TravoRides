@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace TravoRides.Domain.Enums
 {
     public enum PaymentStatus
@@ -10,6 +6,8 @@ namespace TravoRides.Domain.Enums
         Paid = 2,
         Failed = 3,
         Cancelled = 4,
-       PartiallyRefunded = 5
+        Refunded = 5,
+        PartiallyRefunded = 6
     }
 }
+

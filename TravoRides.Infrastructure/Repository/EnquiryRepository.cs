@@ -1,15 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using TravoRides.Infrastructure.Context;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.Repositories;
 using TravoRides.Domain.Entities;
+using TravoRides.Infrastructure.Context;
 
 namespace TravoRides.Infrastructure.Repository
 {
-    public class EnquiryRepository :GenericRepository<Enquiry>, IEnquiryRepository
+    public class EnquiryRepository : GenericRepository<Enquiry>, IEnquiryRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -52,3 +49,4 @@ namespace TravoRides.Infrastructure.Repository
         }
     }
 }
+

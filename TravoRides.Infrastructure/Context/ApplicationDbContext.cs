@@ -1,10 +1,5 @@
-﻿using TravoRides.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TravoRides.Domain.Entities;
-
 
 namespace TravoRides.Infrastructure.Context
 {
@@ -12,14 +7,11 @@ namespace TravoRides.Infrastructure.Context
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            
         }
 
         #region Identity Tables
-
         public DbSet<User> Users => Set<User>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-
         #endregion
 
         public DbSet<Cab> Cabs => Set<Cab>();
@@ -40,14 +32,14 @@ namespace TravoRides.Infrastructure.Context
         public DbSet<Enquiry> Enquiries => Set<Enquiry>();
 
         #region OTP Verification
-
         public DbSet<VerificationOtp> VerificationOtps => Set<VerificationOtp>();
-
         #endregion
 
         #region Booking and Payment
         public DbSet<Booking> Bookings => Set<Booking>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<PaymentRefund> PaymentRefunds => Set<PaymentRefund>();
+        public DbSet<PaymentWebhook> PaymentWebhooks => Set<PaymentWebhook>();
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,3 +50,4 @@ namespace TravoRides.Infrastructure.Context
         }
     }
 }
+

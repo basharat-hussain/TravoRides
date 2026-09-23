@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TravoRides.Domain.Entities;
 
 namespace TravoRides.Infrastructure.Configuration
@@ -11,69 +8,68 @@ namespace TravoRides.Infrastructure.Configuration
     {
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
-            // Table
             builder.ToTable("Payments");
 
-            // Primary Key
-            builder.HasKey(p => p.Id);
+            builder.HasKey(x => x.Id);
 
-            // PaymentNo
-            builder.Property(p => p.PaymentNo)
-                .IsRequired();
-
-            // BookingId
-            builder.Property(p => p.BookingId)
-                .IsRequired();
-
-            // Amount
-            builder.Property(p => p.Amount)
+            builder.Property(x => x.Amount)
                 .HasPrecision(18, 2)
                 .IsRequired();
 
-            // Currency
-            builder.Property(p => p.Currency)
-                .HasMaxLength(10)
+            builder.Property(x => x.Currency)
+                .HasMaxLength(3)
                 .IsRequired();
 
-            // PaymentStatus
-            builder.Property(p => p.PaymentStatus)
+            builder.Property(x => x.Status)
                 .IsRequired();
 
-            // GatewayName
-            builder.Property(p => p.GatewayName)
-                .HasMaxLength(100);
+            builder.Property(x => x.GatewayName)
+                .HasMaxLength(50);
 
-            // GateTransId
-            builder.Property(p => p.GateTransId)
-                .HasMaxLength(200);
+            builder.Property(x => x.GatewayOrderId)
+                .HasMaxLength(150);
 
-            // GatewayOrderId
-            builder.Property(p => p.GatewayOrderId)
-                .HasMaxLength(200);
+            builder.Property(x => x.GatewayTransactionId)
+                .HasMaxLength(150);
 
-            // FailureReason
-            builder.Property(p => p.FailureReason)
+            builder.Property(x => x.FailureReason)
                 .HasMaxLength(500);
 
-            // AttemptNumber
-            builder.Property(p => p.AttemptNumber)
-                .IsRequired();
+            builder.Property(x => x.RefundedAmount)
+                .HasPrecision(18, 2)
+                .HasDefaultValue(0);
 
-            builder.Property(x => x.IsActive)
-    .IsRequired();
-
-            builder.Property(x => x.IsDeleted)
-                .IsRequired();
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
 
             builder.Property(x => x.ModifiedAt)
                 .IsRequired(false);
-            // Relationship: Booking 1 -> Many Payments
-            builder.HasOne(p => p.Booking)
-                .WithMany(b => b.Payments)
-                .HasForeignKey(p => p.BookingId)
+
+            builder.HasOne(x => x.Booking)
+                .WithMany(x => x.Payments)
+                .HasForeignKey(x => x.BookingId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.BookingId)
+                .IsUnique()
+                .HasFilter("[Status] = 1");
+
+            builder.HasIndex(x => x.GatewayOrderId);
+
+            builder.HasIndex(x => x.GatewayTransactionId)
+                .IsUnique()
+                .HasFilter("[GatewayTransactionId] IS NOT NULL");
+
+            builder.Property(x => x.PaymentNumber)
+                .HasMaxLength(50)
+                .IsRequired()
+                .ValueGeneratedNever();
+
+            builder.HasIndex(x => x.PaymentNumber)
+                .IsUnique();
+
+            builder.Property(x => x.AttemptNumber)
+                .IsRequired();
         }
     }
 }

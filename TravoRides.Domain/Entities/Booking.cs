@@ -41,7 +41,7 @@ namespace TravoRides.Domain.Entities
         public string? SpecialRequirements { get; set; }
 
         // Final price at the time of booking
-        public decimal Rate { get; set; }
+        public decimal TotalAmount { get; set; }
 
         public Cab Cab { get; set; } = null!;
 

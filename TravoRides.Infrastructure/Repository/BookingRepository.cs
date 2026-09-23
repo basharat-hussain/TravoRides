@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -123,7 +123,7 @@ namespace TravoRides.Infrastructure.Repository
             var totalAmount = await query
                 .SelectMany(b => b.Payments)
                 .Where(p =>
-                    p.PaymentStatus == PaymentStatus.Paid)
+                    p.Status == PaymentStatus.Paid)
                 .Select(p => (decimal?)p.Amount)
                 .SumAsync(cancellationToken) ?? 0;
 
@@ -132,7 +132,7 @@ namespace TravoRides.Infrastructure.Repository
             var failedAmount = await query
                 .SelectMany(b => b.Payments)
                 .Where(p =>
-                    p.PaymentStatus == PaymentStatus.Failed)
+                    p.Status == PaymentStatus.Failed)
                 .Select(p => (decimal?)p.Amount)
                 .SumAsync(cancellationToken) ?? 0;
 
@@ -189,21 +189,21 @@ namespace TravoRides.Infrastructure.Repository
                     // Get successful payment
                     PaymentAmount = b.Payments
                         .Where(p =>
-                            p.PaymentStatus == PaymentStatus.Paid)
+                            p.Status == PaymentStatus.Paid)
                         .OrderByDescending(p => p.AttemptNumber)
                         .Select(p => (decimal?)p.Amount)
                         .FirstOrDefault(),
 
                     PaymentStatus = b.Payments
                         .Where(p =>
-                            p.PaymentStatus == PaymentStatus.Paid)
+                            p.Status == PaymentStatus.Paid)
                         .OrderByDescending(p => p.AttemptNumber)
-                        .Select(p => (PaymentStatus?)p.PaymentStatus)
+                        .Select(p => (PaymentStatus?)p.Status)
                         .FirstOrDefault(),
 
                     PaidAt = b.Payments
                         .Where(p =>
-                            p.PaymentStatus == PaymentStatus.Paid)
+                            p.Status == PaymentStatus.Paid)
                         .OrderByDescending(p => p.AttemptNumber)
                         .Select(p => p.PaidAt)
                         .FirstOrDefault()

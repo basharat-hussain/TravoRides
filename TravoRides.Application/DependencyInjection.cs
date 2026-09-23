@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Notifications;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Services;
 using TravoRides.Domain.Entities;
@@ -32,9 +33,12 @@ namespace TravoRides.Application
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IForgotPasswordService, ForgotPasswordService>();
             services.AddScoped<IOtpVerificationService, EmailOtpVerificationService>();
-           
+            
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IBookingNotificationService, BookingNotificationService>();
 
             return services;
         }
     }
 }
+

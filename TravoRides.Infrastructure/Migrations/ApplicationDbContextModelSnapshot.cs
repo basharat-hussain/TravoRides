@@ -105,13 +105,13 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<DateTime>("PickupTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Rate")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("SpecialRequirements")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("TransitId")
                         .HasColumnType("uniqueidentifier");
@@ -403,7 +403,8 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("CanonicalUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -431,13 +432,16 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("KeyTakeaways")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("MetaDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("MetaTitle")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -448,18 +452,17 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("PublishedOn")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Subtitle")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Summary")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -619,8 +622,8 @@ namespace TravoRides.Infrastructure.Migrations
 
                     b.Property<string>("Currency")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
 
                     b.Property<DateTime?>("FailedAt")
                         .HasColumnType("datetime2");
@@ -629,17 +632,17 @@ namespace TravoRides.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("GateTransId")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("GatewayName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("GatewayOrderId")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("GatewayTransactionId")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -656,17 +659,205 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PaymentNo")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("PaymentNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("PaymentStatus")
+                    b.Property<decimal>("RefundedAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTime?>("RefundedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId");
+                    b.HasIndex("BookingId")
+                        .IsUnique()
+                        .HasFilter("[Status] = 1");
+
+                    b.HasIndex("GatewayOrderId");
+
+                    b.HasIndex("GatewayTransactionId")
+                        .IsUnique()
+                        .HasFilter("[GatewayTransactionId] IS NOT NULL");
+
+                    b.HasIndex("PaymentNumber")
+                        .IsUnique();
 
                     b.ToTable("Payments", (string)null);
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.PaymentRefund", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("GatewayRefundId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastCheckedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RefundNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GatewayRefundId")
+                        .IsUnique()
+                        .HasFilter("[GatewayRefundId] IS NOT NULL");
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("RefundNumber")
+                        .IsUnique();
+
+                    b.ToTable("PaymentRefunds", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PaymentRefunds_Amount_Positive", "[Amount] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.PaymentWebhook", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("EventId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("GatewayOrderId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("HangfireJobId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentGatewayId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("RazorpayCreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId")
+                        .IsUnique();
+
+                    b.ToTable("PaymentWebhooks", (string)null);
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Quote", b =>
@@ -1202,6 +1393,17 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Navigation("Booking");
                 });
 
+            modelBuilder.Entity("TravoRides.Domain.Entities.PaymentRefund", b =>
+                {
+                    b.HasOne("TravoRides.Domain.Entities.Payment", "Payment")
+                        .WithMany("PaymentRefunds")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Payment");
+                });
+
             modelBuilder.Entity("TravoRides.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("TravoRides.Domain.Entities.User", "User")
@@ -1285,6 +1487,11 @@ namespace TravoRides.Infrastructure.Migrations
             modelBuilder.Entity("TravoRides.Domain.Entities.Package", b =>
                 {
                     b.Navigation("PackageRates");
+                });
+
+            modelBuilder.Entity("TravoRides.Domain.Entities.Payment", b =>
+                {
+                    b.Navigation("PaymentRefunds");
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Transit", b =>

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using TravoRides.Application.Repositories;
-using TravoRides.Infrastructure.Context;
 using TravoRides.Domain.Entities;
+using TravoRides.Infrastructure.Context;
 
 namespace TravoRides.Infrastructure.Repository
 {
@@ -13,11 +11,13 @@ namespace TravoRides.Infrastructure.Repository
 
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
-  public ILatestThinkingRepository LatestThinkings { get; }
+        public ILatestThinkingRepository LatestThinkings { get; }
         public IEnquiryRepository Enquiries { get; }
         public IReviewRepository Reviews { get; }
         public IBookingRepository Bookings { get; }
-        public IGenericRepository<Payment> Payments { get; }
+        public IPaymentRepository Payments { get; }
+        public IPaymentRefundRepository PaymentRefunds { get; }
+        public IPaymentWebhookRepository PaymentWebhooks { get; }
         public IGenericRepository<Subscription> Subscriptions { get; }
         public IGenericRepository<Quote> Quotes { get; }
              
@@ -31,17 +31,27 @@ namespace TravoRides.Infrastructure.Repository
         public IPackageRateRepository PackageRates { get; }
         public ITransitRateRepository TransitRates { get; }
         public IPackageRepository Packages { get; }
-         
 
-
-
-        public UnitOfWork(ApplicationDbContext context, ICabRepository cabs, ISelfDriveRepository selfDrives, 
-           IUserRepository user ,IRefreshTokenRepository refreshTokens,
-            IOtpVerificationRepository otpVerifications,ITransitRepository transit,
-            ICategoryRepository category, IFeatureMasterRepository featureMasters, IPackageRepository packages
-            ,IEnquiryRepository enquiries, IReviewRepository reviews,IBookingRepository booking,
-            ILatestThinkingRepository latestThinking,IPackageRateRepository packageRate,
-            ITransitRateRepository transitRate)
+        public UnitOfWork(
+            ApplicationDbContext context,
+            ICabRepository cabs,
+            ISelfDriveRepository selfDrives, 
+            IUserRepository user,
+            IRefreshTokenRepository refreshTokens,
+            IOtpVerificationRepository otpVerifications,
+            ITransitRepository transit,
+            ICategoryRepository category,
+            IFeatureMasterRepository featureMasters,
+            IPackageRepository packages,
+            IEnquiryRepository enquiries,
+            IReviewRepository reviews,
+            IBookingRepository booking,
+            ILatestThinkingRepository latestThinking,
+            IPackageRateRepository packageRate,
+            ITransitRateRepository transitRate,
+            IPaymentRepository payments,
+            IPaymentRefundRepository paymentRefunds,
+            IPaymentWebhookRepository paymentWebhooks)
         {
             _context = context;
             Cabs = cabs;
@@ -59,15 +69,37 @@ namespace TravoRides.Infrastructure.Repository
             LatestThinkings = latestThinking;
             PackageRates = packageRate;
             TransitRates = transitRate;
-            Payments = new GenericRepository<Payment>(context);
+            Payments = payments;
+            PaymentRefunds = paymentRefunds;
+            PaymentWebhooks = paymentWebhooks;
             Subscriptions = new GenericRepository<Subscription>(context);
             Quotes = new GenericRepository<Quote>(context);
         }
+
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-           => await _context.SaveChangesAsync();
+            => await _context.SaveChangesAsync(cancellationToken);
 
         public void Dispose()
             => _context.Dispose();
 
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            await _context.Database.BeginTransactionAsync(cancellationToken);
+        }
+
+        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            var transaction = _context.Database.CurrentTransaction;
+            if (transaction != null)
+                await transaction.CommitAsync(cancellationToken);
+        }
+
+        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            var transaction = _context.Database.CurrentTransaction;
+            if (transaction != null)
+                await transaction.RollbackAsync(cancellationToken);
+        }
     }
 }
+

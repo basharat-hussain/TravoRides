@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.25" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.25" />
     <PackageReference Include="MailKit" Version="4.17.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
@@ -20,6 +23,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.11" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Razorpay" Version="3.3.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
   </ItemGroup>
 
@@ -41,3 +46,4 @@
 	  </Content>
 	</ItemGroup>
 </Project>
+

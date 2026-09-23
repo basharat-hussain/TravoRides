@@ -98,7 +98,7 @@ namespace TravoRides.Application.Services
             };
         }
 
-        private async Task<decimal> GetBookingRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+        private async Task<decimal> GetBookingAmountAsync(CreateBookingRequest request, CancellationToken cancellationToken)
         {
             switch (request.BookingType)
             {
@@ -148,7 +148,7 @@ namespace TravoRides.Application.Services
             }
 
             // Calculate rate based on booking type
-            var rate = await GetBookingRateAsync(request, cancellationToken);
+            var totalAmount = await GetBookingAmountAsync(request, cancellationToken);
 
             // Create booking
             var booking = new Booking
@@ -189,7 +189,7 @@ namespace TravoRides.Application.Services
 
                 IsConfirmed = false,
                 // Server-calculated amount
-                Rate = rate
+                TotalAmount = totalAmount
             };
 
             await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
@@ -256,7 +256,7 @@ namespace TravoRides.Application.Services
             // Prevent negative price
             if (finalRate < 0)
             {
-                throw new ValidationException("Package discount cannot be greater than the package rate.");
+                throw new ValidationException("Package discount cannot be greater than the package totalAmount.");
             }
 
             return finalRate;
@@ -272,7 +272,7 @@ namespace TravoRides.Application.Services
 
             if (packageRate == null)
             {
-                throw new ResourceNotFoundException("No rate found for the selected cab and package.");
+                throw new ResourceNotFoundException("No totalAmount found for the selected cab and package.");
             }
 
             // Get both discounts
@@ -288,7 +288,7 @@ namespace TravoRides.Application.Services
             // Prevent negative price
             if (finalRate < 0)
             {
-                throw new ValidationException("Package discount cannot be greater than the package rate.");
+                throw new ValidationException("Package discount cannot be greater than the package totalAmount.");
             }
 
             return finalRate;
@@ -310,7 +310,7 @@ namespace TravoRides.Application.Services
             if (finalRate < 0)
             {
                 throw new ValidationException(
-                    "Cab discount cannot be greater than the Cab rate.");
+                    "Cab discount cannot be greater than the Cab totalAmount.");
             }
 
             return finalRate;
@@ -321,7 +321,7 @@ namespace TravoRides.Application.Services
 
             if (selfDrive == null)
             {
-                throw new ResourceNotFoundException("Self-drive rate not found for the selected cab.");
+                throw new ResourceNotFoundException("Self-drive totalAmount not found for the selected cab.");
             }
 
             // Get both discounts
@@ -338,7 +338,7 @@ namespace TravoRides.Application.Services
 
             if (finalRate < 0)
             {
-                throw new ValidationException("SelfDrive discount cannot be greater than the SelfDrive rate.");
+                throw new ValidationException("SelfDrive discount cannot be greater than the SelfDrive totalAmount.");
             }
 
 

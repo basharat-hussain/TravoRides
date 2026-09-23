@@ -108,7 +108,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<DateTime>("PickupTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Rate")
+                    b.Property<decimal>("TotalAmout")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -583,7 +583,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<Guid>("PackageId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Rate")
+                    b.Property<decimal>("TotalAmout")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -997,7 +997,7 @@ namespace TravoRides.Infrastructure.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Rate")
+                    b.Property<decimal>("TotalAmout")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 

@@ -1,5 +1,7 @@
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -7,14 +9,15 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using TravoRides.API.Middleware;
-using TravoRides.Application.Common.Responses;
-using TravoRides.Application.Interfaces.Services;
-using TravoRides.Infrastructure.Authentication;
-using TravoRides.Infrastructure.Services;
 using TravoRides.API.Services;
 using TravoRides.Application;
+using TravoRides.Application.Common.Responses;
 using TravoRides.Application.Interfaces;
+using TravoRides.Application.Interfaces.Services;
 using TravoRides.Infrastructure;
+using TravoRides.Infrastructure.Authentication;
+using TravoRides.Infrastructure.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -27,7 +30,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -51,6 +54,7 @@ builder.Services.AddSwaggerGen(options =>
             }
         });
 });
+
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddHttpContextAccessor();
@@ -59,54 +63,47 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-
 var jwtSettings = builder.Configuration
     .GetSection("Jwt")
     .Get<JwtSettings>();
 
 if (jwtSettings == null)
 {
-    throw new InvalidOperationException(
-        "JWT settings are not configured.");
+    throw new InvalidOperationException("JWT settings are not configured.");
 }
 
 if (string.IsNullOrWhiteSpace(jwtSettings.Key))
 {
-    throw new InvalidOperationException(
-        "JWT signing key is not configured.");
+    throw new InvalidOperationException("JWT signing key is not configured.");
 }
 
-builder.Services.AddAuthentication(
-    JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters =
-            new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-
-                IssuerSigningKey =
-                    new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(
-                            jwtSettings.Key)),
-
-                ValidateIssuer = true,
-
-                ValidIssuer = jwtSettings.Issuer,
-
-                ValidateAudience = true,
-
-                ValidAudience = jwtSettings.Audience,
-
-                ValidateLifetime = true,
-
-                ClockSkew = TimeSpan.Zero
-            };
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtSettings.Audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
     });
 
 builder.Services.AddRateLimiter(options =>
 {
-    // What happens when a request is rejected
+    options.AddFixedWindowLimiter(
+        "payment-api",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 10;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueLimit = 0;
+        });
+
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
     options.OnRejected = async (context, cancellationToken) =>
@@ -115,8 +112,7 @@ builder.Services.AddRateLimiter(options =>
 
         if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
         {
-            context.HttpContext.Response.Headers.RetryAfter =
-                ((int)retryAfter.TotalSeconds).ToString();
+            context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();
         }
         var response = new ApiResponse
         {
@@ -132,7 +128,7 @@ builder.Services.AddRateLimiter(options =>
         await context.HttpContext.Response.WriteAsync(json, cancellationToken);
     };
 
-    // Global fallback limiter — applies to all endpoints not otherwise configured
+    // Global fallback limiter
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: httpContext.User.Identity?.Name ?? httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
@@ -146,6 +142,7 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -163,15 +160,10 @@ app.UseCors("AngularPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
-app.MapControllers();
 
-app.Run();
-
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseHangfireDashboard("/hangfire");
 
 app.MapControllers();
 
 app.Run();
+
