@@ -18,7 +18,8 @@ function sendForgotPasswordOtp() {
             email: email
         },
         beforeSend: function () {
-            $("#send-otp-btn").prop("disabled", true);
+            $("#send-otp-btn").html("<i class='fas fa-spinner fa-spin'></i> Wait...").prop("disabled", true);
+
         },
         success: function (response) {
 
@@ -80,7 +81,8 @@ function verifyPasswordResetOtp() {
             otp: otp
         },
         beforeSend: function () {
-            $("#verify-otp-btn").prop("disabled", true);
+            $("#verify-otp-btn").html("<i class='fas fa-spinner fa-spin'></i> Wait...").prop("disabled", true);
+
         },
         success: function (response) {
 
@@ -157,7 +159,7 @@ function resetPassword() {
             confirmPassword: confirmPassword
         },
         beforeSend: function () {
-            $("#reset-password-btn").prop("disabled", true);
+            $("#reset-password-btn").html("<i class='fas fa-spinner fa-spin'></i> Wait...").prop("disabled", true);
         },
         success: function (response) {
 

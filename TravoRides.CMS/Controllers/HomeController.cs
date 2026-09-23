@@ -43,12 +43,20 @@ namespace TravoRides.CMS.Controllers
                 });
             }
 
-            var response = await _apiService.PostAsync<ChangePasswordRequest, ApiResponse<object>>(
+            var apiResponse = await _apiService.PostAsync<ChangePasswordRequest, ApiResponse<object>>(
                 "api/Auth/change-password",
                 model
             );
+            if (apiResponse == null || !apiResponse.IsSuccess)
+            {
+                return Json(new[] {"False",apiResponse?.Message ?? "Error occured while Changing Password."
+            });
+            }
 
-            return Json(response);
+            return Json(new[] { "True", apiResponse.Message ?? "Password Changed successfully."
+            });
+
+         
         }
     }
 }
