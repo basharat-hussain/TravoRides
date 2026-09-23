@@ -36,15 +36,22 @@ namespace TravoRides.CMS.Controllers
             if (item == null) return NotFound();
             return View(item);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetCabsByCategory(Guid categoryId)
+        {
+            var response = await _apiService.GetAsync<ApiResponse<List<CabDTO>>>(
+                $"api/Cab/by-category/{categoryId}");
+
+            return Json(response);
+        }
 
         [HttpGet]
-
         public async Task<IActionResult> Create()
         {
-            var response = await _apiService.GetAsync<ApiResponse<PagedResponse<CabDTO>>>
-                ("api/Category?pageNumber=1&pageSize=40");
+            var response = await _apiService.GetAsync<ApiResponse<PagedResponse<CategoryDTO>>>
+                ("api/Category?pageNumber=1&pageSize=50");
 
-            ViewBag.Cabs = response.Data.Items;
+            ViewBag.Categories = response.Data.Items ?? new List<CategoryDTO>();
 
             return View(new CreateSelfDriveRequest());
         }
@@ -73,33 +80,30 @@ namespace TravoRides.CMS.Controllers
         "True",
         apiResponse.Message ?? "SelfDrive created successfully."
         });
-            }
-        
+        }
+       
         [HttpGet]
+
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response = await _apiService.GetAsync<ApiResponse<SelfDriveDTO>>($"api/SelfDrive/{id}");
+            var response =await _apiService.GetAsync<ApiResponse<SelfDriveDTO>>($"api/SelfDrive/{id}");
             var item = response?.Data;
             if (item == null) return NotFound();
-            // Get categories for dropdown
-            var categoryResponse = await _apiService.GetAsync<
-            ApiResponse<PagedResponse<CabDTO>>>("api/Cab?pageNumber=1&pageSize=100");
 
-            ViewBag.Cabs = categoryResponse.Data?.Items ?? new List<CabDTO>();
+            var categoryResponse = await _apiService.GetAsync<ApiResponse<PagedResponse<CategoryDTO>>>(
+                    "api/Category?pageNumber=1&pageSize=100");
+            ViewBag.Categories = categoryResponse.Data?.Items ?? new List<CategoryDTO>();
+
             var model = new UpdateSelfDriveRequest
             {
                 Id = item.Id,
-               
                 PricePerDay = item.PricePerDay,
-                Discount = item.Discount,
-                
+                Discount = item.Discount
             };
 
             return View(model);
         }
-
-       
-
+ 
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, UpdateSelfDriveRequest model)
         {
@@ -152,5 +156,7 @@ namespace TravoRides.CMS.Controllers
                 return Json(response);
             }
         }
+
+
     }
 }

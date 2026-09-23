@@ -433,7 +433,7 @@
         toastr.options = {
             closeButton: true,
             progressBar: true,
-            timeOut: 5000
+            timeOut: 3000
         };
     }
 

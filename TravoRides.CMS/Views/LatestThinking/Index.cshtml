@@ -60,7 +60,18 @@
         var title = $btn.data('title') || '';
         var subtitle = $btn.data('subtitle') || '';
         var author = $btn.data('author') || '';
-        var technology = $btn.data('technology') || '';
+        var metaTitle = $btn.data('metaTitle') || '';
+                var metaDescription = $btn.data('metaDescription') || '';
+
+                          var summary = $btn.data('summary') || '';
+              var takeAways = $btn.data('takeAways') || '';
+
+                                var slug = $btn.data('slug') || '';
+
+                                        var altImage = $btn.data('altImage') || '';
+
+                                                var canonicalUrl = $btn.data('canonicalUrl') || '';
+
         var description = $btn.data('description') || '';
         var image = $btn.data('image') || '';
 
@@ -74,7 +85,14 @@
         html += '<p><strong>Title:</strong> ' + $('<div/>').text(title).html() + '</p>';
         html += '<p><strong>Subtitle:</strong> ' + $('<div/>').text(subtitle).html() + '</p>';
         html += '<p><strong>Author:</strong> ' + $('<div/>').text(author).html() + '</p>';
-        html += '<p><strong>Technology:</strong> ' + $('<div/>').text(technology).html() + '</p>';
+        html += '<p><strong>Slug:</strong> ' + $('<div/>').text(slug).html() + '</p>';
+                html += '<p><strong>CanonicalUrl:</strong> ' + $('<div/>').text(canonicalUrl).html() + '</p>';
+        html += '<p><strong>ImageText:</strong> ' + $('<div/>').text(altImage).html() + '</p>';
+        html += '<p><strong>MetaTitle:</strong> ' + $('<div/>').text(metaTitle).html() + '</p>';
+        html += '<p><strong>KeyTakeways:</strong> ' + $('<div/>').text(takeAways).html() + '</p>';
+                html += '<p><strong>MetaDescription:</strong><br />' + $('<div/>').text(metaDescription).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '<p><strong>Summary:</strong><br />' + $('<div/>').text(summary).html().replace(/\n/g, '<br/>') + '</p>';
+
         html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
         html += '</div>';
         html += '</div>';

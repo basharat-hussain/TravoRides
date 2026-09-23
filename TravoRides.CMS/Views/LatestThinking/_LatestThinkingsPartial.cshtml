@@ -55,11 +55,16 @@
                     
                 </td>
                
+              
                 <td>
-                    @{ var fb = latestThinking.Description ?? string.Empty; }
-                    @((fb.Length > 50) ? fb.Substring(0, 50) + "..." : fb)
+                    @{
+                        var fb = latestThinking.Description ?? string.Empty;
+                        var truncated = fb.Length > 50
+                            ? fb.Substring(0, 50) + "..."
+                            : fb;
+                    }
+                    @Html.Raw(truncated)
                 </td>
-
                 <td class="project-actions text-center">
 
                     <a asp-controller="LatestThinking" asp-action="Edit" asp-route-id="@latestThinking.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
@@ -75,10 +80,15 @@
                             data-title="@latestThinking.Title"
                             data-subtitle="@latestThinking.Subtitle"
                             data-author="@latestThinking.Author"
-                            data-description="@latestThinking.Description"
+                            data-canonicalUrl="@latestThinking.CanonicalUrl"
+                            data-summary="@latestThinking.Summary"
+                            data-metaTitle="@latestThinking.MetaTitle"
+                            data-metaDescription="@latestThinking.MetaDescription"
+                            data-takeAways="@latestThinking.KeyTakeaways"
+                            data-slug="@latestThinking.Slug"
+                            data-description="@Html.Raw(latestThinking.Description)
                             data-image="@latestThinking.ImageUrl"
-                            
-                           >
+                            data-altImage="@latestThinking.ImageAltText">
                         View
                     </button>
                     </td>

@@ -54,6 +54,18 @@ namespace TravoRides.API.Controllers
             });
         }
 
+        [HttpGet("by-category/{categoryId:guid}")]
+        public async Task<IActionResult> GetByCategory( Guid categoryId,  CancellationToken cancellationToken)
+        {
+            var cabs = await _cabService.GetByCategoryIdAsync(  categoryId,  cancellationToken);
+
+            return Ok(new ApiResponse<List<CabDTO>>
+            {
+                IsSuccess = true,
+                Data = cabs
+            });
+        }
+
         // POST: api/Portfolio
         [HttpPost]
         [Authorize]

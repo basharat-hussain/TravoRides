@@ -11,7 +11,7 @@ namespace TravoRides.Application.Interfaces
         Task<PagedResponse<CabDTO>> GetAllAsync(SearchCabRequest request, CancellationToken cancellationToken = default);
 
         Task<CabDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-
+        Task<List<CabDTO>> GetByCategoryIdAsync( Guid categoryId, CancellationToken cancellationToken = default);
         Task<Guid> CreateAsync(CreateCabRequest request, CancellationToken cancellationToken = default);
 
         Task UpdateAsync(UpdateCabRequest request, CancellationToken cancellationToken = default);

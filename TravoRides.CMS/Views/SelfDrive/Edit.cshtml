@@ -46,34 +46,56 @@
                         <form id="editform" enctype="multipart/form-data" asp-controller="SelfDrive" asp-action="Edit" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
                             <input type="hidden" asp-for="Id" />
                             <div class="row">
-
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label asp-for="CabId" class="form-label">Category</label>
+                                        <label asp-for="CategoryId" class="form-label">Category</label>
+                                        <select id="CategoryId"
+                                                class="form-control"
+                                                asp-for="@Model.CategoryId">
 
-                                        <select asp-for="CabId" class="form-select">
-                                            <option value="">-- Select Cab --</option>
+                                            <option value="">-- Select Category --</option>
 
-                                            @foreach (var category in ViewBag.Cabs)
+                                            @foreach (var category in ViewBag.Categories)
                                             {
                                                 <option value="@category.Id">
                                                     @category.Name
                                                 </option>
                                             }
                                         </select>
+                                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                    </div>
+                                </div>
 
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="CabId" class="form-label">Cab</label>
+
+                                        @* <select id="CabId"
+                                                class="form-control"
+                                                asp-for="@Model.CabId">
+
+                                            <option value="">-- Select Cab --</option>
+
+                                            @if (Model.CabId != Guid.Empty)
+                                            {
+                                                <option value="@Model.CabId">
+                                                    @Model.CabName
+                                                </option>
+                                            }
+
+                                        </select> *@
+                                        <select id="CabId"
+                                                asp-for="@Model.CabId"
+                                                class="form-control"
+                                                data-selected-cab="@Model.CabId">
+
+                                            <option value="">-- Select Cab --</option>
+
+                                        </select>
                                         <span asp-validation-for="CabId" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Price</label>
-                                        <input asp-for="PricePerDay" class="form-control" />
-                                        <span asp-validation-for="PricePerDay" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-                           
+ 
                             <div class="row">
                                
 
@@ -84,13 +106,21 @@
                                         <span asp-validation-for="Discount" class="text-danger"></span>
                                     </div>
                                 </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Price</label>
+                                            <input asp-for="PricePerDay" class="form-control" />
+                                            <span asp-validation-for="PricePerDay" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        
+                        <div class="row">
                             <div class="form-group">
                                 <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save"></i> Save</button>
                                 <button type="reset" class="btn btn-danger"><i class="fas fa-recycle"></i> Reset</button>
                             </div>
-                           
+                            </div>
                         </form>
 
                     </div>

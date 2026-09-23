@@ -38,32 +38,52 @@
                           
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="CabId" class="form-label">Cab</label>
+                                    <label asp-for="CategoryId" class="form-label">Category</label>
 
-                                    <select asp-for="CabId" class="form-control">
-                                        <option value="">-- Select Cab --</option>
+                                    <select asp-for="CategoryId" class="form-control">
+                                        <option value="">-- Select Category --</option>
 
-                                        @foreach (var category in ViewBag.Cabs)
+                                        @foreach (var Category in ViewBag.Categories)
                                         {
-                                            <option value="@category.Id">
-                                                @category.Name
+                                            <option value="@Category.Id">
+                                                @Category.Name
                                             </option>
                                         }
                                     </select>
 
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CabId" class="form-label">Cab</label>
+                                  @*   <select asp-for="CabId" class="form-control">
+                                        <option value="">-- Select Cab --</option>
+
+                                        @foreach (var cab in ViewBag.Cabs)
+                                        {
+                                            <option value="@cab.Id">
+                                                @cab.Name
+                                            </option>
+                                        }
+                                    </select> *@
+                                    <select asp-for="CabId" id="CabId" name="CabId" class="form-control">
+                                        <option value="">-- Select Cab --</option>
+                                    </select>
                                     <span asp-validation-for="CabId" class="text-danger"></span>
                                 </div>
                             </div>
-                            
-                                <div class="col-md-6">
-                                 <div class="form-group">
-                                        <label>Price</label>
-                                        <input asp-for="PricePerDay" class="form-control" />
-                                        <span asp-validation-for="PricePerDay" class="text-danger"></span>
-                                    </div>
-                                </div>
+                                
                              </div>
                               <div class="row">
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <label>Price</label>
+                                    <input asp-for="PricePerDay" class="form-control" />
+                                    <span asp-validation-for="PricePerDay" class="text-danger"></span>
+                                </div>
+                            </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Discount</label>

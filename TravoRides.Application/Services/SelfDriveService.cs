@@ -32,7 +32,7 @@ namespace TravoRides.Application.Services
             if (request.PageSize > 100)
                 request.PageSize = 100;
 
-            var pagedResponse = await _unitOfWork.Cabs
+            var pagedResponse = await _unitOfWork.SelfDrives
                 .GetAllSearchAsync(
                     request.PageNumber,
                     request.PageSize,
@@ -53,7 +53,7 @@ namespace TravoRides.Application.Services
                 TotalPages = pagedResponse.TotalPages
             };
         }
-
+        // this is not used anywhere
         public async Task<SelfDriveDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(id, cancellationToken);
@@ -65,7 +65,7 @@ namespace TravoRides.Application.Services
         }
          public async Task<CabDTO?> GetByCabIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var selfDrive = await _unitOfWork.SelfDrives.GetSelfDriveById(id, cancellationToken);
+            var selfDrive = await _unitOfWork.SelfDrives.GetSelfDriveByCabId(id, cancellationToken);
             if (selfDrive == null) return null;
             return _mapper.Map<CabDTO>(selfDrive);
         }
@@ -100,6 +100,11 @@ namespace TravoRides.Application.Services
         {
             var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(request.Id, cancellationToken);
             if (selfDrive == null) throw new ResourceNotFoundException("Self-drive not found.");
+          
+            var cab = await _unitOfWork.Cabs.GetByIdAsync(request.CabId, cancellationToken);
+
+            if (cab == null) throw new ResourceNotFoundException("Cab not found.");
+           
             selfDrive.CabId = request.CabId;
 
             selfDrive.PricePerDay = request.PricePerDay;
@@ -108,7 +113,7 @@ namespace TravoRides.Application.Services
             _unitOfWork.SelfDrives.Update(selfDrive);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
-
+      
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(id, cancellationToken);

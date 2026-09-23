@@ -51,7 +51,7 @@ namespace TravoRides.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateSelfDriveRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "SelfDrive Created.", Data = id });
+            return CreatedAtAction(nameof(GetByCab), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "SelfDrive Created.", Data = id });
         }
 
         [HttpPut("{id:guid}")]
