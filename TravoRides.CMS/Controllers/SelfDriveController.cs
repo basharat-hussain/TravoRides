@@ -39,6 +39,14 @@ namespace TravoRides.CMS.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCabsByCategory(Guid categoryId)
         {
+            if (categoryId == Guid.Empty)
+            {
+                return Json(new ApiResponse<List<CabDTO>>
+                {
+                    IsSuccess = false,
+                    Message = "Invalid category."
+                });
+            }
             var response = await _apiService.GetAsync<ApiResponse<List<CabDTO>>>(
                 $"api/Cab/by-category/{categoryId}");
 

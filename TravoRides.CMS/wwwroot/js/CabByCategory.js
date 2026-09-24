@@ -20,7 +20,7 @@
         cabDropdown.prop('disabled', true);
 
         $.ajax({
-            url: '/Cab/GetByCategory',
+            url: '/SelfDrive/GetCabsByCategory',
             type: 'GET',
             data: {
                 categoryId: categoryId
