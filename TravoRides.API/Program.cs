@@ -25,7 +25,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200, https://travorides.com, https://admin.travorides.com") // Replace with your Angular app's URL
+        //policy.WithOrigins("http://localhost:4200, https://travorides.com, https://admin.travorides.com") // Replace with your Angular app's URL
+        policy.WithOrigins("https://travorides.com, https://admin.travorides.com") // Replace with your Angular app's URL
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -89,7 +90,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = jwtSettings.Audience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role
         };
     });
 

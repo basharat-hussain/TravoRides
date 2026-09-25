@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TravoRides.Application.Interfaces;
 using TravoRides.Domain.Entities;
@@ -9,8 +9,6 @@ using System.Runtime;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using TravoRides.Application.Interfaces;
-using TravoRides.Domain.Entities;
 
 namespace TravoRides.Infrastructure.Authentication
 {
@@ -27,14 +25,11 @@ namespace TravoRides.Infrastructure.Authentication
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-
-                new(JwtRegisteredClaimNames.Email,user.Email),
-
-                new(ClaimTypes.NameIdentifier,user.Id.ToString()),
-
-                new(ClaimTypes.Email,user.Email),
-
-               // new(ClaimTypes.Role,user.Role.ToString())
+                new(JwtRegisteredClaimNames.Email, user.Email),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Role, user.Role.ToString()),
+                new("role", user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key));
