@@ -21,18 +21,18 @@ namespace TravoRides.API.Controllers
             _currentUserService = currentUserService;
         }
 
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> RegisterUser([FromBody] CreateUserRequst request)
-        {
-            var result = await _userService.RegisterUserAsync(request);
-            return Ok(new ApiResponse<object>
-            {
-                IsSuccess = true,
-                Message = "User registered successfully.",
-                Data = result
-            });
-        }
+        //[HttpPost("register")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> RegisterUser([FromBody] CreateUserRequst request)
+        //{
+        //    var result = await _userService.RegisterUserAsync(request);
+        //    return Ok(new ApiResponse<object>
+        //    {
+        //        IsSuccess = true,
+        //        Message = "User registered successfully.",
+        //        Data = result
+        //    });
+        //}
 
         [HttpGet("me")]
         [Authorize(Roles = nameof(UserRole.Admin))]
