@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -68,7 +68,7 @@ namespace TravoRides.CMS.Controllers
             {
             new AuthenticationToken { Name = "access_token", Value = result.Data.AccessToken },
             new AuthenticationToken { Name = "refresh_token", Value = result.Data.RefreshToken },
-            new AuthenticationToken { Name = "expires_at", Value = result.Data.AccessTokenExpiresAt.ToString("O") }
+            new AuthenticationToken { Name = "expires_at", Value = DateTime.SpecifyKind(result.Data.AccessTokenExpiresAt, DateTimeKind.Utc).ToString("O") }
         });
 
             await HttpContext.SignInAsync( CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);

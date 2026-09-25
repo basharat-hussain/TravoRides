@@ -96,7 +96,7 @@ namespace TravoRides.Application.Services
 
                 if (!string.IsNullOrWhiteSpace(request.Email))
                 {
-                    await _emailService.SendEmailAsync(request.Email.Trim(), subject, body, true, cancellationToken);
+                    await _emailService.SendEmailAsync(request.Email.Trim(), subject, body, true, null, cancellationToken);
                 }
             return Enquiry.Id;
         }

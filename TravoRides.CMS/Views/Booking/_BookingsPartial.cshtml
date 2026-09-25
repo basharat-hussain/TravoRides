@@ -1,0 +1,140 @@
+@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.BookingDTO
+@using TravoRides.Domain.Enums
+@model PagedResponse<BookingDTO>
+
+@if (Model != null && Model.Items.Any())
+{
+    <thead>
+        <tr>
+            <th style="width: 5%">#</th>
+            <th style="width: 11%">Booking No</th>
+            <th style="width: 17%">Customer</th>
+            <th style="width: 15%">Trip & Route</th>
+            <th style="width: 10%">Amount</th>
+            <th style="width: 11%">Confirmation</th>
+            <th style="width: 12%">Payment</th>
+            <th style="width: 10%">Booked On</th>
+            <th style="width: 8%" class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int count = (Model.PageNumber - 1) * Model.PageSize + 1;
+        }
+        @foreach (var b in Model.Items)
+        {
+            <tr>
+                <td>
+                    @(count++)
+                    <input type="hidden" class="hdn-id" value="@b.Id" />
+                </td>
+                <td>
+                    <strong class="text-primary name">@b.BookingNo</strong>
+                    @if (!string.IsNullOrEmpty(b.CabName))
+                    {
+                        <br /><small class="text-muted"><i class="fas fa-car mr-1"></i>@b.CabName</small>
+                    }
+                </td>
+                <td>
+                    <div><strong>@b.Name</strong></div>
+                    <div><small><i class="fas fa-phone mr-1"></i>@b.PhoneNo</small></div>
+                    @if (!string.IsNullOrWhiteSpace(b.Email))
+                    {
+                        <div><small><i class="fas fa-envelope mr-1"></i>@b.Email</small></div>
+                    }
+                </td>
+                <td>
+                    <div><i class="far fa-calendar-alt text-info mr-1"></i>@b.TravelDate.ToString("dd-MMM-yyyy")</div>
+                    @if (b.ReturnDate.HasValue)
+                    {
+                        <div><small class="text-muted"><i class="fas fa-undo-alt mr-1"></i>Return: @b.ReturnDate.Value.ToString("dd-MMM-yyyy")</small></div>
+                    }
+                    <div class="mt-1" style="font-size: 0.85rem;">
+                        <span class="text-success"><i class="fas fa-map-marker-alt mr-1"></i>@b.PickupLocation</span>
+                        <br />
+                        <span class="text-danger"><i class="fas fa-flag-checkered mr-1"></i>@b.DropLocation</span>
+                    </div>
+                </td>
+                <td>
+                    <strong class="text-dark">₹@b.TotalAmount.ToString("N2")</strong>
+                </td>
+                <td>
+                    @if (b.IsConfirmed)
+                    {
+                        <span class="badge badge-success px-2 py-1"><i class="fas fa-check mr-1"></i>Confirmed</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-warning px-2 py-1 text-dark"><i class="fas fa-clock mr-1"></i>Pending</span>
+                    }
+                </td>
+                <td>
+                    @if (b.IsPaid)
+                    {
+                        <span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i>Paid</span>
+                        @if (b.PaidAmount.HasValue && b.PaidAmount.Value > 0)
+                        {
+                            <div class="text-success font-weight-bold" style="font-size: 0.85rem;">₹@b.PaidAmount.Value.ToString("N2")</div>
+                        }
+                    }
+                    else if (b.PaymentStatus == PaymentStatus.Pending)
+                    {
+                        <span class="badge badge-warning px-2 py-1 text-dark"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>
+                    }
+                    else if (b.PaymentStatus == PaymentStatus.Failed)
+                    {
+                        <span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i>Failed</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary px-2 py-1"><i class="fas fa-minus-circle mr-1"></i>Not Done</span>
+                    }
+                </td>
+                <td>
+                    <small class="text-muted">@b.CreatedAt.ToString("dd-MMM-yyyy")</small>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showBookingDetails(this)"
+                            data-id="@b.Id"
+                            data-bookingno="@b.BookingNo"
+                            data-name="@b.Name"
+                            data-email="@b.Email"
+                            data-phone="@b.PhoneNo"
+                            data-whatsapp="@b.WhatsApp"
+                            data-cabname="@b.CabName"
+                            data-bookingtype="@b.BookingType"
+                            data-traveldate="@b.TravelDate.ToString("dd-MMM-yyyy")"
+                            data-returndate="@(b.ReturnDate.HasValue ? b.ReturnDate.Value.ToString("dd-MMM-yyyy") : "")"
+                            data-pickuptime="@b.PickupTime.ToString("hh:mm tt")"
+                            data-pickuplocation="@b.PickupLocation"
+                            data-droplocation="@b.DropLocation"
+                            data-passengers="@b.Passengers"
+                            data-luggage="@b.Luggage"
+                            data-specialreq="@b.SpecialRequirements"
+                            data-isconfirmed="@b.IsConfirmed"
+                            data-totalamount="@b.TotalAmount"
+                            data-ispaid="@b.IsPaid"
+                            data-paidamount="@(b.PaidAmount.HasValue ? b.PaidAmount.Value.ToString("N2") : "")"
+                            data-paymentstatus="@(b.PaymentStatus.HasValue ? b.PaymentStatus.ToString() : "")"
+                            data-createdat="@b.CreatedAt.ToString("dd-MMM-yyyy hh:mm tt")"
+                            title="View Details">
+                        <i class="fas fa-eye mr-1"></i>View
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+}
+else
+{
+    <tbody>
+        <tr>
+            <td colspan="9" class="text-center py-4 text-muted">
+                <i class="fas fa-calendar-times fa-2x mb-2 d-block text-secondary"></i>
+                No bookings found matching the selected criteria.
+            </td>
+        </tr>
+    </tbody>
+}
+

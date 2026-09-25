@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Authentication;
 using TravoRides.Application.Interfaces;
@@ -17,8 +18,8 @@ namespace TravoRides.API.Controllers
         private readonly IForgotPasswordService _forgotPassword;
         private readonly ICurrentUserService _currentUserService;
 
-        public AuthController(IAuthService authService, IForgotPasswordService forgotPassword, 
-            IOtpVerificationService otpVerificationService, ICurrentUserService currentUserService  )
+        public AuthController(IAuthService authService, IForgotPasswordService forgotPassword,
+            IOtpVerificationService otpVerificationService, ICurrentUserService currentUserService)
         {
             _authService = authService;
             _forgotPassword = forgotPassword;
@@ -27,6 +28,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("login-api")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
             var response = await _authService.LoginAsync(request, cancellationToken);
@@ -39,7 +41,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("refresh-token-api")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             var result = await _authService.RefreshTokenAsync(request, cancellationToken);
@@ -53,7 +56,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("login-api")]
         public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             await _authService.LogoutAsync(request.RefreshToken, cancellationToken);
@@ -105,8 +109,8 @@ namespace TravoRides.API.Controllers
             });
         }
         [HttpPost("change-password")]
-        [Authorize]
-       // [EnableRateLimiting("password-reset-api")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("login-api")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
         {
             var userId = _currentUserService.UserId;

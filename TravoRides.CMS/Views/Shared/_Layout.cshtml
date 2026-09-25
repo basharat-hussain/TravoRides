@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,7 +36,7 @@
 
         @* Preloader *@
         <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__shake" src="~/images/alarwa_logo_main.png" alt="AASLogo">
+            <img class="animation__shake" src="~/images/travorides_logo.png" alt="TravoRides Logo" style="max-height: 80px;">
 
         </div>
 
@@ -101,12 +101,13 @@
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-cogs text-purple mr-2"></i> Settings
                         </a>
+
                         <div class="dropdown-divider"></div>
-                        <a asp-controller="Login" asp-action="Logout" class="dropdown-item">
+                        <a asp-controller="Login"
+                           asp-action="Logout"
+                           class="dropdown-item logout-link">
                             <i class="fas fa-power-off text-danger mr-2"></i> Logout
                         </a>
-                        <div class="dropdown-divider"></div>
-
                     </div>
                 </li>
 
@@ -115,9 +116,9 @@
 
         @* Sidebar *@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a asp-controller="Home" asp-action="Index" class="brand-link">
-                <img src="~/dist/img/SMCLogo.png" alt="TMSS Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">TravoRides CMS</span>
+            <a asp-controller="Home" asp-action="Index" class="brand-link bg-white" style="border-bottom: 1px solid #dee2e6;">
+                <img src="~/images/travorides_logo.png" alt="TravoRides Logo" class="brand-image" style="max-height: 33px; opacity: 1;">
+                <span class="brand-text font-weight-bold text-dark">CMS</span>
             </a>
 
             <div class="sidebar">
@@ -141,6 +142,22 @@
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
                                     Dashboard
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Booking" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check text-success"></i>
+                                <p>
+                                    Bookings
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Payment" asp-action="Index" class="nav-link">
+                                <i class="nav-icon fas fa-credit-card text-warning"></i>
+                                <p>
+                                    Payments
                                 </p>
                             </a>
                         </li>
@@ -235,7 +252,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Login" asp-action="Logout" class="nav-link">
+                            <a asp-controller="Login" asp-action="Logout" class="nav-link logout-link">
                                 <i class="nav-icon fas fa-power-off text-danger"></i>
                                 <p>
                                     Logout
@@ -321,3 +338,26 @@
     </script>
 </body>
 </html>
+<script>
+    $(document).on('click', '.logout-link', function (e) {
+        e.preventDefault();
+
+        const logoutUrl = $(this).attr('href');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will be logged out of your account.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, Logout',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = logoutUrl;
+            }
+        });
+    });
+</script>

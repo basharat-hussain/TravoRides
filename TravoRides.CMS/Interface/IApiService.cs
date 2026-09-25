@@ -1,4 +1,4 @@
-﻿using TravoRides.Application.Common.Responses;
+using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Authentication;
 using TravoRides.CMS.Models;
 
@@ -21,7 +21,7 @@ namespace TravoRides.CMS.Interface
 
         Task<ApiResponse<LoginResponse?>> LoginAsync(LoginModel model);
 
-        Task<LoginResponse?> RefreshTokenAsync();
+        Task<RefreshTokenResponse?> RefreshTokenAsync();
         Task<bool> LogoutAsync();
     }
 }

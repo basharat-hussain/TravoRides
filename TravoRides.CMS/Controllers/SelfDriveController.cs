@@ -94,7 +94,7 @@ namespace TravoRides.CMS.Controllers
 
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response =await _apiService.GetAsync<ApiResponse<SelfDriveDTO>>($"api/SelfDrive/{id}");
+            var response =await _apiService.GetAsync<ApiResponse<CabDTO>>($"api/SelfDrive/{id}/GetByCab");
             var item = response?.Data;
             if (item == null) return NotFound();
 
@@ -104,16 +104,18 @@ namespace TravoRides.CMS.Controllers
 
             var model = new UpdateSelfDriveRequest
             {
-                Id = item.Id,
-                PricePerDay = item.PricePerDay,
-                Discount = item.Discount
+                SelfDriveId = item.SelfDrive.Id,
+                PricePerDay = item.SelfDrive.PricePerDay,
+                Discount = item.SelfDrive.Discount,
+                CategoryId = item.Category.Id,
+                CabId = item.Id
             };
 
             return View(model);
         }
  
         [HttpPost]
-        public async Task<IActionResult> Edit(Guid id, UpdateSelfDriveRequest model)
+        public async Task<IActionResult> Edit(Guid selfDriveId, UpdateSelfDriveRequest model)
         {
             var response = new string[] { };
 
@@ -123,14 +125,8 @@ namespace TravoRides.CMS.Controllers
                 return Json(response);
             }
 
-            //var category = new UpdateSelfDriveRequest
-            //{
-            //    Id = id,
-            //    PricePerDay = model.PricePerDay,
-            //    Discount = model.Discount
-            //};
 
-            await _apiService.PutAsync<UpdateSelfDriveRequest, ApiResponse<object>>($"api/SelfDrive/{id}", model);
+            await _apiService.PutAsync<UpdateSelfDriveRequest, ApiResponse<object>>($"api/SelfDrive/{selfDriveId}", model);
 
             response = new[] { "True", "Updated successfully." };
             return Json(response);

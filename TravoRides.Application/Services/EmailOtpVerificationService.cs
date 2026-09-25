@@ -76,7 +76,7 @@ namespace TravoRides.Application.Services
 
             var template = await _templateService.GetEmailOTPVerificationTemplateAsync(otp, EXPIRATION_MINUTES);
 
-            await _emailService.SendEmailAsync(user.Email, subject, template, true, cancellationToken);
+            await _emailService.SendEmailAsync(user.Email, subject, template, true, null, cancellationToken);
         }
 
         public async Task<bool> VerifyOtpAsync(string email, string otp, VerificationOtpPurpose purpose, CancellationToken cancellationToken = default)

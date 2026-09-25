@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Package;
@@ -7,6 +8,7 @@ using TravoRides.Application.DTOs.PackageRate;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
 using TravoRides.Domain.Entities;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -60,6 +62,8 @@ namespace TravoRides.API.Controllers
 
        //======================================== POST =====================================
         [HttpPost("{packageId:guid}/cabs")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> AddCabsToPackage( Guid packageId,[FromBody] PackageCabRequest request, CancellationToken cancellationToken)
         {
             await _service.AddCabsToPackageAsync( packageId, request, cancellationToken);
@@ -72,7 +76,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Create([FromForm] CreatePackageRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -82,7 +87,8 @@ namespace TravoRides.API.Controllers
         //========================================= PUT ==============================================
 
         [HttpPut("{id:guid}")]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromForm] UpdatePackageRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -91,6 +97,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{packageId:guid}/cabs/{cabId:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> UpdatePackageCab( Guid packageId, Guid cabId, [FromBody] UpdatePackageCabRequest request, CancellationToken cancellationToken)
         {
             await _service.UpdatePackageCabAsync( packageId, cabId, request, cancellationToken);
@@ -105,7 +113,8 @@ namespace TravoRides.API.Controllers
         //========================================== DELETE ==============================
 
         [HttpDelete("{id:guid}")]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);
@@ -113,6 +122,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{packageId:guid}/cabs/{cabId:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> RemoveCabFromPackage( Guid packageId, Guid cabId, CancellationToken cancellationToken)
         {
             await _service.RemoveCabFromPackageAsync( packageId, cabId, cancellationToken);

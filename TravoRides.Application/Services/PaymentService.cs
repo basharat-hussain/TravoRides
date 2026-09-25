@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Payment;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Interfaces.Notifications;
@@ -18,19 +20,22 @@ namespace TravoRides.Application.Services
         private readonly IPaymentNumberGenerator _numberGenerator;
         private readonly IPaymentStateService _paymentStateService;
         private readonly IJobScheduler _jobScheduler;
+        private readonly IMapper _mapper;
 
         public PaymentService(
             IPaymentGateway paymentGateway,
             IUnitOfWork unitOfWork,
             IPaymentNumberGenerator numberGenerator,
             IPaymentStateService paymentStateService,
-            IJobScheduler jobScheduler)
+            IJobScheduler jobScheduler,
+            IMapper mapper)
         {
             _paymentGateway = paymentGateway;
             _unitOfWork = unitOfWork;
             _numberGenerator = numberGenerator;
             _paymentStateService = paymentStateService;
             _jobScheduler = jobScheduler;
+            _mapper = mapper;
         }
 
         public async Task<CreatePaymentResponse> CreatePaymentAsync(CreatePaymentRequest request, CancellationToken cancellationToken = default)
@@ -213,6 +218,74 @@ namespace TravoRides.Application.Services
                 Success = true,
                 Message = "Payment verified successfully."
             };
+        }
+
+        public async Task<PagedResponse<PaymentDTO>> GetAllAsync(SearchPaymentRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request.PageNumber < 1) request.PageNumber = 1;
+            if (request.PageSize < 1) request.PageSize = 10;
+            if (request.PageSize > 100) request.PageSize = 100;
+
+            DateTime? fromDate = request.FromDate;
+            DateTime? toDate = request.ToDate;
+
+            if (!string.IsNullOrWhiteSpace(request.DateFilter))
+            {
+                var filter = request.DateFilter.Trim().ToLowerInvariant();
+                var today = DateTime.Today;
+
+                switch (filter)
+                {
+                    case "today":
+                        fromDate = today;
+                        toDate = today;
+                        break;
+                    case "thisweek":
+                        var diff = (7 + (int)today.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+                        fromDate = today.AddDays(-diff);
+                        toDate = today;
+                        break;
+                    case "thismonth":
+                        fromDate = new DateTime(today.Year, today.Month, 1);
+                        toDate = today;
+                        break;
+                    case "past3months":
+                        fromDate = today.AddMonths(-3);
+                        toDate = today;
+                        break;
+                    case "thisyear":
+                        fromDate = new DateTime(today.Year, 1, 1);
+                        toDate = today;
+                        break;
+                }
+            }
+
+            var paged = await _unitOfWork.Payments.GetAllSearchAsync(
+                request.PageNumber,
+                request.PageSize,
+                request.Keyword,
+                request.Status,
+                fromDate,
+                toDate,
+                cancellationToken);
+
+            var items = _mapper.Map<IEnumerable<PaymentDTO>>(paged.Items);
+
+            return new PagedResponse<PaymentDTO>
+            {
+                Items = items,
+                PageNumber = paged.PageNumber,
+                PageSize = paged.PageSize,
+                TotalCount = paged.TotalCount,
+                TotalPages = paged.TotalPages
+            };
+        }
+
+        public async Task<PaymentDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var payment = await _unitOfWork.Payments.GetByIdWithBookingAsync(id, cancellationToken);
+            if (payment == null) return null;
+            return _mapper.Map<PaymentDTO>(payment);
         }
     }
 }

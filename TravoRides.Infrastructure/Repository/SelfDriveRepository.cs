@@ -26,6 +26,7 @@ namespace TravoRides.Infrastructure.Repository
         CancellationToken cancellationToken)
         {
             var query = context.Cabs
+                .Include(c=>c.SelfDrive)
                 .Where(c => !c.IsDeleted)
                 .Join(
                     context.SelfDrives,
@@ -83,7 +84,8 @@ namespace TravoRides.Infrastructure.Repository
                     PricePerDay = x.SelfDrive.PricePerDay,
                     Discount = x.SelfDrive.Discount,
 
-                    CreatedAt = x.Cab.CreatedAt
+                    CreatedAt = x.Cab.CreatedAt,
+                    SelfDrive = x.SelfDrive
                 })
                 .ToListAsync(cancellationToken);
 
@@ -108,15 +110,21 @@ namespace TravoRides.Infrastructure.Repository
                 .Include(c => c.CabFeatures)
             .Join(context.SelfDrives, c => c.Id, s => s.CabId, (c, s) => new Cab
             {
+                Id = c.Id,
                 Name = c.Name,
+                CategoryId = c.CategoryId,
                 Category = c.Category,
                 CabFeatures = c.CabFeatures,
                 LuggageCapacity = c.LuggageCapacity,
                 SeatingCapacity = c.SeatingCapacity,
                 Fuel = c.Fuel,
                 Transmission = c.Transmission,
-                PricePerDay = s.PricePerDay,
-                Discount = s.Discount
+                SelfDrive = new SelfDrive
+                {
+                    Id = s.Id,
+                    PricePerDay = s.PricePerDay,
+                    Discount = s.Discount
+                }
             });
             return await query.FirstOrDefaultAsync(
                 c => c.Id == id,

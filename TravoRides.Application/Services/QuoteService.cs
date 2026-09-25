@@ -1,9 +1,11 @@
 using AutoMapper;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using TravoRides.Application.Common.Exceptions;
+using TravoRides.Application.Common.Models;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Quote;
 using TravoRides.Application.Interfaces;
@@ -20,13 +22,20 @@ namespace TravoRides.Application.Services
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly EmailSettings _emailSettings;
 
-        public QuoteService(IUnitOfWork unitOfWork, IMapper mapper,IEmailService emailService, IEmailTemplateService emailTemplate)
+        public QuoteService(
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IEmailService emailService, 
+            IEmailTemplateService emailTemplate,
+            IOptions<EmailSettings> emailSettings)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _emailService = emailService;
             _emailTemplateService = emailTemplate;
+            _emailSettings = emailSettings.Value;
         }
 
         public async Task<PagedResponse<QuoteDTO>> GetAllAsync(SearchQuoteRequest request, CancellationToken cancellationToken = default)
@@ -102,9 +111,21 @@ namespace TravoRides.Application.Services
 
                 );
 
+            var ownerEmail = _emailSettings.OwnerEmail?.Trim();
+
             if (!string.IsNullOrWhiteSpace(request.Email))
             {
-                await _emailService.SendEmailAsync(request.Email.Trim(), subject, body, true, cancellationToken);
+                var customerEmail = request.Email.Trim();
+                var ccEmail = !string.IsNullOrWhiteSpace(ownerEmail) &&
+                              !string.Equals(customerEmail, ownerEmail, StringComparison.OrdinalIgnoreCase)
+                    ? ownerEmail
+                    : null;
+
+                await _emailService.SendEmailAsync(customerEmail, subject, body, true, ccEmail, cancellationToken);
+            }
+            else if (!string.IsNullOrWhiteSpace(ownerEmail))
+            {
+                await _emailService.SendEmailAsync(ownerEmail, subject, body, true, null, cancellationToken);
             }
             return quote.Id;
         }

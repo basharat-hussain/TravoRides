@@ -52,6 +52,12 @@ namespace TravoRides.Application.Services
             };
         }
 
+        public async Task<IEnumerable<CategoryDTO>> GetCategoriesHavingCabsAsync(CancellationToken cancellationToken = default)
+        {
+            var categories = await _unitOfWork.Categories.GetCategoriesHavingCabsAsync(cancellationToken);
+            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
+        }
+
         public async Task<CategoryDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var category = await _unitOfWork.Categories.GetByIdAsync(id, cancellationToken);

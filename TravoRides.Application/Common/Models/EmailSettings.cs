@@ -1,4 +1,4 @@
-﻿namespace TravoRides.Application.Common.Models
+namespace TravoRides.Application.Common.Models
 {
     public class EmailSettings
     {
@@ -15,5 +15,7 @@
         public string FromName { get; set; } = null!;
 
         public bool EnableSsl { get; set; }
+
+        public string? OwnerEmail { get; set; }
     }
 }

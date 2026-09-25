@@ -1,4 +1,4 @@
-﻿
+
 using TravoRides.Domain.Common;
 using TravoRides.Domain.Enums;
 
@@ -25,6 +25,8 @@ namespace TravoRides.Domain.Entities
         public string WhatsApp { get; set; } = string.Empty;
 
         public DateTime TravelDate { get; set; }
+
+        public DateTime? ReturnDate { get; set; }
 
         public string PickupLocation { get; set; } = string.Empty;
 

@@ -1305,7 +1305,7 @@ namespace TravoRides.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("VerificationOtps");
+                    b.ToTable("VerificationOtps", (string)null);
                 });
 
             modelBuilder.Entity("TravoRides.Domain.Entities.Booking", b =>

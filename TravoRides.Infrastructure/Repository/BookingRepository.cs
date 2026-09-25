@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.DTOs.BookingReport;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Repositories;
@@ -19,42 +20,142 @@ namespace TravoRides.Infrastructure.Repository
             this.context = context;
         }
 
-        public async Task<PagedResponse<Booking>> GetAllSearchAsync( int pageNumber, int pageSize,string? keyword, CancellationToken cancellationToken)
+        public async Task<PagedResponse<Booking>> GetAllSearchAsync(SearchBookingRequest request, CancellationToken cancellationToken = default)
         {
             var query = context.Bookings    
                 .Where(b => !b.IsDeleted)
+                .Include(b => b.Payments)
+                .Include(b => b.Cab)
                 .AsNoTracking()
                 .AsQueryable();
 
-            // Search by keyword
-            if (!string.IsNullOrWhiteSpace(keyword))
+            // Search by keyword across name, email, phone, and booking number
+            if (!string.IsNullOrWhiteSpace(request.Keyword))
             {
-                string cleanKeyword = keyword.Trim();
+                string cleanKeyword = request.Keyword.Trim();
 
                 query = query.Where(c =>
                     c.Name.Contains(cleanKeyword) ||
-                    (c.Email != null &&
-                     c.Email.Contains(cleanKeyword)));
+                    (c.Email != null && c.Email.Contains(cleanKeyword)) ||
+                    (c.Phone != null && c.Phone.Contains(cleanKeyword)) ||
+                    (c.BookingNo != null && c.BookingNo.Contains(cleanKeyword)));
+            }
+
+            // Filter by confirmation status
+            if (request.IsConfirmed.HasValue)
+            {
+                query = query.Where(c => c.IsConfirmed == request.IsConfirmed.Value);
+            }
+
+            var today = DateTime.Today;
+            var scope = (request.BookingScope ?? "new").Trim().ToLowerInvariant();
+            var quick = (request.QuickFilter ?? "").Trim().ToLowerInvariant().Replace("-", "").Replace("_", "");
+
+            DateTime? computedFrom = request.FromDate?.Date;
+            DateTime? computedTo = request.ToDate?.Date;
+
+            if (!computedFrom.HasValue && !computedTo.HasValue && !string.IsNullOrWhiteSpace(quick) && quick != "all")
+            {
+                if (scope == "past")
+                {
+                    switch (quick)
+                    {
+                        case "yesterday":
+                            computedFrom = today.AddDays(-1);
+                            computedTo = today.AddDays(-1);
+                            break;
+                        case "lastweek":
+                            computedFrom = today.AddDays(-7);
+                            computedTo = today.AddDays(-1);
+                            break;
+                        case "lastmonth":
+                            computedFrom = today.AddDays(-30);
+                            computedTo = today.AddDays(-1);
+                            break;
+                    }
+                }
+                else // new / upcoming
+                {
+                    switch (quick)
+                    {
+                        case "today":
+                            computedFrom = today;
+                            computedTo = today;
+                            break;
+                        case "nextday":
+                        case "tomorrow":
+                            computedFrom = today.AddDays(1);
+                            computedTo = today.AddDays(1);
+                            break;
+                        case "thisweek":
+                            int daysUntilSunday = ((int)DayOfWeek.Sunday - (int)today.DayOfWeek + 7) % 7;
+                            computedFrom = today;
+                            computedTo = today.AddDays(daysUntilSunday);
+                            break;
+                        case "thismonth":
+                            computedFrom = today;
+                            computedTo = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                            break;
+                    }
+                }
+            }
+
+            if (computedFrom.HasValue)
+            {
+                query = query.Where(b => b.TravelDate >= computedFrom.Value);
+            }
+
+            if (computedTo.HasValue)
+            {
+                var endDate = computedTo.Value.AddDays(1);
+                query = query.Where(b => b.TravelDate < endDate);
+            }
+
+            // If no specific date filter or quick filter was given, enforce scope boundary
+            if (!computedFrom.HasValue && !computedTo.HasValue)
+            {
+                if (scope == "past")
+                {
+                    query = query.Where(b => b.TravelDate < today);
+                }
+                else if (scope != "all")
+                {
+                    // Default: new/upcoming bookings
+                    query = query.Where(b => b.TravelDate >= today);
+                }
             }
 
             // Total records
             var totalCount = await query.CountAsync(cancellationToken);
 
+            // Sorting:
+            // "by default new bookings should be displayed starting from today and then i.e. ascending date"
+            if (scope == "past")
+            {
+                query = query
+                    .OrderByDescending(c => c.TravelDate)
+                    .ThenByDescending(c => c.PickupTime);
+            }
+            else
+            {
+                query = query
+                    .OrderBy(c => c.TravelDate)
+                    .ThenBy(c => c.PickupTime);
+            }
+
             // Pagination
             var items = await query
-                .OrderByDescending(c => c.CreatedAt)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
-            var totalPages = (int)Math.Ceiling(
-                (double)totalCount / pageSize);
+            var totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 
             return new PagedResponse<Booking>
             {
                 Items = items,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize,
                 TotalCount = totalCount,
                 TotalPages = totalPages
             };
@@ -176,6 +277,7 @@ namespace TravoRides.Infrastructure.Repository
                     BookingDate = b.CreatedAt,
 
                     TravelDate = b.TravelDate,
+                    ReturnDate = b.ReturnDate,
 
                     PickupLocation = b.PickupLocation,
 
@@ -233,12 +335,13 @@ namespace TravoRides.Infrastructure.Repository
             };
         }
 
-        public async Task<Booking?> GetByIdAsync( Guid id, CancellationToken cancellationToken)
+        public new async Task<Booking?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await context.Bookings
                 .Include(x => x.Cab)
                 .Include(x => x.Transit)
                 .Include(x => x.Package)
+                .Include(x => x.Payments)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(
                     x => x.Id == id &&

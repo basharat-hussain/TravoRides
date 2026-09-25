@@ -98,7 +98,7 @@ namespace TravoRides.Application.Services
 
         public async Task UpdateAsync(UpdateSelfDriveRequest request, CancellationToken cancellationToken = default)
         {
-            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(request.Id, cancellationToken);
+            var selfDrive = await _unitOfWork.SelfDrives.GetByIdAsync(request.SelfDriveId, cancellationToken);
             if (selfDrive == null) throw new ResourceNotFoundException("Self-drive not found.");
           
             var cab = await _unitOfWork.Cabs.GetByIdAsync(request.CabId, cancellationToken);
@@ -106,7 +106,7 @@ namespace TravoRides.Application.Services
             if (cab == null) throw new ResourceNotFoundException("Cab not found.");
            
             selfDrive.CabId = request.CabId;
-
+            
             selfDrive.PricePerDay = request.PricePerDay;
             selfDrive.Discount = request.Discount;
 

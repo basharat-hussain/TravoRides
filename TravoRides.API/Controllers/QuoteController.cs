@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Quote;
 using TravoRides.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -19,7 +21,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet]
-      //  [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetAll([FromQuery] SearchQuoteRequest request, CancellationToken cancellationToken)
         {
             var data = await _service.GetAllAsync(request, cancellationToken);
@@ -27,7 +30,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-       // [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             var item = await _service.GetByIdAsync(id, cancellationToken);
@@ -45,6 +49,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateQuoteRequest request, CancellationToken cancellationToken = default)
         {
             request.Id = id;
@@ -53,7 +59,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-      //  [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
         {
             await _service.DeleteAsync(id, cancellationToken);

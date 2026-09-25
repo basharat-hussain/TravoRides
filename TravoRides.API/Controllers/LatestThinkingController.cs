@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.LatestThinking;
 using TravoRides.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -53,7 +55,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-       // [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Create([FromForm] CreateLatestThinkingRequest request, CancellationToken cancellationToken = default)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -67,7 +70,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-      //  [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromForm] UpdateLatestThinkingRequest request, CancellationToken cancellationToken = default)
         {
             request.Id = id;
@@ -83,7 +87,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-      //  [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
         {
             await _service.DeleteAsync(id, cancellationToken);

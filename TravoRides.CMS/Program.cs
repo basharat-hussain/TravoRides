@@ -57,6 +57,7 @@ app.UseStaticFiles();
 app.UseRouting();
 // Session MUST come before AuthenticationMiddleware
 app.UseSession();
+app.UseAuthentication();
 // custom authentication middleware
 app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthorization();

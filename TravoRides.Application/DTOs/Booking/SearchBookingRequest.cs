@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,5 +17,9 @@ namespace TravoRides.Application.DTOs.BookingDTO
         public DateTime? FromDate { get; set; }
 
         public DateTime? ToDate { get; set; }
+
+        public string? BookingScope { get; set; } = "new";
+
+        public string? QuickFilter { get; set; }
     }
 }

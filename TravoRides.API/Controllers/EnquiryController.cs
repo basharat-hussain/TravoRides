@@ -1,10 +1,12 @@
-﻿using TravoRides.Application.Common.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Enquirer;
 using TravoRides.Application.DTOs.Review;
 using TravoRides.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -20,7 +22,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet]
-      //  [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetAll([FromQuery]SearchEnquiryRequest request, CancellationToken cancellationToken = default)
         {
             var enquiry = await _service.GetAllAsync(request, cancellationToken);
@@ -35,6 +38,8 @@ namespace TravoRides.API.Controllers
 
         // GET: api/Enquiry/{id}
         [HttpGet("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             var enquiry = await _service.GetByIdAsync(id, cancellationToken);
@@ -69,21 +74,20 @@ namespace TravoRides.API.Controllers
             });
         }
 
+        // DELETE: api/Enquiry/{id}
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
+        {
+            await _service.DeleteAsync(id, cancellationToken);
 
-
-        //// DELETE: api/Enquiry/{id}
-        //[HttpDelete("{id:guid}")]
-        //[Authorize]
-        //public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
-        //{
-        //    await _service.DeleteAsync(id, cancellationToken);
-
-        //    return Ok(new ApiResponse<object>
-        //    {
-        //        IsSuccess = true,
-        //        Message = "Enquiry deleted successfully.",
-        //        Data = id
-        //    });
-        //}
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Enquiry deleted successfully.",
+                Data = id
+            });
+        }
     }
 }

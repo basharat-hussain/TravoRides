@@ -1,0 +1,266 @@
+@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.Payment
+@using TravoRides.Domain.Enums
+@model ApiResponse<PagedResponse<PaymentDTO>>
+
+@{
+    ViewData["Title"] = "Payments";
+    var keyword = (string?)ViewBag.Keyword ?? "";
+    var dateFilter = (string?)ViewBag.DateFilter ?? "";
+    var status = (string?)ViewBag.Status ?? "";
+    var fromDate = (string?)ViewBag.FromDate ?? "";
+    var toDate = (string?)ViewBag.ToDate ?? "";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1><i class="fas fa-credit-card text-success mr-2"></i>Payments</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item active">Payments</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- Quick Filter Buttons -->
+        <div class="mb-3 d-flex flex-wrap" style="gap: 8px;">
+            <a href="@Url.Action("Index", "Payment", new { keyword = keyword, status = status })"
+               class="btn btn-sm @(string.IsNullOrEmpty(dateFilter) ? "btn-primary" : "btn-outline-primary")">
+                <i class="fas fa-list mr-1"></i>All Time
+            </a>
+            <a href="@Url.Action("Index", "Payment", new { dateFilter = "today", keyword = keyword, status = status })"
+               class="btn btn-sm @(dateFilter == "today" ? "btn-primary" : "btn-outline-primary")">
+                <i class="fas fa-sun mr-1"></i>Today
+            </a>
+            <a href="@Url.Action("Index", "Payment", new { dateFilter = "thisweek", keyword = keyword, status = status })"
+               class="btn btn-sm @(dateFilter == "thisweek" ? "btn-primary" : "btn-outline-primary")">
+                <i class="fas fa-calendar-week mr-1"></i>This Week
+            </a>
+            <a href="@Url.Action("Index", "Payment", new { dateFilter = "thismonth", keyword = keyword, status = status })"
+               class="btn btn-sm @(dateFilter == "thismonth" ? "btn-primary" : "btn-outline-primary")">
+                <i class="fas fa-calendar-alt mr-1"></i>This Month
+            </a>
+            <a href="@Url.Action("Index", "Payment", new { dateFilter = "past3months", keyword = keyword, status = status })"
+               class="btn btn-sm @(dateFilter == "past3months" ? "btn-primary" : "btn-outline-primary")">
+                <i class="fas fa-history mr-1"></i>Past 3 Months
+            </a>
+            <a href="@Url.Action("Index", "Payment", new { dateFilter = "thisyear", keyword = keyword, status = status })"
+               class="btn btn-sm @(dateFilter == "thisyear" ? "btn-primary" : "btn-outline-primary")">
+                <i class="fas fa-calendar mr-1"></i>This Year
+            </a>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="card card-outline card-success mb-3">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-filter mr-1"></i>Search & Date Range Filter</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="get" asp-controller="Payment" asp-action="Index" id="paymentFilterForm">
+                    <input type="hidden" name="dateFilter" value="@dateFilter" id="hiddenDateFilter" />
+                    <div class="row">
+                        <!-- Keyword Search -->
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label for="keyword" class="font-weight-normal">Search Keyword</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input type="text" name="keyword" id="keyword" class="form-control"
+                                       value="@keyword" placeholder="Payment #, Booking #, Name, Phone" />
+                            </div>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label for="status" class="font-weight-normal">Payment Status</label>
+                            <select name="status" id="status" class="form-control">
+                                <option value="" selected="@(string.IsNullOrEmpty(status))">All Statuses</option>
+                                <option value="Paid" selected="@(status == "Paid")">Paid</option>
+                                <option value="Pending" selected="@(status == "Pending")">Pending</option>
+                                <option value="Failed" selected="@(status == "Failed")">Failed</option>
+                                <option value="Refunded" selected="@(status == "Refunded")">Refunded</option>
+                            </select>
+                        </div>
+
+                        <!-- From Date -->
+                        <div class="col-md-2 col-sm-6 mb-2">
+                            <label for="fromDate" class="font-weight-normal">From Date</label>
+                            <input type="date" name="fromDate" id="fromDate" class="form-control" value="@fromDate" />
+                        </div>
+
+                        <!-- To Date -->
+                        <div class="col-md-2 col-sm-6 mb-2">
+                            <label for="toDate" class="font-weight-normal">To Date</label>
+                            <input type="date" name="toDate" id="toDate" class="form-control" value="@toDate" />
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="col-md-2 col-sm-12 mb-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success mr-2 flex-fill" onclick="$('#hiddenDateFilter').val('custom');">
+                                <i class="fas fa-search mr-1"></i>Filter
+                            </button>
+                            <a asp-controller="Payment" asp-action="Index" class="btn btn-secondary flex-fill" title="Reset Filters">
+                                <i class="fas fa-undo mr-1"></i>Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Payments Data Card -->
+        <div class="card card-outline card-secondary">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title font-weight-bold">
+                    Payment Transactions
+                    @if (Model?.Data != null)
+                    {
+                        <span class="badge badge-success ml-2">Total: @Model.Data.TotalCount</span>
+                    }
+                </h3>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-striped table-hover dataTable mb-0" id="data-grid">
+                    @await Html.PartialAsync("_PaymentsPartial", Model?.Data)
+                </table>
+            </div>
+            <div class="card-footer clearfix">
+                @await Html.PartialAsync("~/Views/Shared/_PaginationPartial.cshtml", Model?.Data)
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_ManageModalsPartial" />
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    var module = "Payment";
+
+    function showPaymentDetails(btn) {
+        var $btn = $(btn);
+        var paymentNumber = $btn.data('paymentnumber') || '';
+        var bookingNo = $btn.data('bookingno') || '';
+        var customerName = $btn.data('customername') || '';
+        var customerEmail = $btn.data('customeremail') || '';
+        var customerPhone = $btn.data('customerphone') || '';
+        var amount = $btn.data('amount') || '';
+        var currency = $btn.data('currency') || 'INR';
+        var status = $btn.data('status') || '';
+        var gatewayName = $btn.data('gatewayname') || '';
+        var gatewayTxId = $btn.data('gatewaytransactionid') || '';
+        var gatewayOrderId = $btn.data('gatewayorderid') || '';
+        var paidAt = $btn.data('paidat') || '';
+        var createdAt = $btn.data('createdat') || '';
+        var refundedAmount = $btn.data('refundedamount') || '';
+        var refundedAt = $btn.data('refundedat') || '';
+        var failureReason = $btn.data('failurereason') || '';
+        var bookingRate = $btn.data('bookingrate') || '';
+        var travelDate = $btn.data('traveldate') || '';
+        var pickupLocation = $btn.data('pickuplocation') || '';
+        var dropLocation = $btn.data('droplocation') || '';
+
+        var html = '<div class="container-fluid">';
+
+        // Header Summary Row
+        html += '<div class="row mb-3 pb-2 border-bottom">';
+        html += '  <div class="col-md-7">';
+        html += '    <h4 class="text-primary mb-0 font-weight-bold">Payment #' + $('<div/>').text(paymentNumber).html() + '</h4>';
+        html += '    <small class="text-muted"><i class="far fa-clock mr-1"></i>Created: ' + $('<div/>').text(createdAt).html() + '</small>';
+        html += '  </div>';
+        html += '  <div class="col-md-5 text-md-right">';
+        if (status === 'Paid') {
+            html += '<span class="badge badge-success px-3 py-2 font-size-14"><i class="fas fa-check-circle mr-1"></i>Paid</span>';
+        } else if (status === 'Pending') {
+            html += '<span class="badge badge-warning px-3 py-2 font-size-14 text-dark"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>';
+        } else if (status === 'Failed') {
+            html += '<span class="badge badge-danger px-3 py-2 font-size-14"><i class="fas fa-times-circle mr-1"></i>Failed</span>';
+        } else if (status === 'Refunded' || status === 'PartiallyRefunded') {
+            html += '<span class="badge badge-info px-3 py-2 font-size-14"><i class="fas fa-undo mr-1"></i>' + $('<div/>').text(status).html() + '</span>';
+        } else {
+            html += '<span class="badge badge-secondary px-3 py-2 font-size-14">' + $('<div/>').text(status).html() + '</span>';
+        }
+        html += '  </div>';
+        html += '</div>';
+
+        // Payment Info & Customer Info
+        html += '<div class="row">';
+        // Left Column: Payment Details
+        html += '  <div class="col-md-6">';
+        html += '    <div class="card card-light mb-2">';
+        html += '      <div class="card-header py-1 bg-light font-weight-bold"><i class="fas fa-receipt mr-1 text-success"></i>Transaction Details</div>';
+        html += '      <div class="card-body p-2">';
+        html += '        <p class="mb-1"><strong>Amount:</strong> <span class="text-success font-weight-bold font-size-16">₹' + $('<div/>').text(amount).html() + ' ' + $('<div/>').text(currency).html() + '</span></p>';
+        html += '        <p class="mb-1"><strong>Gateway:</strong> ' + (gatewayName ? $('<div/>').text(gatewayName).html() : '<span class="text-muted">N/A</span>') + '</p>';
+        html += '        <p class="mb-1"><strong>Transaction ID:</strong> <span class="text-monospace">' + (gatewayTxId ? $('<div/>').text(gatewayTxId).html() : '<span class="text-muted">N/A</span>') + '</span></p>';
+        html += '        <p class="mb-1"><strong>Gateway Order ID:</strong> <span class="text-monospace">' + (gatewayOrderId ? $('<div/>').text(gatewayOrderId).html() : '<span class="text-muted">N/A</span>') + '</span></p>';
+        html += '        <p class="mb-1"><strong>Paid At:</strong> ' + (paidAt ? $('<div/>').text(paidAt).html() : '<span class="text-muted">Not completed</span>') + '</p>';
+        if (refundedAmount) {
+            html += '    <p class="mb-1 text-danger"><strong>Refunded:</strong> ₹' + $('<div/>').text(refundedAmount).html() + (refundedAt ? ' on ' + $('<div/>').text(refundedAt).html() : '') + '</p>';
+        }
+        if (failureReason) {
+            html += '    <p class="mb-1 text-danger"><strong>Failure Reason:</strong> ' + $('<div/>').text(failureReason).html() + '</p>';
+        }
+        html += '      </div>';
+        html += '    </div>';
+        html += '  </div>';
+
+        // Right Column: Booking & Customer Details
+        html += '  <div class="col-md-6">';
+        html += '    <div class="card card-light mb-2">';
+        html += '      <div class="card-header py-1 bg-light font-weight-bold"><i class="fas fa-calendar-check mr-1 text-info"></i>Associated Booking</div>';
+        html += '      <div class="card-body p-2">';
+        html += '        <p class="mb-1"><strong>Booking #:</strong> <span class="badge badge-light border font-weight-bold">' + (bookingNo ? $('<div/>').text(bookingNo).html() : '<span class="text-muted">N/A</span>') + '</span></p>';
+        html += '        <p class="mb-1"><strong>Customer:</strong> ' + (customerName ? $('<div/>').text(customerName).html() : '<span class="text-muted">N/A</span>') + '</p>';
+        html += '        <p class="mb-1"><strong>Phone:</strong> ' + (customerPhone ? $('<div/>').text(customerPhone).html() : '<span class="text-muted">N/A</span>') + '</p>';
+        html += '        <p class="mb-1"><strong>Email:</strong> ' + (customerEmail ? $('<div/>').text(customerEmail).html() : '<span class="text-muted">N/A</span>') + '</p>';
+        if (bookingRate) {
+            html += '    <p class="mb-1"><strong>Booking Total Rate:</strong> ₹' + $('<div/>').text(bookingRate).html() + '</p>';
+        }
+        html += '      </div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // Route Details if available
+        if (pickupLocation || dropLocation || travelDate) {
+            html += '<div class="card card-light mt-1">';
+            html += '  <div class="card-header py-1 bg-light font-weight-bold"><i class="fas fa-route mr-1 text-primary"></i>Trip Details</div>';
+            html += '  <div class="card-body p-2">';
+            if (travelDate) {
+                html += '    <p class="mb-1"><strong>Travel Date:</strong> ' + $('<div/>').text(travelDate).html() + '</p>';
+            }
+            if (pickupLocation) {
+                html += '    <p class="mb-1"><strong>Pickup:</strong> <span class="text-success">' + $('<div/>').text(pickupLocation).html() + '</span></p>';
+            }
+            if (dropLocation) {
+                html += '    <p class="mb-1"><strong>Drop:</strong> <span class="text-danger">' + $('<div/>').text(dropLocation).html() + '</span></p>';
+            }
+            html += '  </div>';
+            html += '</div>';
+        }
+
+        html += '</div>';
+
+        $('#modal-getbyid .lbl-module').text('Payment');
+        $('#modal-getbyid #modal-body').html(html);
+        $('#modal-getbyid').modal('show');
+    }
+</script>
+<script src="~/js/managemodule.js"></script>
+

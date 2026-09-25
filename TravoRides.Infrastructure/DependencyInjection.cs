@@ -95,7 +95,15 @@ namespace TravoRides.Infrastructure
 
             services.Configure<FileStorageOptions>(options => configuration.GetSection("FileStorage").Bind(options));
             services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
-            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+
+            services.Configure<EmailSettings>(options =>
+            {
+                configuration.GetSection("EmailSettings").Bind(options);
+                if (string.IsNullOrWhiteSpace(options.OwnerEmail))
+                {
+                    options.OwnerEmail = configuration["OwnerEmail"];
+                }
+            });
             services.Configure<PaymentOptions>(configuration.GetSection("Payment"));
             services.Configure<RefundReconciliationOptions>(configuration.GetSection("Payment:RefundReconciliation"));
 

@@ -25,7 +25,7 @@
         @if (Model is null)
         {
             <div class="offset-md-2 col-md-8 mt-4">
-                <div class="alert alert-warning text-center"><i class="fas fa-frown fa-4x"></i><h3 class="mt-2">Sorry! Category Details not found</h3></div>
+                <div class="alert alert-warning text-center"><i class="fas fa-frown fa-4x"></i><h3 class="mt-2">Sorry! Self-Drive Details not found</h3></div>
             </div>
         }
         else
@@ -44,14 +44,14 @@
                     </div>
                     <div class="card-body">
                         <form id="editform" enctype="multipart/form-data" asp-controller="SelfDrive" asp-action="Edit" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
-                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" asp-for="SelfDriveId" />
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label asp-for="CategoryId" class="form-label">Category</label>
                                         <select id="CategoryId"
                                                 class="form-control"
-                                                asp-for="@Model.CategoryId">
+                                                asp-for="CategoryId">
 
                                             <option value="">-- Select Category --</option>
 
@@ -63,6 +63,7 @@
                                             }
                                         </select>
                                         <span asp-validation-for="CategoryId" class="text-danger"></span>
+
                                     </div>
                                 </div>
 
@@ -147,5 +148,6 @@
 </script>
 
 <script src="~/js/managemodule.js"></script>
+<script src="~/js/CabByCategory.js"></script>
 
 

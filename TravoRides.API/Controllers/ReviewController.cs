@@ -1,10 +1,12 @@
-﻿using TravoRides.Application.Common.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Review;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -21,7 +23,8 @@ namespace TravoRides.API.Controllers
 
 
         [HttpGet("Admin")]
-       // [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetAll([FromQuery] SearchReviewRequest request, CancellationToken cancellationToken = default)
         {
             var review = await _service.GetAllAsync(request, cancellationToken);
@@ -49,7 +52,8 @@ namespace TravoRides.API.Controllers
 
         // GET: api/Review/{id}
         [HttpGet("{id:guid}")]
-      //  [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             var review = await _service.GetByIdAsync(id, cancellationToken);
@@ -93,7 +97,8 @@ namespace TravoRides.API.Controllers
         //}
 
         [HttpPut("{id:guid}/status")]
-       // [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateStatusRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -110,19 +115,20 @@ namespace TravoRides.API.Controllers
         }
 
 
-       // // DELETE: api/Review/{id}
-       // [HttpDelete("{id:guid}")]
-       //// [Authorize]
-       // public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
-       // {
-       //     await _service.DeleteAsync(id, cancellationToken);
+        // DELETE: api/Review/{id}
+        [HttpDelete("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
+        {
+            await _service.DeleteAsync(id, cancellationToken);
 
-       //     return Ok(new ApiResponse<object>
-       //     {
-       //         IsSuccess = true,
-       //         Message = "Review deleted successfully.",
-       //         Data = id
-       //     });
-       // }
+            return Ok(new ApiResponse<object>
+            {
+                IsSuccess = true,
+                Message = "Review deleted successfully.",
+                Data = id
+            });
+        }
     }
 }

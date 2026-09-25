@@ -1,18 +1,20 @@
 ﻿
-using Microsoft.AspNetCore.Mvc;
-using TravoRides.Application.Interfaces;
-using TravoRides.Application.DTOs.Cabs;
-using TravoRides.Application.DTOs.Review;
-using TravoRides.Application.DTOs.Category;
-using TravoRides.Application.DTOs.Package;
-using TravoRides.Application.DTOs.Transit;
-using TravoRides.Application.DTOs.FeaturesMaster;
-using TravoRides.Application.DTOs.Enquirer;
-using TravoRides.Application.DTOs.LatestThinking;
-using TravoRides.Application.DTOs.Subscription;
-using TravoRides.Application.Common.Responses;
-using TravoRides.Application.DTOs.SelfDrive;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Cabs;
+using TravoRides.Application.DTOs.Category;
+using TravoRides.Application.DTOs.Enquirer;
+using TravoRides.Application.DTOs.FeaturesMaster;
+using TravoRides.Application.DTOs.LatestThinking;
+using TravoRides.Application.DTOs.Package;
+using TravoRides.Application.DTOs.Review;
+using TravoRides.Application.DTOs.SelfDrive;
+using TravoRides.Application.DTOs.Subscription;
+using TravoRides.Application.DTOs.Transit;
+using TravoRides.Application.Interfaces;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -25,7 +27,8 @@ namespace TravoRides.API.Controllers
     {
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetCount(CancellationToken cancellationToken)
         {
             var cabs = await cabService.GetAllAsync(new SearchCabRequest());

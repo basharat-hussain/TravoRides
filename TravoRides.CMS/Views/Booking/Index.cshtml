@@ -1,0 +1,334 @@
+@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.DTOs.Common
+@using TravoRides.Application.DTOs.BookingDTO
+@model ApiResponse<PagedResponse<BookingDTO>>
+
+@{
+    ViewData["Title"] = "Bookings";
+    var keyword = (string?)ViewBag.Keyword ?? "";
+    var isConfirmed = (bool?)ViewBag.IsConfirmed;
+    var scope = (string?)ViewBag.Scope ?? "new";
+    var quickFilter = (string?)ViewBag.QuickFilter ?? "";
+    var fromDate = (string?)ViewBag.FromDate ?? "";
+    var toDate = (string?)ViewBag.ToDate ?? "";
+    bool isPast = scope.Equals("past", StringComparison.OrdinalIgnoreCase);
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1><i class="fas fa-calendar-check text-primary mr-2"></i>Bookings</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="breadcrumb-item active">Bookings</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <!-- Booking Scope Navigation Tabs -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card p-2 shadow-sm border-0 mb-0">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link font-weight-bold @(!isPast ? "active bg-primary shadow-sm" : "text-dark")" 
+                               asp-controller="Booking" asp-action="Index" 
+                               asp-route-scope="new"
+                               asp-route-keyword="@keyword"
+                               asp-route-isConfirmed="@isConfirmed">
+                                <i class="fas fa-calendar-alt mr-1"></i> New & Upcoming Bookings
+                                @if (!isPast && Model?.Data != null)
+                                {
+                                    <span class="badge badge-light ml-1 text-primary">@Model.Data.TotalCount</span>
+                                }
+                            </a>
+                        </li>
+                        <li class="nav-item ml-2">
+                            <a class="nav-link font-weight-bold @(isPast ? "active bg-secondary shadow-sm" : "text-dark")" 
+                               asp-controller="Booking" asp-action="Index" 
+                               asp-route-scope="past"
+                               asp-route-keyword="@keyword"
+                               asp-route-isConfirmed="@isConfirmed">
+                                <i class="fas fa-history mr-1"></i> Past Bookings
+                                @if (isPast && Model?.Data != null)
+                                {
+                                    <span class="badge badge-light ml-1 text-secondary">@Model.Data.TotalCount</span>
+                                }
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="card card-outline @(!isPast ? "card-primary" : "card-secondary") mb-3">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-filter mr-1"></i>Filter @(!isPast ? "New & Upcoming" : "Past") Bookings</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Quick Filter Buttons -->
+                <div class="d-flex flex-wrap align-items-center mb-3 pb-2 border-bottom">
+                    <span class="mr-3 font-weight-bold text-muted"><i class="far fa-clock mr-1"></i>Quick Filters:</span>
+                    @if (!isPast)
+                    {
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(string.IsNullOrEmpty(quickFilter) || quickFilter == "all" ? "btn-primary font-weight-bold" : "btn-outline-primary")" onclick="applyQuickFilter('all')">
+                            All Upcoming
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "today" ? "btn-primary font-weight-bold" : "btn-outline-primary")" onclick="applyQuickFilter('today')">
+                            <i class="fas fa-sun mr-1"></i>Today
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "next_day" || quickFilter == "nextday" ? "btn-primary font-weight-bold" : "btn-outline-primary")" onclick="applyQuickFilter('next_day')">
+                            <i class="fas fa-calendar-day mr-1"></i>Next Day
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "this_week" || quickFilter == "thisweek" ? "btn-primary font-weight-bold" : "btn-outline-primary")" onclick="applyQuickFilter('this_week')">
+                            <i class="fas fa-calendar-week mr-1"></i>This Week
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "this_month" || quickFilter == "thismonth" ? "btn-primary font-weight-bold" : "btn-outline-primary")" onclick="applyQuickFilter('this_month')">
+                            <i class="far fa-calendar mr-1"></i>This Month
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(string.IsNullOrEmpty(quickFilter) || quickFilter == "all" ? "btn-secondary font-weight-bold" : "btn-outline-secondary")" onclick="applyQuickFilter('all')">
+                            All Past
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "yesterday" ? "btn-secondary font-weight-bold" : "btn-outline-secondary")" onclick="applyQuickFilter('yesterday')">
+                            <i class="fas fa-history mr-1"></i>Yesterday
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "last_week" || quickFilter == "lastweek" ? "btn-secondary font-weight-bold" : "btn-outline-secondary")" onclick="applyQuickFilter('last_week')">
+                            <i class="fas fa-calendar-minus mr-1"></i>Last Week
+                        </button>
+                        <button type="button" class="btn btn-sm mr-2 mb-1 @(quickFilter == "last_month" || quickFilter == "lastmonth" ? "btn-secondary font-weight-bold" : "btn-outline-secondary")" onclick="applyQuickFilter('last_month')">
+                            <i class="far fa-calendar-times mr-1"></i>Last Month
+                        </button>
+                    }
+                </div>
+
+                <form method="get" asp-controller="Booking" asp-action="Index" id="bookingFilterForm">
+                    <input type="hidden" name="scope" value="@scope" />
+                    <input type="hidden" name="quickFilter" id="quickFilterInput" value="@quickFilter" />
+                    <div class="row">
+                        <!-- Keyword Search -->
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label for="keyword" class="font-weight-normal">Search Keyword</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input type="text" name="keyword" id="keyword" class="form-control"
+                                       value="@keyword" placeholder="Name, Phone, Email, Booking #" />
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Filter -->
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <label for="isConfirmed" class="font-weight-normal">Confirmation Status</label>
+                            <select name="isConfirmed" id="isConfirmed" class="form-control">
+                                <option value="" selected="@(!isConfirmed.HasValue)">All Statuses</option>
+                                <option value="true" selected="@(isConfirmed == true)">Confirmed</option>
+                                <option value="false" selected="@(isConfirmed == false)">Non-Confirmed (Pending)</option>
+                            </select>
+                        </div>
+
+                        <!-- From Date -->
+                        <div class="col-md-2 col-sm-6 mb-2">
+                            <label for="fromDate" class="font-weight-normal">From Date</label>
+                            <input type="date" name="fromDate" id="fromDate" class="form-control" value="@fromDate" />
+                        </div>
+
+                        <!-- To Date -->
+                        <div class="col-md-2 col-sm-6 mb-2">
+                            <label for="toDate" class="font-weight-normal">To Date</label>
+                            <input type="date" name="toDate" id="toDate" class="form-control" value="@toDate" />
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="col-md-2 col-sm-12 mb-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary mr-2 flex-fill">
+                                <i class="fas fa-search mr-1"></i>Filter
+                            </button>
+                            <a asp-controller="Booking" asp-action="Index" asp-route-scope="@scope" class="btn btn-secondary flex-fill" title="Reset Filters">
+                                <i class="fas fa-undo mr-1"></i>Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bookings Data Card -->
+        <div class="card card-outline @(!isPast ? "card-primary" : "card-secondary")">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title font-weight-bold">
+                    @if (!isPast)
+                    {
+                        <span class="text-primary"><i class="fas fa-calendar-check mr-2"></i>New &amp; Upcoming Bookings</span>
+                        <small class="text-muted ml-2">(Starting from today &bull; Ascending Travel Date)</small>
+                    }
+                    else
+                    {
+                        <span class="text-secondary"><i class="fas fa-history mr-2"></i>Past Bookings</span>
+                        <small class="text-muted ml-2">(Completed journeys &bull; Descending Travel Date)</small>
+                    }
+                    @if (Model?.Data != null)
+                    {
+                        <span class="badge badge-info ml-2">Total: @Model.Data.TotalCount</span>
+                    }
+                </h3>
+            </div>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-striped table-hover dataTable mb-0" id="data-grid">
+                    @await Html.PartialAsync("_BookingsPartial", Model?.Data)
+                </table>
+            </div>
+            <div class="card-footer clearfix">
+                @await Html.PartialAsync("~/Views/Shared/_PaginationPartial.cshtml", Model?.Data)
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_ManageModalsPartial" />
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+    var module = "Booking";
+
+    function applyQuickFilter(val) {
+        $('#quickFilterInput').val(val);
+        $('#fromDate').val('');
+        $('#toDate').val('');
+        $('#bookingFilterForm').submit();
+    }
+
+    function showBookingDetails(btn) {
+        var $btn = $(btn);
+        var bookingNo = $btn.data('bookingno') || '';
+        var name = $btn.data('name') || '';
+        var email = $btn.data('email') || '';
+        var phone = $btn.data('phone') || '';
+        var whatsapp = $btn.data('whatsapp') || '';
+        var cabName = $btn.data('cabname') || '';
+        var bookingType = $btn.data('bookingtype') || '';
+        var travelDate = $btn.data('traveldate') || '';
+        var returnDate = $btn.data('returndate') || '';
+        var pickupTime = $btn.data('pickuptime') || '';
+        var pickupLocation = $btn.data('pickuplocation') || '';
+        var dropLocation = $btn.data('droplocation') || '';
+        var passengers = $btn.data('passengers') || '';
+        var luggage = $btn.data('luggage') || '';
+        var specialReq = $btn.data('specialreq') || '';
+        var isConfirmed = $btn.data('isconfirmed');
+        var totalAmount = $btn.data('totalamount') || 0;
+        var isPaid = $btn.data('ispaid');
+        var paidAmount = $btn.data('paidamount') || '';
+        var paymentStatus = $btn.data('paymentstatus') || '';
+        var createdAt = $btn.data('createdat') || '';
+
+        var html = '<div class="container-fluid">';
+
+        // Header Summary Row
+        html += '<div class="row mb-3 pb-2 border-bottom">';
+        html += '  <div class="col-md-6">';
+        html += '    <h4 class="text-primary mb-0 font-weight-bold">Booking #' + $('<div/>').text(bookingNo).html() + '</h4>';
+        html += '    <small class="text-muted"><i class="far fa-clock mr-1"></i>Booked on: ' + $('<div/>').text(createdAt).html() + '</small>';
+        html += '  </div>';
+        html += '  <div class="col-md-6 text-md-right">';
+        if (isConfirmed === true || isConfirmed === 'True') {
+            html += '<span class="badge badge-success px-3 py-2 font-size-14 mr-1"><i class="fas fa-check mr-1"></i>Confirmed</span>';
+        } else {
+            html += '<span class="badge badge-warning px-3 py-2 font-size-14 mr-1 text-dark"><i class="fas fa-clock mr-1"></i>Non-Confirmed (Pending)</span>';
+        }
+
+        if (isPaid === true || isPaid === 'True') {
+            html += '<span class="badge badge-success px-3 py-2 font-size-14"><i class="fas fa-check-circle mr-1"></i>Payment Done</span>';
+        } else {
+            html += '<span class="badge badge-secondary px-3 py-2 font-size-14"><i class="fas fa-times-circle mr-1"></i>Payment Pending</span>';
+        }
+        html += '  </div>';
+        html += '</div>';
+
+        // Customer & Booking Info Cards
+        html += '<div class="row">';
+        // Left Column: Customer Details
+        html += '  <div class="col-md-6">';
+        html += '    <div class="card card-light">';
+        html += '      <div class="card-header py-1 bg-light font-weight-bold"><i class="fas fa-user mr-1 text-info"></i>Customer Information</div>';
+        html += '      <div class="card-body p-2">';
+        html += '        <p class="mb-1"><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
+        html += '        <p class="mb-1"><strong>Phone:</strong> ' + $('<div/>').text(phone).html() + '</p>';
+        if (whatsapp) {
+            html += '    <p class="mb-1"><strong>WhatsApp:</strong> ' + $('<div/>').text(whatsapp).html() + '</p>';
+        }
+        html += '        <p class="mb-1"><strong>Email:</strong> ' + (email ? $('<div/>').text(email).html() : '<span class="text-muted">N/A</span>') + '</p>';
+        html += '      </div>';
+        html += '    </div>';
+        html += '  </div>';
+
+        // Right Column: Payment Details
+        html += '  <div class="col-md-6">';
+        html += '    <div class="card card-light">';
+        html += '      <div class="card-header py-1 bg-light font-weight-bold"><i class="fas fa-receipt mr-1 text-success"></i>Payment Information</div>';
+        html += '      <div class="card-body p-2">';
+        html += '        <p class="mb-1"><strong>Booking Rate:</strong> <span class="text-primary font-weight-bold">₹' + Number(totalAmount).toFixed(2) + '</span></p>';
+        html += '        <p class="mb-1"><strong>Payment Status:</strong> ' + (paymentStatus ? $('<div/>').text(paymentStatus).html() : '<span class="text-muted">Not Attempted</span>') + '</p>';
+        html += '        <p class="mb-1"><strong>Paid Amount:</strong> ' + (paidAmount ? '<span class="text-success font-weight-bold">₹' + $('<div/>').text(paidAmount).html() + '</span>' : '<span class="text-muted">₹0.00</span>') + '</p>';
+        html += '      </div>';
+        html += '    </div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // Ride & Route Details
+        html += '<div class="card card-light mt-2">';
+        html += '  <div class="card-header py-1 bg-light font-weight-bold"><i class="fas fa-route mr-1 text-primary"></i>Ride & Route Details</div>';
+        html += '  <div class="card-body p-2">';
+        html += '    <div class="row">';
+        html += '      <div class="col-md-6">';
+        if (cabName) {
+            html += '    <p class="mb-1"><strong>Cab / Vehicle:</strong> ' + $('<div/>').text(cabName).html() + '</p>';
+        }
+        html += '        <p class="mb-1"><strong>Booking Type:</strong> ' + $('<div/>').text(bookingType).html() + '</p>';
+        html += '        <p class="mb-1"><strong>Travel Date:</strong> ' + $('<div/>').text(travelDate).html() + '</p>';
+        if (returnDate) {
+            html += '    <p class="mb-1"><strong>Return Date:</strong> ' + $('<div/>').text(returnDate).html() + '</p>';
+        }
+        html += '        <p class="mb-1"><strong>Pickup Time:</strong> ' + $('<div/>').text(pickupTime).html() + '</p>';
+        html += '      </div>';
+        html += '      <div class="col-md-6">';
+        html += '        <p class="mb-1"><strong>Pickup:</strong> <span class="text-success">' + $('<div/>').text(pickupLocation).html() + '</span></p>';
+        html += '        <p class="mb-1"><strong>Drop:</strong> <span class="text-danger">' + $('<div/>').text(dropLocation).html() + '</span></p>';
+        html += '        <p class="mb-1"><strong>Passengers:</strong> ' + (passengers ? $('<div/>').text(passengers).html() : '1') + '</p>';
+        if (luggage) {
+            html += '    <p class="mb-1"><strong>Luggage:</strong> ' + $('<div/>').text(luggage).html() + '</p>';
+        }
+        html += '      </div>';
+        html += '    </div>';
+        if (specialReq) {
+            html += '  <hr class="my-2"/>';
+            html += '  <p class="mb-0"><strong>Special Requirements / Notes:</strong><br/>' + $('<div/>').text(specialReq).html().replace(/\n/g, '<br/>') + '</p>';
+        }
+        html += '  </div>';
+        html += '</div>';
+
+        html += '</div>';
+
+        $('#modal-getbyid .lbl-module').text('Booking');
+        $('#modal-getbyid #modal-body').html(html);
+        $('#modal-getbyid').modal('show');
+    }
+</script>
+<script src="~/js/managemodule.js"></script>
+

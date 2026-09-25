@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Common;
@@ -8,6 +9,7 @@ using TravoRides.Application.DTOs.PackageRate;
 using TravoRides.Application.DTOs.Transit;
 using TravoRides.Application.DTOs.TransitRate;
 using TravoRides.Application.Interfaces;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -20,7 +22,7 @@ namespace TravoRides.API.Controllers
         public TransitController(ITransitService service, IBookingService bookingService)
         {
             _service = service;
-           
+
         }
         ///----------------==========  GET APIS -------------------------
         [HttpGet]
@@ -50,7 +52,7 @@ namespace TravoRides.API.Controllers
                 Data = result
             });
         }
-       
+
         [HttpGet("{id:guid}/rates/{cabid:guid}")]
         public async Task<IActionResult> GetTransitRates(Guid id, Guid cabid, CancellationToken cancellationToken)
         {
@@ -64,19 +66,22 @@ namespace TravoRides.API.Controllers
         }
 
         //========================== POST APIs ========================================
-       
+
         [HttpPost]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Create([FromForm] CreateTransitRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
             return CreatedAtAction(nameof(Get), new { id }, new ApiResponse<object> { IsSuccess = true, Message = "Created.", Data = id });
         }
-       
+
         [HttpPost("{transitId:guid}/cabs")]
-        public async Task<IActionResult> AddCabsToTransit( Guid transitId, [FromBody] TransitCabRequest request,  CancellationToken cancellationToken)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public async Task<IActionResult> AddCabsToTransit(Guid transitId, [FromBody] TransitCabRequest request, CancellationToken cancellationToken)
         {
-            await _service.AddCabsToTransitAsync( transitId,  request, cancellationToken);
+            await _service.AddCabsToTransitAsync(transitId, request, cancellationToken);
 
             return Ok(new ApiResponse<object>
             {
@@ -84,11 +89,12 @@ namespace TravoRides.API.Controllers
                 Message = "Cabs added to transit successfully."
             });
         }
-        
+
         //=============================== PUT APIs =============================
 
         [HttpPut("{id:guid}")]
-        // [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromForm] UpdateTransitRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -97,9 +103,11 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{packageId:guid}/cabs/{cabId:guid}")]
-        public async Task<IActionResult> UpdateTransitCab( Guid packageId, Guid cabId,[FromBody] UpdateTransitCabRequest request, CancellationToken cancellationToken)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public async Task<IActionResult> UpdateTransitCab(Guid packageId, Guid cabId, [FromBody] UpdateTransitCabRequest request, CancellationToken cancellationToken)
         {
-            await _service.UpdateTransitCabAsync( packageId, cabId, request,  cancellationToken);
+            await _service.UpdateTransitCabAsync(packageId, cabId, request, cancellationToken);
 
             return Ok(new ApiResponse<object>
             {
@@ -109,9 +117,10 @@ namespace TravoRides.API.Controllers
         }
 
         //====================================== DELETE =============================
-       
+
         [HttpDelete("{id:guid}")]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);
@@ -119,6 +128,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{transitId:guid}/cabs/{cabId:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> RemoveCabFromTransit(Guid transitId, Guid cabId, CancellationToken cancellationToken)
         {
             await _service.RemoveCabFromTransitAsync(transitId, cabId, cancellationToken);
@@ -129,6 +140,6 @@ namespace TravoRides.API.Controllers
                 Message = "Cab removed from transit successfully."
             });
         }
-      
+
     }
 }

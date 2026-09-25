@@ -51,6 +51,7 @@ namespace TravoRides.Infrastructure.Repository
                     !x.IsDeleted &&
                     !x.Cab.IsDeleted)
                 .AsNoTracking()
+                .OrderBy(x=>x.Cab.Name)
                 .ToListAsync(cancellationToken);
         }
     }

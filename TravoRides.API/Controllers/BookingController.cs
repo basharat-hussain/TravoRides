@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.BookingDTO;
 using TravoRides.Application.DTOs.BookingReport;
@@ -7,6 +9,7 @@ using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
 using TravoRides.Application.Services;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -22,6 +25,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetAll([FromQuery] SearchBookingRequest request, CancellationToken cancellationToken)
         {
             var result = await _service.GetAllAsync(request, cancellationToken);
@@ -29,6 +34,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             var r = await _service.GetByIdAsync(id, cancellationToken);
@@ -37,7 +44,6 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
         public async Task<IActionResult> Create([FromBody] CreateBookingRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -46,7 +52,8 @@ namespace TravoRides.API.Controllers
         }
       
         [HttpPut("{id:guid}")]
-        // [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBookingRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -55,11 +62,11 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        //[Authorize]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public IActionResult Delete(Guid id, CancellationToken cancellationToken)
         {
-            await _service.DeleteAsync(id, cancellationToken);
-            return Ok(new ApiResponse<object> { IsSuccess = true, Message = "Booking deleted.", Data = id });
+            return BadRequest(new ApiResponse<object> { IsSuccess = false, Message = "Deleting bookings is not allowed." });
         }
 
         // -----------------------------------------
@@ -67,6 +74,8 @@ namespace TravoRides.API.Controllers
         // -----------------------------------------
 
         [HttpGet("report")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> GetReport([FromQuery] SearchBookingRequest request, CancellationToken cancellationToken)
         {
             var result = await _service.GetBookingReportAsync(request,cancellationToken);

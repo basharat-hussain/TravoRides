@@ -101,9 +101,9 @@
                 </td> *@
                 <td>
     <button type="button"
-            class="btn btn-sm @(review.IsActive ? "btn-danger ml-1" : "btn-success ml-1")"
+                            class="btn btn-sm @(review.IsActive ? "btn-success ml-1" : "btn-danger ml-1" )"
             onclick="toggleReviewStatus('@review.Id', this)">
-        @(review.IsActive ? "Unapprove" : "Approve")
+        @(review.IsActive ? "Approve" : "UnApprove")
     </button>
 </td>
                 <td class="text-center">

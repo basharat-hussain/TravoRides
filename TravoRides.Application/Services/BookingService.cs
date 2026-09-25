@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,11 +36,7 @@ namespace TravoRides.Application.Services
                 request.PageSize = 100;
 
             var pagedResponse = await _unitOfWork.Bookings
-                .GetAllSearchAsync(
-                    request.PageNumber,
-                    request.PageSize,
-                    request.Keyword,
-                    cancellationToken);
+                .GetAllSearchAsync(request, cancellationToken);
 
             var bookingDtos = _mapper.Map<IEnumerable<BookingDTO>>(
                 pagedResponse.Items);
@@ -98,33 +94,57 @@ namespace TravoRides.Application.Services
             };
         }
 
+        public static int CalculateTotalDays(DateTime travelDate, DateTime? returnDate)
+        {
+            if (!returnDate.HasValue)
+            {
+                return 1;
+            }
+
+            // Compare calendar dates irrespective of hours
+            var diffDays = (returnDate.Value.Date - travelDate.Date).Days;
+            if (diffDays < 0)
+            {
+                return 1;
+            }
+
+            // Same day is 1 day (diffDays = 0, so diffDays + 1 = 1)
+            // Second day drop is 2 days (diffDays = 1, so diffDays + 1 = 2)
+            return diffDays + 1;
+        }
+
         private async Task<decimal> GetBookingAmountAsync(CreateBookingRequest request, CancellationToken cancellationToken)
         {
+            var totalDays = CalculateTotalDays(request.TravelDate, request.ReturnDate);
+
+            decimal basePrice;
+            decimal discount;
+
             switch (request.BookingType)
             {
                 case BookingType.Transit:
-
-                    return await GetTransitRateAsync(request, cancellationToken);
-
+                    (basePrice, discount) = await GetTransitPricingAsync(request, cancellationToken);
+                    break;
 
                 case BookingType.Package:
-
-                    return await GetPackageRateAsync(request, cancellationToken);
-
+                    (basePrice, discount) = await GetPackagePricingAsync(request, cancellationToken);
+                    break;
 
                 case BookingType.Cab:
-
-                    return await GetCabRateAsync(request, cancellationToken);
-
+                    (basePrice, discount) = await GetCabPricingAsync(request, cancellationToken);
+                    break;
 
                 case BookingType.SelfDrive:
-
-                    return await GetSelfDriveRateAsync(request, cancellationToken);
+                    (basePrice, discount) = await GetSelfDrivePricingAsync(request, cancellationToken);
+                    break;
 
                 default:
-
                     throw new ValidationException("Invalid booking type.");
             }
+
+            var subtotal = basePrice * totalDays;
+            var discountAmount = Math.Min(subtotal, Math.Max(0, discount));
+            return Math.Max(0, subtotal - discountAmount);
         }
         public async Task<BookingDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
@@ -175,6 +195,8 @@ namespace TravoRides.Application.Services
 
                 TravelDate = request.TravelDate,
 
+                ReturnDate = request.ReturnDate,
+
                 PickupLocation = request.PickupLocation,
 
                 DropLocation = request.DropLocation,
@@ -209,6 +231,7 @@ namespace TravoRides.Application.Services
             booking.WhatsApp = request.WhatsApp?.Trim();
             booking.Email = request.Email?.Trim();
             booking.TravelDate = request.TravelDate;
+            booking.ReturnDate = request.ReturnDate;
             booking.PickupLocation = request.PickupLocation?.Trim();
             booking.DropLocation = request.DropLocation?.Trim();
             booking.PickupTime = request.PickupTime;
@@ -229,7 +252,7 @@ namespace TravoRides.Application.Services
             _unitOfWork.Bookings.Update(booking);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
-        private async Task<decimal> GetTransitRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+        private async Task<(decimal BasePrice, decimal Discount)> GetTransitPricingAsync(CreateBookingRequest request, CancellationToken cancellationToken)
         {
             if (!request.TransitId.HasValue)
             {
@@ -244,24 +267,16 @@ namespace TravoRides.Application.Services
             }
 
             // Get both discounts
-            decimal transitDiscount = transitRate.Transit.Discount ?? 0;
+            decimal transitDiscount = transitRate.Transit?.Discount ?? 0;
             decimal transitRateDiscount = transitRate.Discount ?? 0;
 
             // Use the greater discount
             decimal applicableDiscount = Math.Max(transitDiscount, transitRateDiscount);
 
-            // Calculate final price
-            decimal finalRate = transitRate.Rate - applicableDiscount;
-
-            // Prevent negative price
-            if (finalRate < 0)
-            {
-                throw new ValidationException("Package discount cannot be greater than the package totalAmount.");
-            }
-
-            return finalRate;
+            return (transitRate.Rate, applicableDiscount);
         }
-        private async Task<decimal> GetPackageRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+
+        private async Task<(decimal BasePrice, decimal Discount)> GetPackagePricingAsync(CreateBookingRequest request, CancellationToken cancellationToken)
         {
             if (!request.PackageId.HasValue)
             {
@@ -272,77 +287,50 @@ namespace TravoRides.Application.Services
 
             if (packageRate == null)
             {
-                throw new ResourceNotFoundException("No totalAmount found for the selected cab and package.");
+                throw new ResourceNotFoundException("No rate found for the selected cab and package.");
             }
 
             // Get both discounts
-            decimal packageDiscount = packageRate.Package.Discount ?? 0;
+            decimal packageDiscount = packageRate.Package?.Discount ?? 0;
             decimal packageRateDiscount = packageRate.Discount ?? 0;
 
             // Use the greater discount
             decimal applicableDiscount = Math.Max(packageDiscount, packageRateDiscount);
 
-            // Calculate final price
-            decimal finalRate = packageRate.Rate - applicableDiscount;
-
-            // Prevent negative price
-            if (finalRate < 0)
-            {
-                throw new ValidationException("Package discount cannot be greater than the package totalAmount.");
-            }
-
-            return finalRate;
+            return (packageRate.Rate, applicableDiscount);
         }
-        private async Task<decimal> GetCabRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+
+        private async Task<(decimal BasePrice, decimal Discount)> GetCabPricingAsync(CreateBookingRequest request, CancellationToken cancellationToken)
         {
             var cab = await _unitOfWork.Cabs.GetByIdAsync(request.CabId, cancellationToken);
 
             if (cab == null)
             {
-                throw new ResourceNotFoundException(
-                    "Cab not found.");
+                throw new ResourceNotFoundException("Cab not found.");
             }
 
             var discount = cab.Discount ?? 0;
 
-            var finalRate = cab.PricePerDay - discount;
-
-            if (finalRate < 0)
-            {
-                throw new ValidationException(
-                    "Cab discount cannot be greater than the Cab totalAmount.");
-            }
-
-            return finalRate;
+            return (cab.PricePerDay, discount);
         }
-        private async Task<decimal> GetSelfDriveRateAsync(CreateBookingRequest request, CancellationToken cancellationToken)
+
+        private async Task<(decimal BasePrice, decimal Discount)> GetSelfDrivePricingAsync(CreateBookingRequest request, CancellationToken cancellationToken)
         {
             var selfDrive = await _unitOfWork.SelfDrives.GetByCabIdAsync(request.CabId, cancellationToken);
 
             if (selfDrive == null)
             {
-                throw new ResourceNotFoundException("Self-drive totalAmount not found for the selected cab.");
+                throw new ResourceNotFoundException("Self-drive rate not found for the selected cab.");
             }
 
             // Get both discounts
-            decimal cabDiscount = selfDrive.Cab.Discount ?? 0;
+            decimal cabDiscount = selfDrive.Cab?.Discount ?? 0;
             decimal selfDriveDiscount = selfDrive.Discount ?? 0;
 
             // Use the greater discount
             decimal applicableDiscount = Math.Max(selfDriveDiscount, cabDiscount);
 
-            // Calculate final price
-            decimal finalRate = selfDrive.PricePerDay - applicableDiscount;
-
-            // Prevent negative price
-
-            if (finalRate < 0)
-            {
-                throw new ValidationException("SelfDrive discount cannot be greater than the SelfDrive totalAmount.");
-            }
-
-
-            return finalRate;
+            return (selfDrive.PricePerDay, applicableDiscount);
         }
 
         private void ValidateBookingType(CreateBookingRequest request)

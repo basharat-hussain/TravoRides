@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -34,6 +34,14 @@ namespace TravoRides.Application.DTOs.BookingDTO
         public string WhatsApp { get; set; } = string.Empty;
 
         public DateTime TravelDate { get; set; }
+
+        public DateTime? ReturnDate { get; set; }
+
+        public DateTime? DropDate
+        {
+            get => ReturnDate;
+            set => ReturnDate = value ?? ReturnDate;
+        }
 
         public string PickupLocation { get; set; } = string.Empty;
 

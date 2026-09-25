@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Domain.Enums;
@@ -20,6 +20,7 @@ namespace TravoRides.Application.DTOs.BookingReport
         public DateTime BookingDate { get; set; }
 
         public DateTime TravelDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
 
         public string PickupLocation { get; set; } = string.Empty;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -48,6 +48,15 @@ namespace TravoRides.Infrastructure.Repository
                 TotalCount = total,
                 TotalPages = totalPages
             };
+        }
+
+        public async Task<List<Category>> GetCategoriesHavingCabsAsync(CancellationToken cancellationToken = default)
+        {
+            return await context.Categories
+                .AsNoTracking()
+                .Where(c => !c.IsDeleted && c.Cabs.Any(cab => !cab.IsDeleted))
+                .OrderBy(c => c.Name)
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // Replace with your Angular app's URL
+        policy.WithOrigins("http://localhost:4200, https://travorides.com, https://admin.travorides.com") // Replace with your Angular app's URL
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -100,6 +100,34 @@ builder.Services.AddRateLimiter(options =>
         limiterOptions =>
         {
             limiterOptions.PermitLimit = 10;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueLimit = 0;
+        });
+
+
+    options.AddFixedWindowLimiter(
+        "login-api",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 10;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueLimit = 0;
+        });
+
+    options.AddFixedWindowLimiter(
+        "refresh-token-api",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 10;
+            limiterOptions.Window = TimeSpan.FromMinutes(1);
+            limiterOptions.QueueLimit = 0;
+        });
+
+    options.AddFixedWindowLimiter(
+        "generic-api",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 30;
             limiterOptions.Window = TimeSpan.FromMinutes(1);
             limiterOptions.QueueLimit = 0;
         });

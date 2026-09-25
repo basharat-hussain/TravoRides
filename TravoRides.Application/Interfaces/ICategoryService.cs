@@ -5,6 +5,7 @@ namespace TravoRides.Application.Interfaces
     public interface ICategoryService
     {
         Task<PagedResponse<CategoryDTO>> GetAllAsync(SearchCategoryRequest request, CancellationToken cancellationToken = default);
+        Task<IEnumerable<CategoryDTO>> GetCategoriesHavingCabsAsync(CancellationToken cancellationToken = default);
         Task<CategoryDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<Guid> CreateAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default);
         Task UpdateAsync(UpdateCategoryRequest request, CancellationToken cancellationToken = default);

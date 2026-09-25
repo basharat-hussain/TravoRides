@@ -63,6 +63,81 @@ namespace TravoRides.Infrastructure.Repository
 
             return lastAttemptNumber + 1;
         }
+
+        public async Task<TravoRides.Application.DTOs.Common.PagedResponse<Payment>> GetAllSearchAsync(
+            int pageNumber,
+            int pageSize,
+            string? keyword,
+            PaymentStatus? status,
+            DateTime? fromDate,
+            DateTime? toDate,
+            CancellationToken cancellationToken = default)
+        {
+            var query = _context.Payments
+                .Where(p => !p.IsDeleted)
+                .Include(p => p.Booking)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                var clean = keyword.Trim();
+                query = query.Where(p =>
+                    p.PaymentNumber.Contains(clean) ||
+                    (p.GatewayTransactionId != null && p.GatewayTransactionId.Contains(clean)) ||
+                    (p.GatewayOrderId != null && p.GatewayOrderId.Contains(clean)) ||
+                    (p.Booking != null && (
+                        p.Booking.BookingNo.Contains(clean) ||
+                        p.Booking.Name.Contains(clean) ||
+                        (p.Booking.Email != null && p.Booking.Email.Contains(clean)) ||
+                        (p.Booking.Phone != null && p.Booking.Phone.Contains(clean))
+                    )));
+            }
+
+            if (status.HasValue)
+            {
+                query = query.Where(p => p.Status == status.Value);
+            }
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(p => (p.PaidAt ?? p.CreatedAt) >= fromDate.Value.Date);
+            }
+
+            if (toDate.HasValue)
+            {
+                var endDate = toDate.Value.Date.AddDays(1);
+                query = query.Where(p => (p.PaidAt ?? p.CreatedAt) < endDate);
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderByDescending(p => p.PaidAt ?? p.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+            return new TravoRides.Application.DTOs.Common.PagedResponse<Payment>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
+        }
+
+        public async Task<Payment?> GetByIdWithBookingAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Payments
+                .Include(p => p.Booking)
+                .Include(p => p.PaymentRefunds)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted, cancellationToken);
+        }
     }
 }
 

@@ -84,7 +84,7 @@ namespace TravoRides.Application.Services
 
             var template = await templateService.GetForgotPasswordOTPTemplateAsync(otp, EXPIRATION_MINUTES);
 
-            await emailService.SendEmailAsync(user.Email, subject, template, true, cancellationToken);
+            await emailService.SendEmailAsync(user.Email, subject, template, true, null, cancellationToken);
         }
 
         public async Task VerifyResetPasswordOtpAsync(VerifyPasswordResetOtpRequest request, CancellationToken cancellationToken = default)

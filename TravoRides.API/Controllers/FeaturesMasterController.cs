@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TravoRides.Application.DTOs.FeaturesMaster;
-using TravoRides.Application.DTOs.Common;
-using TravoRides.Application.Interfaces;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.FeaturesMaster;
+using TravoRides.Application.Interfaces;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -30,7 +32,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Create([FromBody] CreateFeaturesMasterRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -38,7 +41,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateFeaturesMasterRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -47,7 +51,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        //[Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);

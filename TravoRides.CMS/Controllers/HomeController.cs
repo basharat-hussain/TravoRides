@@ -49,7 +49,7 @@ namespace TravoRides.CMS.Controllers
             );
             if (apiResponse == null || !apiResponse.IsSuccess)
             {
-                return Json(new[] {"False",apiResponse?.Message ?? "Error occured while Changing Password."
+                return Json(new[] {"False",apiResponse?.Message ?? "Error occured while changing password."
             });
             }
 

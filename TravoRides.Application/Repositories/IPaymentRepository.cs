@@ -11,6 +11,8 @@ namespace TravoRides.Application.Repositories
         Task<Payment?> GetPendingByBookingIdAsync(Guid bookingId, CancellationToken cancellationToken = default);
         Task<Payment?> GetSuccessfulPaymentAsync(Guid bookingId, Guid excludePaymentId, CancellationToken cancellationToken = default);
         Task<int> GetNextAttemptNumberAsync(Guid bookingId, CancellationToken cancellationToken = default);
+        Task<TravoRides.Application.DTOs.Common.PagedResponse<Payment>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, TravoRides.Domain.Enums.PaymentStatus? status, DateTime? fromDate, DateTime? toDate, CancellationToken cancellationToken = default);
+        Task<Payment?> GetByIdWithBookingAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }
 

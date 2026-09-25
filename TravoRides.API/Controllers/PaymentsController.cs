@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
+using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.DTOs.Payment;
 using TravoRides.Application.Interfaces;
 using TravoRides.Domain.Enums;
@@ -19,6 +20,44 @@ namespace TravoRides.API.Controllers
         {
             _paymentService = paymentService;
             _paymentRefundService = paymentRefundService;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public async Task<IActionResult> GetAll([FromQuery] SearchPaymentRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _paymentService.GetAllAsync(request, cancellationToken);
+            return Ok(new ApiResponse<PagedResponse<PaymentDTO>>
+            {
+                IsSuccess = true,
+                Message = "Payments retrieved successfully",
+                Data = result
+            });
+        }
+
+        [HttpGet("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _paymentService.GetByIdAsync(id, cancellationToken);
+            if (result == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = "Payment not found.",
+                    Data = null
+                });
+            }
+
+            return Ok(new ApiResponse<PaymentDTO>
+            {
+                IsSuccess = true,
+                Message = "Payment retrieved successfully",
+                Data = result
+            });
         }
 
         [HttpPost]

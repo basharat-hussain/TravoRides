@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Domain.Enums;
@@ -35,6 +35,8 @@ namespace TravoRides.Application.DTOs.BookingDTO
 
         public DateTime TravelDate { get; set; }
 
+        public DateTime? ReturnDate { get; set; }
+
         public string PickupLocation { get; set; } = string.Empty;
 
         public string DropLocation { get; set; } = string.Empty;
@@ -49,5 +51,10 @@ namespace TravoRides.Application.DTOs.BookingDTO
         public bool IsConfirmed { get; set; }
 
         public decimal Rate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public bool IsPaid { get; set; }
+        public decimal? PaidAmount { get; set; }
+        public PaymentStatus? PaymentStatus { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

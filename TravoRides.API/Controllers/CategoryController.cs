@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
 using TravoRides.Application.Interfaces;
+using TravoRides.Domain.Enums;
 
 namespace TravoRides.API.Controllers
 {
@@ -21,6 +23,18 @@ namespace TravoRides.API.Controllers
             return Ok(new ApiResponse<PagedResponse<CategoryDTO>> { IsSuccess = true, Message = "Categories retrieved.", Data = result });
         }
 
+        [HttpGet("having-cabs")]
+        public async Task<IActionResult> GetCategoriesHavingCabs(CancellationToken cancellationToken)
+        {
+            var categories = await _service.GetCategoriesHavingCabsAsync(cancellationToken);
+            return Ok(new ApiResponse<IEnumerable<CategoryDTO>>
+            {
+                IsSuccess = true,
+                Message = "Categories having cabs retrieved.",
+                Data = categories
+            });
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
         {
@@ -30,7 +44,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
         {
             var id = await _service.CreateAsync(request, cancellationToken);
@@ -38,7 +53,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-       [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
         {
             request.Id = id;
@@ -47,7 +63,8 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [EnableRateLimiting("generic-api")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             await _service.DeleteAsync(id, cancellationToken);

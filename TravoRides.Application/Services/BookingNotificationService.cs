@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using TravoRides.Application.Common.Models;
 using TravoRides.Application.Interfaces.Notifications;
 using TravoRides.Application.Interfaces.Services;
 using TravoRides.Application.Repositories;
@@ -9,12 +11,18 @@ namespace TravoRides.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly EmailSettings _emailSettings;
 
-        public BookingNotificationService(IUnitOfWork unitOfWork, IEmailService emailService, IEmailTemplateService emailTemplateService)
+        public BookingNotificationService(
+            IUnitOfWork unitOfWork, 
+            IEmailService emailService, 
+            IEmailTemplateService emailTemplateService,
+            IOptions<EmailSettings> emailSettings)
         {
             _unitOfWork = unitOfWork;
             _emailService = emailService;
             _emailTemplateService = emailTemplateService;
+            _emailSettings = emailSettings.Value;
         }
 
         public async Task SendBookingConfirmationAsync(Guid bookingId, CancellationToken cancellationToken = default)
@@ -34,15 +42,25 @@ namespace TravoRides.Application.Services
                 cabType,
                 booking.TotalAmount);
 
+            var subject = $"TravoRides - Booking Confirmed #{booking.BookingNo}";
+            var ownerEmail = _emailSettings.OwnerEmail?.Trim();
+
             if (!string.IsNullOrWhiteSpace(booking.Email))
             {
+                var ccEmail = !string.IsNullOrWhiteSpace(ownerEmail) &&
+                              !string.Equals(booking.Email, ownerEmail, StringComparison.OrdinalIgnoreCase)
+                    ? ownerEmail
+                    : null;
+
                 await _emailService.SendEmailAsync(
                     booking.Email,
-                    $"TravoRides - Booking Confirmed #{booking.BookingNo}",
+                    subject,
                     emailBody,
                     withHeaderLogo: true,
-                    cancellationToken);
+                    cc: ccEmail,
+                    cancellationToken: cancellationToken);
             }
+           
         }
     }
 }

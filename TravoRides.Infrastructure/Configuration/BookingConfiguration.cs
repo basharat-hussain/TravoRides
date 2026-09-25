@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TravoRides.Domain.Entities;
 
@@ -87,6 +87,9 @@ namespace TravoRides.Infrastructure.Persistence.Configurations
             // Dates
             builder.Property(x => x.TravelDate)
                 .IsRequired();
+
+            builder.Property(x => x.ReturnDate)
+                .IsRequired(false);
 
             builder.Property(x => x.PickupTime)
                 .IsRequired();

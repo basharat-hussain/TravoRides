@@ -1,14 +1,10 @@
 ﻿$(document).ready(function () {
 
-    // ============================
-    // Load Cabs by Category
-    // ============================
     function loadCabsByCategory(categoryId, selectedCabId = '') {
 
         const cabDropdown = $('#CabId');
 
-        cabDropdown.empty();
-        cabDropdown.append(
+        cabDropdown.empty().append(
             '<option value="">-- Select Cab --</option>'
         );
 
@@ -28,7 +24,9 @@
 
             success: function (response) {
 
-                if (response.isSuccess && response.data && response.data.length > 0) {
+                if (response.isSuccess &&
+                    response.data &&
+                    response.data.length > 0) {
 
                     $.each(response.data, function (index, cab) {
 
@@ -37,11 +35,10 @@
                             text: cab.name
                         });
 
-                        // Select existing Cab while editing
                         if (
                             selectedCabId &&
-                            cab.id.toString().toLowerCase() ===
-                            selectedCabId.toString().toLowerCase()
+                            String(cab.id).toLowerCase() ===
+                            String(selectedCabId).toLowerCase()
                         ) {
                             option.prop('selected', true);
                         }
@@ -65,8 +62,7 @@
 
                 toastr.error('Unable to load cabs.');
 
-                cabDropdown.empty();
-                cabDropdown.append(
+                cabDropdown.empty().append(
                     '<option value="">-- Select Cab --</option>'
                 );
 
@@ -76,24 +72,19 @@
     }
 
 
-    // ============================
-    // Category Changed
-    // ============================
+    // Category changed
     $('#CategoryId').on('change', function () {
 
         const categoryId = $(this).val();
 
-        // Category changed by user,
-        // therefore old Cab must be cleared.
-        loadCabsByCategory(categoryId);
+        // Clear previously selected cab
+        loadCabsByCategory(categoryId, '');
     });
 
 
-    // ============================
-    // Edit Page Initial Load
-    // ============================
+    // Edit page initial load
     const existingCategoryId = $('#CategoryId').val();
-    const existingCabId = $('#CabId').data('selected-cab');
+    const existingCabId = $('#CabId').attr('data-selected-cab');
 
     if (existingCategoryId) {
 
@@ -102,4 +93,8 @@
             existingCabId
         );
     }
+    else {
+        $('#CabId').prop('disabled', true);
+    }
+
 });
