@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using TravoRides.Application.Common.Exceptions;
 using TravoRides.Application.Common.Models;
 using TravoRides.Application.Interfaces.Services;
@@ -174,12 +174,32 @@ namespace TravoRides.Application.Services
 
                 PricePerDay = request.PricePerDay,
 
-                ImageUrl = result.AbsolutePath,
+                ImageUrl = result.RelativePath,
                 Discount = request.Discount,
 
                 // Foreign Key
                 CategoryId = request.CategoryId
             };
+
+            if (request.FeatureIds != null && request.FeatureIds.Any())
+            {
+                var distinctFeatureIds = request.FeatureIds.Distinct().ToList();
+                var validFeatures = await _unitOfWork.FeatureMasters
+                    .FindAsync(f => distinctFeatureIds.Contains(f.Id) && !f.IsDeleted, cancellationToken);
+
+                foreach (var feature in validFeatures)
+                {
+                    cab.CabFeatures.Add(new CabFeatures
+                    {
+                        CabId = cab.Id,
+                        FeatureId = feature.Id,
+                        CreatedBy = "System",
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        IsDeleted = false
+                    });
+                }
+            }
 
             await _unitOfWork.Cabs.AddAsync(
                 cab,
@@ -217,7 +237,7 @@ namespace TravoRides.Application.Services
 
             // Get existing Cab
             var cab = await _unitOfWork.Cabs
-                .GetByIdAsync(
+                .GetCabWithFeaturesForUpdateAsync(
                     request.Id,
                     cancellationToken);
 
@@ -278,7 +298,7 @@ namespace TravoRides.Application.Services
                 // Delete the old image here if your
                 // FileStorageService supports it.
 
-                cab.ImageUrl = result.AbsolutePath;
+                cab.ImageUrl = result.RelativePath;
             }
 
             // ========================================================
@@ -305,39 +325,104 @@ namespace TravoRides.Application.Services
             cab.Discount = request.Discount;
             // Update Foreign Key
             cab.CategoryId = request.CategoryId;
-            // SelfDrive handling
-            var selfDrive = await _unitOfWork.SelfDrives
-                .GetByCabIdAsync(cab.Id, cancellationToken);
 
-            if (request.IsSelfDrive)
+            // ========================================================
+            // Update Cab Features
+            // ========================================================
+            var requestedFeatureIds = request.FeatureIds?.Distinct().ToList() ?? new List<Guid>();
+            var validFeatures = new List<FeaturesMaster>();
+            if (requestedFeatureIds.Any())
             {
-                // Create SelfDrive record if it doesn't already exist
-                if (selfDrive == null)
+                validFeatures = await _unitOfWork.FeatureMasters
+                    .FindAsync(f => requestedFeatureIds.Contains(f.Id) && !f.IsDeleted, cancellationToken);
+            }
+            var validFeatureIds = validFeatures.Select(f => f.Id).ToHashSet();
+
+            // 1. Soft-delete removed features
+            foreach (var existingCf in cab.CabFeatures.Where(cf => !cf.IsDeleted))
+            {
+                if (!validFeatureIds.Contains(existingCf.FeatureId))
                 {
-                    selfDrive = new SelfDrive
+                    existingCf.IsDeleted = true;
+                    existingCf.ModifiedAt = DateTime.UtcNow;
+                    existingCf.ModifiedBy = "System";
+                }
+            }
+
+            // 2. Add new or restore previously deleted features
+            foreach (var featureId in validFeatureIds)
+            {
+                var existingCf = cab.CabFeatures.FirstOrDefault(cf => cf.FeatureId == featureId);
+                if (existingCf != null)
+                {
+                    if (existingCf.IsDeleted)
                     {
-                        //Id = Guid.NewGuid(),
+                        existingCf.IsDeleted = false;
+                        existingCf.ModifiedAt = DateTime.UtcNow;
+                        existingCf.ModifiedBy = "System";
+                    }
+                }
+                else
+                {
+                    var newCf = new CabFeatures
+                    {
+                        Id = Guid.Empty,
                         CabId = cab.Id,
-                        //Discount = cab.Discount,
-                        //PricePerDay = cab.PricePerDay
+                        FeatureId = featureId,
+                        CreatedBy = "System",
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        IsDeleted = false
                     };
 
-                    await _unitOfWork.SelfDrives.AddAsync(selfDrive);
+                    await _unitOfWork.CabFeatures.AddAsync(newCf, cancellationToken);
+                    cab.CabFeatures.Add(newCf);
+                }
+            }
+
+            cab.ModifiedAt = DateTime.UtcNow;
+            cab.ModifiedBy = "System";
+
+            // SelfDrive handling
+            if (request.IsSelfDrive)
+            {
+                if (cab.SelfDrive == null)
+                {
+                    var newSelfDrive = new SelfDrive
+                    {
+                        Id = Guid.Empty,
+                        CabId = cab.Id,
+                        PricePerDay = cab.PricePerDay,
+                        Discount = cab.Discount,
+                        CreatedBy = "System",
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        IsDeleted = false
+                    };
+
+                    await _unitOfWork.SelfDrives.AddAsync(newSelfDrive, cancellationToken);
+                    cab.SelfDrive = newSelfDrive;
+                }
+                else
+                {
+                    cab.SelfDrive.PricePerDay = cab.PricePerDay;
+                    cab.SelfDrive.Discount = cab.Discount;
+                    cab.SelfDrive.IsDeleted = false;
+                    cab.SelfDrive.ModifiedAt = DateTime.UtcNow;
+                    cab.SelfDrive.ModifiedBy = "System";
                 }
             }
             else
             {
-                // Cab should not be SelfDrive
-                if (selfDrive != null)
+                if (cab.SelfDrive != null)
                 {
-                    selfDrive.IsDeleted = true;
-                    selfDrive.ModifiedAt = DateTime.UtcNow;
-                    selfDrive.ModifiedBy = "System";
+                    cab.SelfDrive.IsDeleted = true;
+                    cab.SelfDrive.ModifiedAt = DateTime.UtcNow;
+                    cab.SelfDrive.ModifiedBy = "System";
                 }
             }
-                _unitOfWork.Cabs.Update(cab);
 
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             
         }
         // ============================================================

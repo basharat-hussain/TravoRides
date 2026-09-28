@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +18,12 @@ namespace TravoRides.Application.Mapping
 
             CreateMap<Cab, CabDTO>()
                 .ForMember(c => c.Fuel, opt => opt.MapFrom(src => src.Fuel.ToString()))
-            ;
+                .ForMember(c => c.Features, opt => opt.MapFrom(src =>
+                    src.CabFeatures != null
+                        ? src.CabFeatures
+                            .Where(cf => !cf.IsDeleted && cf.Feature != null && !cf.Feature.IsDeleted)
+                            .Select(cf => cf.Feature)
+                        : Enumerable.Empty<FeaturesMaster>()));
 
         }
     }

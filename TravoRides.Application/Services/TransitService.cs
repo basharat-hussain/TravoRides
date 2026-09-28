@@ -171,7 +171,7 @@ namespace TravoRides.Application.Services
                 Title = request.Title.Trim(),
                Price = request.Price,
                Discount = request.Discount,
-                ImageUrl = result.AbsolutePath,
+                ImageUrl = result.RelativePath,
                 Description = request.Description?.Trim()
             };
 
@@ -282,7 +282,7 @@ namespace TravoRides.Application.Services
 
                 // Optional: Call a service to delete the old file using client.LogoUrl here
 
-                Transit.ImageUrl = result.AbsolutePath;
+                Transit.ImageUrl = result.RelativePath;
             }
 
             // 3. Update remaining properties

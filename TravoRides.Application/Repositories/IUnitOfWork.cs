@@ -23,6 +23,7 @@ namespace TravoRides.Application.Repositories
         ISelfDriveRepository SelfDrives { get; }
         ICategoryRepository Categories { get; }
         IFeatureMasterRepository FeatureMasters { get; }
+        IGenericRepository<CabFeatures> CabFeatures { get; }
         IPackageRepository Packages { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

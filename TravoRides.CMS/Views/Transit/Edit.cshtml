@@ -1,4 +1,4 @@
-﻿@using TravoRides.Application.DTOs.TransitRate
+@using TravoRides.Application.DTOs.TransitRate
 @using TravoRides.Domain.Enums
 @model MasterUpdate
 
@@ -94,9 +94,10 @@
 
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Discount</label>
+                                        <label asp-for="UpdateTransit.Discount"><i class="fas fa-rupee-sign text-warning mr-1"></i> Discount (₹)</label>
 
                                         <input asp-for="UpdateTransit.Discount"
+                                               type="number" step="0.01"
                                                class="form-control" />
 
                                         <span asp-validation-for="UpdateTransit.Discount"
@@ -263,14 +264,15 @@
                                 <!-- Discount -->
                                 <div class="form-group">
                                     <label>
-                                        Discount
+                                        <i class="fas fa-rupee-sign text-warning mr-1"></i> Discount (₹)
                                     </label>
 
                                     <input asp-for="TransitCabRequest.Discount"
                                            id="CabDiscount"
                                            type="number"
+                                           step="0.01"
                                            class="form-control"
-                                           placeholder="Enter discount" />
+                                           placeholder="Enter discount (₹)" />
 
                                     <span asp-validation-for="TransitCabRequest.Discount"
                                           class="text-danger">
@@ -329,7 +331,7 @@
                                         <tr>
                                             <th>Cab</th>
                                             <th>Price</th>
-                                            <th>Discount</th>
+                                            <th>Discount (₹)</th>
                                             <th style="width:120px;">
                                                 Actions
                                             </th>
@@ -350,7 +352,7 @@
                                                         @cab.Rate
                                                     </td>
                                                     <td>
-                                                        @(cab.Discount?.ToString() ?? "-")
+                                                        @(cab.Discount.HasValue && cab.Discount.Value > 0 ? "₹" + cab.Discount.Value.ToString("N0") : (cab.Discount.HasValue ? "₹0" : "-"))
                                                     </td>
                                                     <td>
 

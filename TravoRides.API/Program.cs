@@ -25,8 +25,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
     {
-        //policy.WithOrigins("http://localhost:4200, https://travorides.com, https://admin.travorides.com") // Replace with your Angular app's URL
-        policy.WithOrigins("https://travorides.com", "https://admin.travorides.com") // Replace with your Angular app's URL
+        policy.WithOrigins("http://localhost:4200", "https://travorides.com", "https://admin.travorides.com") // Replace with your Angular app's URL
+        //policy.WithOrigins("https://travorides.com", "https://admin.travorides.com") // Replace with your Angular app's URL
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -56,7 +56,7 @@ builder.Services.AddSwaggerGen(options =>
         });
 });
 
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.WebRootPath);
 builder.Services.AddApplication();
 builder.Services.AddHttpContextAccessor();
 
@@ -174,7 +174,7 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
+app.UseStaticFiles();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

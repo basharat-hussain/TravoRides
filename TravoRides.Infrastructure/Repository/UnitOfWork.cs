@@ -20,7 +20,7 @@ namespace TravoRides.Infrastructure.Repository
         public IPaymentWebhookRepository PaymentWebhooks { get; }
         public IGenericRepository<Subscription> Subscriptions { get; }
         public IGenericRepository<Quote> Quotes { get; }
-             
+
         public ITransitRepository Transit { get; }
         public IOtpVerificationRepository OtpVerifications { get; }
         public ICabRepository Cabs { get; }
@@ -28,6 +28,7 @@ namespace TravoRides.Infrastructure.Repository
         public ICategoryRepository Categories { get; }
 
         public IFeatureMasterRepository FeatureMasters { get; }
+        public IGenericRepository<CabFeatures> CabFeatures { get; }
         public IPackageRateRepository PackageRates { get; }
         public ITransitRateRepository TransitRates { get; }
         public IPackageRepository Packages { get; }
@@ -35,7 +36,7 @@ namespace TravoRides.Infrastructure.Repository
         public UnitOfWork(
             ApplicationDbContext context,
             ICabRepository cabs,
-            ISelfDriveRepository selfDrives, 
+            ISelfDriveRepository selfDrives,
             IUserRepository user,
             IRefreshTokenRepository refreshTokens,
             IOtpVerificationRepository otpVerifications,
@@ -74,6 +75,7 @@ namespace TravoRides.Infrastructure.Repository
             PaymentWebhooks = paymentWebhooks;
             Subscriptions = new GenericRepository<Subscription>(context);
             Quotes = new GenericRepository<Quote>(context);
+            CabFeatures = new GenericRepository<CabFeatures>(context);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

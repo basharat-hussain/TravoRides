@@ -1,4 +1,4 @@
-﻿$(document).ready(function () {
+$(document).ready(function () {
 
     /* =========================================================
        ELEMENTS
@@ -52,7 +52,7 @@
         const discountText =
             (cab.discount === "" || cab.discount === null || cab.discount === undefined)
                 ? "-"
-                : escapeHtml(cab.discount);
+                : (Number(cab.discount) > 0 ? "₹" + escapeHtml(cab.discount) : "₹0");
 
         return `
             <tr id="cab-row-${escapeHtml(cab.id)}">

@@ -1,193 +1,174 @@
-﻿@using TravoRides.CMS.Models
-
+@using TravoRides.CMS.Models
 @model DashboardModel
-@* Breadcrumb *@
+
+<!-- Content Header -->
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Dashboard</h1>
+                <h1 class="m-0 font-weight-bold">Dashboard</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard </li>
+                    <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
             </div>
         </div>
     </div>
 </div>
 
-@* Content *@
+<!-- Main Content -->
 <section class="content">
     <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
+        <!-- Stat Cards Grid -->
         <div class="row">
-
-            <div class="col-lg-3 col-6">
-                <div class="small-box bg-info">
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-primary">
                     <div class="inner">
                         <h3>@Model.Categories</h3>
-
-                        <p>Category</p>
+                        <p>Categories</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-th-large"></i>
                     </div>
-                    <a asp-controller="Category" asp-action="Index" asp- class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Category" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-             <div class="col-lg-3 col-6">
-                <!-- small box -->
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
                 <div class="small-box bg-danger">
                     <div class="inner">
                         <h3>@Model.Cabs</h3>
-
-                        <p>Cabs</p>
+                        <p>Total Cabs</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-comment"></i>
+                        <i class="fas fa-car"></i>
                     </div>
-                    <a asp-controller="Cab" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Cab" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-gradient-green">
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>@Model.Features</h3>
+                        <p>Cab Features</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <a asp-controller="FeatureMaster" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-success">
                     <div class="inner">
                         <h3>@Model.Transits</h3>
-
                         <p>Transits</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-route"></i>
                     </div>
-                    <a asp-controller="Transit" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Transit" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
-                </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                  <div class="small-box bg-gradient-yellow">
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-info">
                     <div class="inner">
                         <h3>@Model.Packages</h3>
-
-                        <p>Packages</p>
+                        <p>Tour Packages</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-desktop"></i>
+                        <i class="fas fa-box-open"></i>
                     </div>
-                    <a asp-controller="Package" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Package" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-             <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>@Model.Features</h3>
 
-                        <p>Features</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <a asp-controller="FeatureMaster" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-            </div>
-  <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-green">
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-gradient-navy">
                     <div class="inner">
                         <h3>@Model.SelfDrives</h3>
-
                         <p>Self-Drives</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-desktop"></i>
+                        <i class="fas fa-key"></i>
                     </div>
-                    <a asp-controller="SelfDrive" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="SelfDrive" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-gradient-gray">
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-gradient-purple">
                     <div class="inner">
                         <h3>@Model.Reviews</h3>
-
-                        <p>Reviews</p>
+                        <p>Customer Reviews</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-comment"></i>
+                        <i class="fas fa-comment-dots"></i>
                     </div>
-                    <a asp-controller="Review" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Review" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-gradient-fuchsia">
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-gradient-indigo">
                     <div class="inner">
                         <h3>@Model.Enquiries</h3>
-
                         <p>Enquiries</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-envelope-open-text"></i>
                     </div>
-                    <a asp-controller="Enquiry" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Enquiry" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-           
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-cyan">
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-gradient-teal">
                     <div class="inner">
                         <h3>@Model.LatestThinkings</h3>
-
-                        <p>Latest Thinkings</p>
+                        <p>Latest Articles</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-edit"></i>
+                        <i class="fas fa-lightbulb"></i>
                     </div>
-                    <a asp-controller="LatestThinking" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="LatestThinking" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-gradient-fuchsia">
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-gradient-maroon">
                     <div class="inner">
                         <h3>@Model.Subscribes</h3>
-
-                        <p>Subscribes</p>
+                        <p>Subscribers</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-desktop"></i>
+                        <i class="fas fa-bell"></i>
                     </div>
-                    <a asp-controller="Subscription" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Subscription" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
-            <div class="col-lg-3 col-6">
-                <!-- small box -->
-                <div class="small-box bg-gradient-yellow">
+
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+                <div class="small-box bg-gradient-orange">
                     <div class="inner">
                         <h3>@Model.Quotes</h3>
-
-                        <p>Quotes</p>
+                        <p>Price Quotes</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-file-invoice"></i>
                     </div>
-                    <a asp-controller="Quote" asp-action="Index" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a asp-controller="Quote" asp-action="Index" class="small-box-footer">View Details <i class="fas fa-arrow-circle-right ml-1"></i></a>
                 </div>
             </div>
         </div>
-
-
-    </div><!-- /.container-fluid -->
+    </div>
 </section>
 
 <script src="~/plugins/sparklines/sparkline.js"></script>
-<script src="~/plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="~/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <script src="~/dist/js/pages/dashboard.js"></script>
+

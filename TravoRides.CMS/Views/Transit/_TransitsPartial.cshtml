@@ -1,4 +1,4 @@
-﻿@using TravoRides.Application.DTOs.Transit
+@using TravoRides.Application.DTOs.Transit
 @using TravoRides.Application.DTOs.Common
 @model PagedResponse<TransitDTO>
 
@@ -19,7 +19,7 @@
                 Price
             </th>
             <th style="width: 15%">
-                 Discount
+                 Discount (₹)
             </th>
            
             <th style="width: 10%" class="text-center">
@@ -44,8 +44,8 @@
 
                 <td class="name">@Transit.Title</td>
 
-                <td>@Transit.Price </td>
-               <td>@Transit.Discount</td>
+                <td>₹@Transit.Price</td>
+                <td>@(Transit.Discount > 0 ? "₹" + Transit.Discount.ToString("N0") : "₹0")</td>
 
 
                 <td class="project-actions text-center">
@@ -61,8 +61,8 @@
                     <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
                             data-id="@Transit.Id"
                             data-title="@Transit.Title"
-                            data-price="@Transit.Price"
-                            data-discount="@Transit.Discount"
+                            data-price="₹@Transit.Price"
+                            data-discount="@(Transit.Discount > 0 ? "₹" + Transit.Discount.ToString("N0") : "₹0")"
                            
                             data-description="@Transit.Description"
                             data-image="@Transit.ImageUrl"

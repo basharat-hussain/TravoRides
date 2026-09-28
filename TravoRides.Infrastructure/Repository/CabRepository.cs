@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,6 +27,8 @@ namespace TravoRides.Infrastructure.Repository
             var query = context.Cabs
                 .Include(c => c.Category)
                 .Include(c => c.SelfDrive)
+                .Include(c => c.CabFeatures.Where(cf => !cf.IsDeleted))
+                    .ThenInclude(cf => cf.Feature)
                 .Where(c => !c.IsDeleted)
                 .AsNoTracking()
                 .AsQueryable();
@@ -73,14 +75,25 @@ namespace TravoRides.Infrastructure.Repository
 
         public async Task<Cab?> GetCabByCategoryIdAsync(Guid cabId, CancellationToken cancellationToken)
         {
-          
-          return await context.Cabs
-        .Include(c => c.Category)
-        .Include(c => c.CabFeatures)
-        .AsNoTracking()
-        .FirstOrDefaultAsync(
-            c => c.Id == cabId && !c.IsDeleted,
-            cancellationToken);
+            return await context.Cabs
+                .Include(c => c.Category)
+                .Include(c => c.SelfDrive)
+                .Include(c => c.CabFeatures.Where(cf => !cf.IsDeleted))
+                    .ThenInclude(cf => cf.Feature)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    c => c.Id == cabId && !c.IsDeleted,
+                    cancellationToken);
+        }
+
+        public async Task<Cab?> GetCabWithFeaturesForUpdateAsync(Guid cabId, CancellationToken cancellationToken)
+        {
+            return await context.Cabs
+                .Include(c => c.CabFeatures)
+                .Include(c => c.SelfDrive)
+                .FirstOrDefaultAsync(
+                    c => c.Id == cabId && !c.IsDeleted,
+                    cancellationToken);
         }
     }
 

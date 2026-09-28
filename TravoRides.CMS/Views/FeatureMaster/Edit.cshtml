@@ -1,14 +1,14 @@
-﻿@using TravoRides.Application.DTOs.FeaturesMaster
+@using TravoRides.Application.DTOs.FeaturesMaster
 @model UpdateFeaturesMasterRequest
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Feature Edit</h1>
+                <h1>Edit Cab Feature</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="/FeatureMaster/Index">Feature</a></li>
+                    <li class="breadcrumb-item"><a href="/FeatureMaster/Index">Cab Features</a></li>
                     <li class="breadcrumb-item active">Edit</li>
                 </ol>
             </div>
@@ -31,7 +31,7 @@
             <div class="offset-md-2 col-md-8">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Edit Feature</h3>
+                        <h3 class="card-title"><i class="fas fa-star text-warning mr-2"></i> Edit Cab Feature</h3>
 
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -45,15 +45,39 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Title</label>
+                                        <label asp-for="Title" class="form-label"><i class="fas fa-font text-info mr-1"></i> Feature Title <span class="text-danger">*</span></label>
                                         <input asp-for="Title" class="form-control" />
                                         <span asp-validation-for="Title" class="text-danger"></span>
                                     </div>
-
-                                     <div class="form-group">
-                                        <label>Icon</label>
-                                        <input asp-for="Icon" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Icon" class="form-label"><i class="fas fa-icons text-primary mr-1"></i> Icon Class</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text bg-light" style="width: 44px; justify-content: center;">
+                                                    <i id="iconPreview" class="fas fa-star text-primary"></i>
+                                                </span>
+                                            </div>
+                                            <input asp-for="Icon" class="form-control" id="iconInput" placeholder="e.g. fas fa-snowflake" />
+                                        </div>
                                         <span asp-validation-for="Icon" class="text-danger"></span>
+                                        <small class="text-muted d-block mt-1">FontAwesome icon class (e.g. <code>fas fa-snowflake</code>)</small>
+
+                                        <!-- Quick Pick Icons -->
+                                        <div class="mt-2 d-flex flex-wrap" style="gap: 5px;">
+                                            <span class="text-muted small mr-1" style="line-height: 24px;">Quick Pick:</span>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-snowflake" title="Air Conditioning"><i class="fas fa-snowflake"></i> AC</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-wifi" title="WiFi"><i class="fas fa-wifi"></i> WiFi</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-music" title="Audio / Music"><i class="fas fa-music"></i> Music</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-shield-alt" title="Airbags / Safety"><i class="fas fa-shield-alt"></i> Airbags</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-charging-station" title="USB / Charger"><i class="fas fa-charging-station"></i> Charger</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-map-marked-alt" title="GPS Navigation"><i class="fas fa-map-marked-alt"></i> GPS</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-chair" title="Comfort Seats"><i class="fas fa-chair"></i> Seats</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-first-aid" title="First Aid Kit"><i class="fas fa-first-aid"></i> First Aid</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-luggage-cart" title="Luggage Carrier"><i class="fas fa-luggage-cart"></i> Carrier</button>
+                                            <button type="button" class="btn btn-xs btn-outline-secondary quick-icon-btn" data-icon="fas fa-check-circle" title="Standard"><i class="fas fa-check-circle"></i> Standard</button>
+                                        </div>
                                     </div>
                                 </div>   
                             </div>          
@@ -61,16 +85,16 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea asp-for="Description" class="form-control"></textarea>
+                                        <label asp-for="Description" class="form-label"><i class="fas fa-align-left text-secondary mr-1"></i> Description</label>
+                                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                                         <span asp-validation-for="Description" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save"></i> Save</button>
-                                <button type="reset" class="btn btn-danger"><i class="fas fa-recycle"></i> Reset</button>
+                                <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save mr-1"></i> Update Feature</button>
+                                <button type="reset" class="btn btn-outline-danger"><i class="fas fa-undo mr-1"></i> Reset</button>
                             </div>
                         </form>
 
@@ -78,8 +102,6 @@
                 </div>
             </div>
             }
-
-
 
     </div>
 
@@ -90,6 +112,27 @@
 <script>
     var module = "FeatureMaster";
     var operation = "Edit";
+
+    $(function() {
+        function updateIconPreview() {
+            var val = ($('#iconInput').val() || '').trim();
+            if (val && val.indexOf('fa-') > -1) {
+                $('#iconPreview').attr('class', val + ' text-primary');
+            } else {
+                $('#iconPreview').attr('class', 'fas fa-star text-muted');
+            }
+        }
+
+        $('#iconInput').on('input change keyup', updateIconPreview);
+
+        $('.quick-icon-btn').on('click', function(e) {
+            e.preventDefault();
+            var icon = $(this).data('icon');
+            $('#iconInput').val(icon).trigger('change');
+        });
+
+        updateIconPreview();
+    });
 </script>
 
 <script src="~/js/managemodule.js"></script>

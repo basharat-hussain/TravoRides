@@ -1,4 +1,4 @@
-﻿@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.Common.Responses
 @using TravoRides.Application.DTOs.Common
 @using TravoRides.Application.DTOs.FeaturesMaster
 @model ApiResponse<PagedResponse<FeaturesMasterDTO>>
@@ -7,12 +7,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Feature</h1>
+                <h1>Cab Features</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Features</li>
+                    <li class="breadcrumb-item"><a href="/Home/Index">Home</a></li>
+                    <li class="breadcrumb-item active">Cab Features</li>
                 </ol>
             </div>
         </div>
@@ -24,7 +24,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Features</h3>
+            <h3 class="card-title"><i class="fas fa-star text-warning mr-2"></i> Cab Features</h3>
 
             <div class="card-tools">
                 <a asp-controller="FeatureMaster" asp-action="Create" class="btn btn-primary btn-sm">
@@ -57,23 +57,31 @@
         var $btn = $(btn);
         var id = $btn.data('id');
         var title = $btn.data('title') || '';
-                var icon = $btn.data('icon') || '';
-
+        var icon = $btn.data('icon') || '';
         var description = $btn.data('description') || '';
-       
 
-        var html = '<div class="row">';
-      
-        html += '</div>';
-        html += '<div class="col-md-8">';
-        html += '<p><strong>Name:</strong> ' + $('<div/>').text(title).html() + '</p>';
-         html += '<p><strong>icon:</strong> ' + $('<div/>').text(icon).html() + '</p>';
+        var iconCls = icon && icon.indexOf('fa-') > -1 ? icon : 'fas fa-star';
 
-        html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+        var html = '<div class="row align-items-center mb-3 p-3 bg-light rounded border">';
+        html += '<div class="col-auto">';
+        html += '<span class="rounded d-inline-flex align-items-center justify-content-center bg-white border shadow-sm" style="width: 54px; height: 54px; font-size: 1.5rem;">';
+        html += '<i class="' + iconCls + ' text-primary"></i>';
+        html += '</span>';
+        html += '</div>';
+        html += '<div class="col">';
+        html += '<h5 class="font-weight-bold text-dark mb-1">' + $('<div/>').text(title).html() + '</h5>';
+        html += '<small class="text-muted">Icon Class: <code>' + $('<div/>').text(icon || 'fas fa-star (default)').html() + '</code></small>';
         html += '</div>';
         html += '</div>';
 
-        $('#modal-getbyid .lbl-module').text('Feature');
+        if (description) {
+            html += '<div class="mt-2">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1">Description</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
+
+        $('#modal-getbyid .lbl-module').text('Cab Feature Details');
         $('#modal-getbyid #modal-body').html(html);
         $('#modal-getbyid').modal('show');
     }

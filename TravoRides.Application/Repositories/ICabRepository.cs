@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Application.DTOs.Common;
@@ -10,6 +10,6 @@ namespace TravoRides.Application.Repositories
     {
         Task<PagedResponse<Cab>> GetAllSearchAsync(int pageNumber, int pageSize, string? keyword, Guid? categoryId, CancellationToken cancellationToken);
         Task<Cab?> GetCabByCategoryIdAsync(Guid id, CancellationToken cancellationToken);
-
+        Task<Cab?> GetCabWithFeaturesForUpdateAsync(Guid id, CancellationToken cancellationToken);
     }
 }

@@ -25,5 +25,9 @@
     <ProjectReference Include="..\TravoRides.Infrastructure\TravoRides.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
 </Project>
 

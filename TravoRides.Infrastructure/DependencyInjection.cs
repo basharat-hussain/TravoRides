@@ -21,7 +21,7 @@ namespace TravoRides.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, string webRootPath)
         {
             // Register DbContext, repositories, etc.
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,7 +49,11 @@ namespace TravoRides.Infrastructure
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<ITokenService, JwtTokenService>();
-            services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IFileStorageService, FileStorageService>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<FileStorageOptions>>();
+                return new FileStorageService(options, webRootPath);
+            });
             services.AddScoped<IOtpVerificationRepository, OtpVerificationRepository>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 

@@ -9,10 +9,11 @@ namespace TravoRides.Infrastructure.Services
     public class FileStorageService : IFileStorageService
     {
         private readonly FileStorageOptions _options;
-
-        public FileStorageService(IOptions<FileStorageOptions> options)
+        private readonly string webRootPath;
+        public FileStorageService(IOptions<FileStorageOptions> options, string webRootPath)
         {
             _options = options.Value;
+            this.webRootPath = webRootPath;
         }
 
         public async Task<FileUploadResult> UploadAsync(FileUploadRequest request, CancellationToken cancellationToken = default)
@@ -23,9 +24,7 @@ namespace TravoRides.Infrastructure.Services
 
             var storedFileName = $"{Guid.NewGuid()}{extension}";
 
-            var folder = Path.Combine(
-                _options.RootFolder,
-                request.FolderName);
+            var folder = Path.Combine(webRootPath, _options.RootFolder, request.FolderName);
 
             Directory.CreateDirectory(folder);
 

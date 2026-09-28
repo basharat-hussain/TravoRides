@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,5 +23,6 @@ namespace TravoRides.Application.DTOs.Cabs
         public decimal PricePerDay { get; set; }
         public decimal Discount { get; set; }
         public bool IsSelfDrive { get; set; }
+        public List<Guid> FeatureIds { get; set; } = new();
     }
 }

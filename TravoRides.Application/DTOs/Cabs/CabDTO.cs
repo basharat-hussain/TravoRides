@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TravoRides.Application.DTOs.Category;
+using TravoRides.Application.DTOs.FeaturesMaster;
 using TravoRides.Application.DTOs.SelfDrive;
 using TravoRides.Domain.Enums;
 
@@ -24,5 +25,6 @@ namespace TravoRides.Application.DTOs.Cabs
         public CategoryDTO Category { get; set; }
 
         public SelfDriveDTO SelfDrive { get; set; }
+        public List<FeaturesMasterDTO> Features { get; set; } = new();
     }
 }

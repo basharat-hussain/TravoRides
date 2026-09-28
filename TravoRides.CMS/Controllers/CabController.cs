@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using TravoRides.Application.Common.Responses;
 using TravoRides.Application.DTOs.Cabs;
 using TravoRides.Application.DTOs.Category;
 using TravoRides.Application.DTOs.Common;
+using TravoRides.Application.DTOs.FeaturesMaster;
 using TravoRides.Application.Interfaces;
 using TravoRides.CMS.Interface;
 
@@ -39,16 +40,21 @@ namespace TravoRides.CMS.Controllers
         }
 
         [HttpGet]
-
         public async Task<IActionResult> Create()
         {
             var response = await _apiService.GetAsync<ApiResponse<PagedResponse<CategoryDTO>>>
-                ("api/Category?pageNumber=1&pageSize=20");
+                ("api/Category?pageNumber=1&pageSize=100");
 
-            ViewBag.Categories = response.Data.Items;
+            ViewBag.Categories = response?.Data?.Items ?? new List<CategoryDTO>();
+
+            var featureResponse = await _apiService.GetAsync<ApiResponse<PagedResponse<FeaturesMasterDTO>>>
+                ("api/FeaturesMaster?pageNumber=1&pageSize=100");
+
+            ViewBag.Features = featureResponse?.Data?.Items ?? new List<FeaturesMasterDTO>();
 
             return View(new CreateCabRequest());
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateCabRequest model)
         {
@@ -72,10 +78,19 @@ namespace TravoRides.CMS.Controllers
             formData.Add(new StringContent(model.IsSelfDrive.ToString()), nameof(model.IsSelfDrive));
 
             // Category
-            formData.Add( new StringContent(model.CategoryId.ToString()), nameof(model.CategoryId));
+            formData.Add(new StringContent(model.CategoryId.ToString()), nameof(model.CategoryId));
 
             // Fuel
-            formData.Add( new StringContent(model.Fuel.ToString()), nameof(model.Fuel));
+            formData.Add(new StringContent(model.Fuel.ToString()), nameof(model.Fuel));
+
+            // Features
+            if (model.FeatureIds != null && model.FeatureIds.Any())
+            {
+                foreach (var featureId in model.FeatureIds)
+                {
+                    formData.Add(new StringContent(featureId.ToString()), "FeatureIds");
+                }
+            }
 
             if (model.Image != null && model.Image.Length > 0)
             {
@@ -89,30 +104,39 @@ namespace TravoRides.CMS.Controllers
             response = new[] { "True", "Created successfully." };
             return Json(response);
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
             var response = await _apiService.GetAsync<ApiResponse<CabDTO>>($"api/Cab/{id}");
             var item = response?.Data;
             if (item == null) return NotFound();
+
             // Get categories for dropdown
             var categoryResponse = await _apiService.GetAsync<
-            ApiResponse<PagedResponse<CategoryDTO>>>("api/Category?pageNumber=1&pageSize=100");
+                ApiResponse<PagedResponse<CategoryDTO>>>("api/Category?pageNumber=1&pageSize=100");
+            ViewBag.Categories = categoryResponse?.Data?.Items ?? new List<CategoryDTO>();
 
-            ViewBag.Categories = categoryResponse.Data?.Items ?? new List<CategoryDTO>();
+            // Get features for checklist
+            var featureResponse = await _apiService.GetAsync<
+                ApiResponse<PagedResponse<FeaturesMasterDTO>>>("api/FeaturesMaster?pageNumber=1&pageSize=100");
+            ViewBag.Features = featureResponse?.Data?.Items ?? new List<FeaturesMasterDTO>();
+
             var model = new UpdateCabRequest
             {
                 Id = item.Id,
-                CategoryId = item.Category.Id,
+                CategoryId = item.Category != null ? item.Category.Id : Guid.Empty,
                 Name = item.Name,
                 PricePerDay = item.PricePerDay,
                 Discount = item.Discount,
                 Description = item.Description,
                 Transmission = item.Transmission,
                 Fuel = item.Fuel,
-               LuggageCapacity = item.LuggageCapacity,
-               SeatingCapacity = item.SeatingCapacity,
+                LuggageCapacity = item.LuggageCapacity,
+                SeatingCapacity = item.SeatingCapacity,
                 ImageUrl = item.ImageUrl,
+                IsSelfDrive = item.SelfDrive != null,
+                FeatureIds = item.Features?.Select(f => f.Id).ToList() ?? new List<Guid>()
             };
 
             return View(model);
@@ -133,7 +157,7 @@ namespace TravoRides.CMS.Controllers
 
             formData.Add(new StringContent(model.Name ?? string.Empty), nameof(model.Name));
             formData.Add(new StringContent(model.PricePerDay.ToString() ?? string.Empty), nameof(model.PricePerDay));
-            formData.Add(new StringContent(model.Discount.ToString()?? string.Empty), nameof(model.Discount));
+            formData.Add(new StringContent(model.Discount.ToString() ?? string.Empty), nameof(model.Discount));
             formData.Add(new StringContent(model.Transmission ?? string.Empty), nameof(model.Transmission));
             formData.Add(new StringContent(model.Description ?? string.Empty), nameof(model.Description));
             formData.Add(new StringContent(model.CategoryId.ToString()), nameof(model.CategoryId));
@@ -142,12 +166,20 @@ namespace TravoRides.CMS.Controllers
             formData.Add(new StringContent(model.SeatingCapacity.ToString() ?? string.Empty), nameof(model.SeatingCapacity));
             formData.Add(new StringContent(model.IsSelfDrive.ToString()), nameof(model.IsSelfDrive));
 
+            // Features
+            if (model.FeatureIds != null && model.FeatureIds.Any())
+            {
+                foreach (var featureId in model.FeatureIds)
+                {
+                    formData.Add(new StringContent(featureId.ToString()), "FeatureIds");
+                }
+            }
 
             if (model.Image != null && model.Image.Length > 0)
             {
                 var imageContent = new StreamContent(model.Image.OpenReadStream());
                 imageContent.Headers.ContentType = new MediaTypeHeaderValue(model.Image.ContentType);
-                formData.Add(imageContent, nameof(model.ImageUrl), model.Image.FileName);
+                formData.Add(imageContent, nameof(model.Image), model.Image.FileName);
             }
 
             await _apiService.PutAsync<ApiResponse<object>>($"api/Cab/{id}", formData);

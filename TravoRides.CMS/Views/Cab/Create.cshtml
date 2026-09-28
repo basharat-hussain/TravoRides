@@ -1,16 +1,22 @@
-﻿@using TravoRides.Application.DTOs.Cabs
+@using TravoRides.Application.DTOs.Cabs
+@using TravoRides.Application.DTOs.FeaturesMaster
 @using TravoRides.Domain.Enums
 @model CreateCabRequest
+
+@{
+    var features = ViewBag.Features as IEnumerable<FeaturesMasterDTO> ?? Enumerable.Empty<FeaturesMasterDTO>();
+}
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Cab Add</h1>
+                <h1>Add New Cab</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="/Cab/Index">Cab</a></li>
-                    <li class="breadcrumb-item active">Add</li>
+                    <li class="breadcrumb-item"><a href="/Cab/Index">Cabs</a></li>
+                    <li class="breadcrumb-item active">Add Cab</li>
                 </ol>
             </div>
         </div>
@@ -19,167 +25,276 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="row">
-        <div class="offset-md-2 col-md-8">
-            <div class="card card-primary">
-                <div class="card-header">
-                    <h3 class="card-title">Add Cab</h3>
-
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                            <i class="fas fa-minus"></i>
-                        </button>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-car mr-2"></i> Cab Details</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <form id="addform" enctype="multipart/form-data" asp-controller="Cab" asp-action="Create" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
-                       
-                        <div class="row">
-                          
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="CategoryId" class="form-label">Category</label>
-
-                                    <select asp-for="CategoryId" class="form-control">
-                                        <option value="">-- Select Category --</option>
-
-                                        @foreach (var category in ViewBag.Categories)
-                                        {
-                                            <option value="@category.Id">
-                                                @category.Name
-                                            </option>
-                                        }
-                                    </select>
-
-                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
-                                </div>
-                            </div>
-                             <div class="col-md-6">
-
-                                    <label asp-for="Fuel" class="form-label">Fuel Type</label>
-
-                                    <select asp-for="Fuel"
-                                            asp-items="Html.GetEnumSelectList<FuelType>()"
-                                            class="form-control">
-                                        <option value="">-- Select Fuel Type --</option>
-                                    </select>
-
-                                    <span asp-validation-for="Fuel" class="text-danger"></span>
-
-                                </div>
+                    <div class="card-body">
+                        <form id="addform" enctype="multipart/form-data" asp-controller="Cab" asp-action="Create" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
                             
-                           </div>
-                        <div class="row">
-                               <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Name</label>
-                                    <input asp-for="Name" class="form-control" />
-                                    <span asp-validation-for="Name" class="text-danger"></span>
-                                </div>
-                            </div>
-                              <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Transmission</label>
-                                    <input asp-for="Transmission" class="form-control" rows="4" />
-                                    <span asp-validation-for="Transmission" class="text-danger"></span>
-                                </div>
-                            </div>
-                           </div>
-                        <div class="row">
+                            <!-- Primary Info -->
+                            <div class="row">
                                 <div class="col-md-6">
-                                 <div class="form-group">
-                                        <label>Price</label>
-                                        <input asp-for="PricePerDay" class="form-control" />
+                                    <div class="form-group">
+                                        <label asp-for="CategoryId" class="form-label"><i class="fas fa-th-large text-primary mr-1"></i> Category <span class="text-danger">*</span></label>
+                                        <select asp-for="CategoryId" class="form-control">
+                                            <option value="">-- Select Category --</option>
+                                            @if (ViewBag.Categories != null)
+                                            {
+                                                foreach (var category in ViewBag.Categories)
+                                                {
+                                                    <option value="@category.Id">@category.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Fuel" class="form-label"><i class="fas fa-gas-pump text-success mr-1"></i> Fuel Type <span class="text-danger">*</span></label>
+                                        <select asp-for="Fuel" asp-items="Html.GetEnumSelectList<FuelType>()" class="form-control">
+                                            <option value="">-- Select Fuel Type --</option>
+                                        </select>
+                                        <span asp-validation-for="Fuel" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Name" class="form-label"><i class="fas fa-font text-info mr-1"></i> Cab Name <span class="text-danger">*</span></label>
+                                        <input asp-for="Name" class="form-control" placeholder="e.g. Toyota Innova Crysta" />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Transmission" class="form-label"><i class="fas fa-cogs text-secondary mr-1"></i> Transmission <span class="text-danger">*</span></label>
+                                        <input asp-for="Transmission" class="form-control" placeholder="e.g. Automatic / Manual" />
+                                        <span asp-validation-for="Transmission" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="PricePerDay" class="form-label"><i class="fas fa-rupee-sign text-success mr-1"></i> Price Per Day <span class="text-danger">*</span></label>
+                                        <input asp-for="PricePerDay" class="form-control" type="number" step="0.01" placeholder="0.00" />
                                         <span asp-validation-for="PricePerDay" class="text-danger"></span>
                                     </div>
                                 </div>
-
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Discount</label>
-                                        <input asp-for="Discount" class="form-control" rows="4" />
+                                        <label asp-for="Discount" class="form-label"><i class="fas fa-rupee-sign text-warning mr-1"></i> Discount (₹)</label>
+                                        <input asp-for="Discount" class="form-control" type="number" step="0.01" placeholder="0.00" />
                                         <span asp-validation-for="Discount" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
-                        <div class="row">
+
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Seating Capacity</label>
-                                        <input asp-for="SeatingCapacity" class="form-control" />
+                                        <label asp-for="SeatingCapacity" class="form-label"><i class="fas fa-users text-primary mr-1"></i> Seating Capacity <span class="text-danger">*</span></label>
+                                        <input asp-for="SeatingCapacity" class="form-control" type="number" min="1" placeholder="e.g. 5" />
                                         <span asp-validation-for="SeatingCapacity" class="text-danger"></span>
                                     </div>
                                 </div>
-
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Luggage</label>
-                                        <input asp-for="LuggageCapacity" class="form-control" rows="4" />
+                                        <label asp-for="LuggageCapacity" class="form-label"><i class="fas fa-suitcase text-purple mr-1"></i> Luggage Capacity (Bags) <span class="text-danger">*</span></label>
+                                        <input asp-for="LuggageCapacity" class="form-control" type="number" min="0" placeholder="e.g. 3" />
                                         <span asp-validation-for="LuggageCapacity" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Logo</label>
-                                    <input asp-for="Image" class="form-control img-uploader" accept=".png, .jpeg, .jpg" />
-                                    <span asp-validation-for="Image" class="text-danger"></span>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label"><i class="fas fa-image text-danger mr-1"></i> Vehicle Image <span class="text-danger">*</span></label>
+                                        <input asp-for="Image" class="form-control img-uploader" accept=".png, .jpeg, .jpg" />
+                                        <span asp-validation-for="Image" class="text-danger"></span>
+                                        <small class="text-muted d-block mt-1">Recommended: Clean PNG/JPG vehicle side profile (under 5MB)</small>
+                                    </div>
                                 </div>
-                            </div>
-                          @*   <div class="col-md-4">
-                            <div class="form-group">
-                                <div class="icheck-primary">
-                                    <input type="checkbox"
-                                           id="isSelfDrive"
-                                           asp-for="IsSelfDrive" />
-
-                                    <label for="isSelfDrive">
-                                        Self Drive
-                                    </label>
-                                </div>
-                            </div>
-                            </div> *@
-                           
-
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <img src="~/dist/img/200x80.png" class="image-previewer" style="height: 100px; width:200px" />
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Image Preview</label>
+                                        <div>
+                                            <img src="~/dist/img/200x80.png" class="image-previewer" style="height: 100px; width: 220px;" alt="Vehicle Preview" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea asp-for="Description" class="form-control"></textarea>
-                                    <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label asp-for="Description" class="form-label"><i class="fas fa-align-left text-secondary mr-1"></i> Description</label>
+                                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter detailed vehicle highlights, terms, or specifications..."></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
                                 </div>
                             </div>
-                            
-                        </div>
 
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-success save-btn"><i class="fas fa-save"></i> Save</button>
-                            <button type="reset" class="btn btn-danger"><i class="fas fa-recycle"></i> Reset</button>
-                        </div>
-                    </form>
+                            <!-- Dedicated Modern Cab Features Selection Section -->
+                            <div class="feature-selection-container">
+                                <div class="feature-selection-header">
+                                    <div>
+                                        <h5 class="feature-selection-title">
+                                            <i class="fas fa-star text-warning"></i> Cab Features & Amenities
+                                        </h5>
+                                        <small class="text-muted">Select all features available in this cab from Feature Master</small>
+                                    </div>
+                                    <div class="feature-selection-tools">
+                                        <div class="feature-search-box">
+                                            <i class="fas fa-search"></i>
+                                            <input type="text" id="featureSearchInput" placeholder="Search features..." />
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnSelectAllFeatures">
+                                            <i class="fas fa-check-double"></i> All
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnClearAllFeatures">
+                                            <i class="fas fa-times"></i> Clear
+                                        </button>
+                                        <span class="feature-count-badge" id="selectedFeaturesBadge">0 selected</span>
+                                    </div>
+                                </div>
 
+                                @if (features.Any())
+                                {
+                                    <div class="features-grid" id="featuresGrid">
+                                        @foreach (var feature in features)
+                                        {
+                                            var iconClass = string.IsNullOrWhiteSpace(feature.Icon) ? "fas fa-check-circle" : feature.Icon;
+                                            if (!iconClass.Contains("fa-")) iconClass = "fas fa-check-circle";
+
+                                            <div class="feature-card" data-title="@feature.Title.ToLower()" data-desc="@(feature.Description?.ToLower() ?? "")">
+                                                <input type="checkbox" name="FeatureIds" value="@feature.Id" class="feature-checkbox d-none" />
+                                                <div class="feature-card-icon">
+                                                    <i class="@iconClass"></i>
+                                                </div>
+                                                <div class="feature-card-content">
+                                                    <div class="feature-card-title" title="@feature.Title">@feature.Title</div>
+                                                    <div class="feature-card-desc">@(string.IsNullOrWhiteSpace(feature.Description) ? "Included with vehicle" : feature.Description)</div>
+                                                </div>
+                                                <div class="feature-card-check">
+                                                    <i class="fas fa-check"></i>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-light text-center border p-4 mb-0">
+                                        <i class="fas fa-info-circle text-info fa-2x mb-2 d-block"></i>
+                                        <p class="mb-1 font-weight-bold">No features found in Feature Master table.</p>
+                                        <small class="text-muted">You can add master features anytime under the <a href="/FeatureMaster/Create" target="_blank" class="font-weight-bold text-primary">Cab Features</a> menu.</small>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="form-group pt-2 mb-0 d-flex gap-2">
+                                <button type="submit" class="btn btn-success save-btn mr-2">
+                                    <i class="fas fa-save mr-1"></i> Save Cab
+                                </button>
+                                <button type="reset" class="btn btn-outline-danger">
+                                    <i class="fas fa-undo mr-1"></i> Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
-
 </section>
 
 <partial name="_ValidationScriptsPartial" />
 
 <script>
     var module = "Cab";
+
+    $(function() {
+        function updateFeatureCount() {
+            var count = $('.feature-checkbox:checked').length;
+            $('#selectedFeaturesBadge').text(count + ' selected');
+        }
+
+        // Feature card toggle
+        $(document).on('click', '.feature-card', function(e) {
+            if ($(e.target).is('input')) return;
+            var $chk = $(this).find('.feature-checkbox');
+            var isChecked = !$chk.prop('checked');
+            $chk.prop('checked', isChecked).trigger('change');
+        });
+
+        // Checkbox change updates UI
+        $(document).on('change', '.feature-checkbox', function() {
+            var $card = $(this).closest('.feature-card');
+            if ($(this).is(':checked')) {
+                $card.addClass('selected');
+            } else {
+                $card.removeClass('selected');
+            }
+            updateFeatureCount();
+        });
+
+        // Select All visible
+        $('#btnSelectAllFeatures').on('click', function() {
+            $('.feature-card:visible').each(function() {
+                var $chk = $(this).find('.feature-checkbox');
+                if (!$chk.prop('checked')) {
+                    $chk.prop('checked', true).trigger('change');
+                }
+            });
+        });
+
+        // Clear All
+        $('#btnClearAllFeatures').on('click', function() {
+            $('.feature-checkbox').prop('checked', false).trigger('change');
+        });
+
+        // Live search filter
+        $('#featureSearchInput').on('input', function() {
+            var term = $(this).val().toLowerCase().trim();
+            $('.feature-card').each(function() {
+                var title = $(this).data('title') || '';
+                var desc = $(this).data('desc') || '';
+                if (title.indexOf(term) > -1 || desc.indexOf(term) > -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // Reset clears selected features
+        $('#addform').on('reset', function() {
+            setTimeout(function() {
+                $('.feature-checkbox').prop('checked', false).trigger('change');
+                $('#featureSearchInput').val('').trigger('input');
+                $('.image-previewer').attr('src', '/dist/img/200x80.png');
+            }, 60);
+        });
+
+        updateFeatureCount();
+    });
 </script>
 
+<script src="~/js/managemodule.js"></script>
 <script src="~/js/managemodule.js"></script>

@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TravoRides | CMS</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
 
     <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -114,152 +116,126 @@
             </ul>
         </nav>
 
+        @{
+            var currentCtrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+        }
+
         @* Sidebar *@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a asp-controller="Home" asp-action="Index" class="brand-link bg-white" style="border-bottom: 1px solid #dee2e6;">
-                <img src="~/images/travorides_logo.png" alt="TravoRides Logo" class="brand-image" style="max-height: 33px; opacity: 1;">
-                <span class="brand-text font-weight-bold text-dark">CMS</span>
+            <a asp-controller="Home" asp-action="Index" class="brand-link">
+                <img src="~/images/travorides_logo.png" alt="TravoRides Logo" class="brand-image" style="max-height: 33px; background: #fff; padding: 2px 6px; border-radius: 6px;">
+                <span class="brand-text">TravoRides</span>
+                <span class="brand-badge ml-auto">CMS</span>
             </a>
 
             <div class="sidebar">
 
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
                     <div class="image">
                         <img src="~/dist/img/avatar5.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        @* <a href="#" class="d-block text-bold">@UserManager.GetUserName(User)</a> *@
+                        <span class="d-block font-weight-bold text-light" style="font-size: 0.9rem;">Administrator</span>
+                        <span class="badge badge-success" style="font-size: 0.68rem; font-weight: 600;">Online</span>
                     </div>
                 </div>
-
 
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
                         <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Index" class="nav-link active">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Dashboard
-                                </p>
+                            <a asp-controller="Home" asp-action="Index" class="nav-link @(currentCtrl == "Home" ? "active" : "")">
+                                <i class="nav-icon fas fa-tachometer-alt text-info"></i>
+                                <p>Dashboard</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Booking" asp-action="Index" class="nav-link">
+                            <a asp-controller="Booking" asp-action="Index" class="nav-link @(currentCtrl == "Booking" ? "active" : "")">
                                 <i class="nav-icon fas fa-calendar-check text-success"></i>
-                                <p>
-                                    Bookings
-                                </p>
+                                <p>Bookings</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Payment" asp-action="Index" class="nav-link">
+                            <a asp-controller="Payment" asp-action="Index" class="nav-link @(currentCtrl == "Payment" ? "active" : "")">
                                 <i class="nav-icon fas fa-credit-card text-warning"></i>
-                                <p>
-                                    Payments
-                                </p>
+                                <p>Payments</p>
                             </a>
                         </li>
-                          <li class="nav-item">
-                            <a asp-controller="Category" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-users text-fuchsia"></i>
-                                <p>
-                                    Category
-                                </p>
+                        <li class="nav-item">
+                            <a asp-controller="Category" asp-action="Index" class="nav-link @(currentCtrl == "Category" ? "active" : "")">
+                                <i class="nav-icon fas fa-th-large text-primary"></i>
+                                <p>Categories</p>
                             </a>
                         </li> 
-                         <li class="nav-item">
-                            <a asp-controller="Cab" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-edit text-blue "></i>
-                                <p>
-                                    Cabs
-                                </p>
-                            </a>
-                        </li>
-                         <li class="nav-item">
-                            <a asp-controller="Package" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-desktop text-light"></i>
-                                <p>
-                                    Packages
-                                </p>
-                            </a>
-                        </li>
-                         <li class="nav-item">
-                            <a asp-controller="Transit" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-train text-yellow"></i>
-                                <p>
-                                    Transits
-                                </p>
+                        <li class="nav-item">
+                            <a asp-controller="Cab" asp-action="Index" class="nav-link @(currentCtrl == "Cab" ? "active" : "")">
+                                <i class="nav-icon fas fa-car text-blue"></i>
+                                <p>Cabs</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="SelfDrive" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-newspaper text-danger"></i>
-                                <p>
-                                    Self-Drive
-                                </p>
+                            <a asp-controller="FeatureMaster" asp-action="Index" class="nav-link @(currentCtrl == "FeatureMaster" ? "active" : "")">
+                                <i class="nav-icon fas fa-star text-warning"></i>
+                                <p>Cab Features</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="FeatureMaster" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-newspaper text-white"></i>
-                                <p>
-                                    Features
-                                </p>
+                            <a asp-controller="Package" asp-action="Index" class="nav-link @(currentCtrl == "Package" ? "active" : "")">
+                                <i class="nav-icon fas fa-box-open text-purple"></i>
+                                <p>Packages</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Review" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-comments text-green"></i>
-                                <p>
-                                    Reviews
-                                </p>
+                            <a asp-controller="Transit" asp-action="Index" class="nav-link @(currentCtrl == "Transit" ? "active" : "")">
+                                <i class="nav-icon fas fa-route text-yellow"></i>
+                                <p>Transits</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="SelfDrive" asp-action="Index" class="nav-link @(currentCtrl == "SelfDrive" ? "active" : "")">
+                                <i class="nav-icon fas fa-key text-danger"></i>
+                                <p>Self-Drive</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Review" asp-action="Index" class="nav-link @(currentCtrl == "Review" ? "active" : "")">
+                                <i class="nav-icon fas fa-star text-green"></i>
+                                <p>Reviews</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a asp-controller="LatestThinking" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-newspaper text-warning"></i>
-                                <p>
-                                    LatestThinkings
-                                </p>
+                            <a asp-controller="LatestThinking" asp-action="Index" class="nav-link @(currentCtrl == "LatestThinking" ? "active" : "")">
+                                <i class="nav-icon fas fa-lightbulb text-warning"></i>
+                                <p>Latest Thinkings</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a asp-controller="Enquiry" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-edit text-cyan"></i>
-                                <p>
-                                    Enquiries
-                                </p>
+                            <a asp-controller="Enquiry" asp-action="Index" class="nav-link @(currentCtrl == "Enquiry" ? "active" : "")">
+                                <i class="nav-icon fas fa-envelope-open-text text-cyan"></i>
+                                <p>Enquiries</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Subscription" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-users text-fuchsia"></i>
-                                <p>
-                                    Subscribers
-                                </p>
+                            <a asp-controller="Subscription" asp-action="Index" class="nav-link @(currentCtrl == "Subscription" ? "active" : "")">
+                                <i class="nav-icon fas fa-bell text-fuchsia"></i>
+                                <p>Subscribers</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Quote" asp-action="Index" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice text-fuchsia"></i>
-                                <p>
-                                    Quotes
-                                </p>
+                            <a asp-controller="Quote" asp-action="Index" class="nav-link @(currentCtrl == "Quote" ? "active" : "")">
+                                <i class="nav-icon fas fa-file-invoice text-pink"></i>
+                                <p>Quotes</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a asp-controller="Login" asp-action="Logout" class="nav-link logout-link">
                                 <i class="nav-icon fas fa-power-off text-danger"></i>
-                                <p>
-                                    Logout
-                                </p>
+                                <p>Logout</p>
                             </a>
                         </li>
-
 
                     </ul>
                 </nav>

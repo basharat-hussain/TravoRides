@@ -1,91 +1,144 @@
-﻿@using TravoRides.Application.DTOs.Cabs
+@using TravoRides.Application.DTOs.Cabs
 @using TravoRides.Application.DTOs.Common
 @model PagedResponse<CabDTO>
 
-
-@if (Model.Items.Count() > 0)
+@if (Model != null && Model.Items.Any())
 {
     <thead>
         <tr>
-            <th style="width: 10%">
-                S.No
-            </th>
-
-            <th style="width: 20%">
-                Category
-            </th>
-
-            <th style="width: 20%">
-                Name
-            </th>
-
-            <th style="width: 15%">
-                Price
-            </th>
-            <th style="width: 15%">
-                 Discount
-            </th>
-           
-            <th style="width: 10%" class="text-center">
-                Actions
-            </th>
-           <th style="width: 10%" class="text-center">
-                View
-            </th>
+            <th style="width: 5%">#</th>
+            <th style="width: 25%">Vehicle</th>
+            <th style="width: 15%">Category</th>
+            <th style="width: 20%">Features</th>
+            <th style="width: 15%">Pricing</th>
+            <th style="width: 10%" class="text-center">Actions</th>
+            <th style="width: 10%" class="text-center">Details</th>
         </tr>
     </thead>
-
     <tbody>
-        @{ int count = 1;}
-        @foreach (var Cab in Model.Items)
+        @{ int count = ((Model.PageNumber - 1) * Model.PageSize) + 1; }
+        @foreach (var cab in Model.Items)
         {
+            var featuresJson = cab.Features != null && cab.Features.Any()
+                ? System.Text.Json.JsonSerializer.Serialize(cab.Features.Select(f => new { f.Title, f.Icon, f.Description }))
+                : "[]";
+
             <tr>
                 <td>
-                    @(count++)
-                    <input type="hidden" class="hdn-id" value="@Cab.Id" />
-
+                    <span class="font-weight-bold text-muted">@(count++)</span>
+                    <input type="hidden" class="hdn-id" value="@cab.Id" />
                 </td>
 
-                <td class="name">@Cab.Category.Name</td>
-
-                <td>@Cab.Name</td>
-
-                <td>@Cab.PricePerDay </td>
-               <td>@Cab.Discount</td>
-
-                <td class="project-actions text-center">
-
-                    <a asp-controller="Cab" asp-action="Edit" asp-route-id="@Cab.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
-                        <i class="fas fa-pencil-alt"></i>
-                    </a>
-                    <a class="btn btn-danger btn-sm btn-delete" href="#" data-toggle="modal" data-target="#modal-delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </a>
+                <td>
+                    <div class="d-flex align-items-center">
+                        @if (!string.IsNullOrWhiteSpace(cab.ImageUrl))
+                        {
+                            <img src="@cab.ImageUrl" alt="@cab.Name" class="rounded mr-3 border" style="width: 54px; height: 38px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="rounded mr-3 border bg-light d-flex align-items-center justify-content-center" style="width: 54px; height: 38px;">
+                                <i class="fas fa-car text-muted"></i>
+                            </div>
+                        }
+                        <div>
+                            <div class="name font-weight-bold text-dark">@cab.Name</div>
+                            <small class="text-muted">
+                                <i class="fas fa-gas-pump mr-1"></i>@cab.Fuel &bull; <i class="fas fa-cogs mr-1"></i>@cab.Transmission
+                            </small>
+                        </div>
+                    </div>
                 </td>
-                  <td class="text-center">
-                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
-                            data-id="@Cab.Id"
-                            data-name="@Cab.Name"
-                            data-category="@Cab.Category.Name"
-                            data-price="@Cab.PricePerDay"
-                            data-discount="@Cab.Discount"
-                            data-fuel="@Cab.Fuel"
-                            data-transmission="@Cab.Transmission"
-                            data-description="@Cab.Description"
-                            data-image="@Cab.ImageUrl"
-                           >
-                        View
+
+                <td>
+                    <span class="badge badge-light border text-primary px-2 py-1 font-weight-bold" style="font-size: 0.82rem;">
+                        @(cab.Category?.Name ?? "Uncategorized")
+                    </span>
+                </td>
+
+                <td>
+                    @if (cab.Features != null && cab.Features.Any())
+                    {
+                        <div class="d-flex flex-wrap align-items-center gap-1">
+                            @foreach (var feat in cab.Features.Take(2))
+                            {
+                                var iconClass = string.IsNullOrWhiteSpace(feat.Icon) ? "fas fa-check" : feat.Icon;
+                                <span class="badge badge-light border text-dark mr-1 mb-1" style="font-size: 0.75rem; padding: 4px 7px;">
+                                    <i class="@iconClass text-primary mr-1"></i>@feat.Title
+                                </span>
+                            }
+                            @if (cab.Features.Count > 2)
+                            {
+                                <span class="badge badge-primary text-white mb-1" style="font-size: 0.72rem; padding: 3px 6px;">
+                                    +@(cab.Features.Count - 2) more
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <small class="text-muted font-italic">No features added</small>
+                    }
+                </td>
+
+                <td>
+                    <div class="font-weight-bold text-success" style="font-size: 0.95rem;">
+                        ₹@cab.PricePerDay.ToString("N0") <span class="text-muted font-weight-normal" style="font-size: 0.75rem;">/ day</span>
+                    </div>
+                    @if (cab.Discount > 0)
+                    {
+                        <small class="text-danger font-weight-bold">
+                            <i class="fas fa-tag mr-1"></i>₹@cab.Discount.ToString("N0") OFF
+                        </small>
+                    }
+                </td>
+
+                <td class="text-center">
+                    <div class="btn-group btn-group-sm">
+                        <a asp-controller="Cab" asp-action="Edit" asp-route-id="@cab.Id" class="btn btn-warning" data-toggle="tooltip" title="Edit Cab">
+                            <i class="fas fa-pen"></i>
+                        </a>
+                        <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#modal-delete" title="Delete Cab">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </td>
+
+                <td class="text-center">
+                    <button type="button" class="btn btn-outline-info btn-sm" onclick="showCabDetails(this)"
+                            data-id="@cab.Id"
+                            data-name="@cab.Name"
+                            data-category="@(cab.Category?.Name ?? "")"
+                            data-price="₹@cab.PricePerDay.ToString("N0") / day"
+                            data-discount="@(cab.Discount > 0 ? "₹" + cab.Discount.ToString("N0") : "None")"
+                            data-fuel="@cab.Fuel"
+                            data-transmission="@cab.Transmission"
+                            data-seating="@cab.SeatingCapacity"
+                            data-luggage="@cab.LuggageCapacity"
+                            data-description="@cab.Description"
+                            data-imageurl="@cab.ImageUrl"
+                            data-selfdrive="@(cab.SelfDrive != null ? "Yes" : "No")"
+                            data-features='@Html.Raw(featuresJson)'>
+                        <i class="fas fa-eye mr-1"></i> View
                     </button>
-                    </td>
+                </td>
             </tr>
         }
-
-
-
     </tbody>
 }
 else
 {
-    <tr>
-        <td>Sorry! No Cabs found</td>
-    </tr>}
+    <tbody>
+        <tr>
+            <td colspan="7" class="text-center py-5">
+                <i class="fas fa-car-side fa-3x text-muted mb-3 d-block"></i>
+                <h5 class="font-weight-bold text-dark">No Cabs Found</h5>
+                <p class="text-muted mb-3">No vehicles are registered yet. Get started by adding your first cab.</p>
+                <a asp-controller="Cab" asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Cab
+                </a>
+            </td>
+        </tr>
+    </tbody>
+}
+
