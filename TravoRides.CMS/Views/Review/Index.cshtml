@@ -1,4 +1,4 @@
-﻿@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.Common.Responses
 @using TravoRides.Application.DTOs.Common
 @using TravoRides.Application.DTOs.Review
 @model ApiResponse<PagedResponse<ReviewDTO>>
@@ -53,29 +53,59 @@
         var id = $btn.data('id');
         var name = $btn.data('name') || '';
         var address = $btn.data('address') || '';
-        var company = $btn.data('company') || '';
         var feedback = $btn.data('feedback') || '';
-        var rating = $btn.data('rating') || '';
-        var image = $btn.data('image') || '';
-        var isActive = $btn.data('isactive');
+        var rating = parseInt($btn.data('rating') || '0', 10);
+        var image = $btn.data('imageurl') || $btn.data('image') || '';
+        var isActive = $btn.data('isactive') === true || $btn.data('isactive') === "true";
 
-        var statusText = isActive ? 'Approved' : 'Unapproved';
-
-        var html = '<div class="row">';
-       
-       
+        var html = '<div class="row align-items-center">';
+        
+        // Avatar & Rating Column
+        html += '<div class="col-md-4 text-center mb-3 mb-md-0">';
+        if (image) {
+            html += '<img src="' + image + '" class="img-fluid rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;" alt="' + $('<div/>').text(name).html() + '" onerror="this.onerror=null;this.src=\'/dist/img/user1-128x128.jpg\';" />';
+        } else {
+            html += '<div class="rounded-circle border bg-light d-inline-flex align-items-center justify-content-center text-muted shadow-sm" style="width: 100px; height: 100px;"><i class="fas fa-user-circle fa-4x"></i></div>';
+        }
+        
+        // Star rating
+        html += '<div class="mt-2 text-warning">';
+        for (var i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                html += '<i class="fas fa-star mr-1"></i>';
+            } else {
+                html += '<i class="far fa-star text-muted mr-1"></i>';
+            }
+        }
+        html += '<div class="small font-weight-bold text-muted mt-1">' + rating + ' out of 5 stars</div>';
         html += '</div>';
+
+        html += '<div class="mt-2">';
+        if (isActive) {
+            html += '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i>Approved</span>';
+        } else {
+            html += '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i>Unapproved</span>';
+        }
+        html += '</div>';
+
+        html += '</div>';
+
+        // Details Column
         html += '<div class="col-md-8">';
-        html += '<p><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
-        html += '<p><strong>Company:</strong> ' + $('<div/>').text(company).html() + '</p>';
-        html += '<p><strong>Address:</strong> ' + $('<div/>').text(address).html() + '</p>';
-        html += '<p><strong>Rating:</strong> ' + rating + '</p>';
-        html += '<p><strong>Status:</strong> ' + statusText + '</p>';
-        html += '<p><strong>Feedback:</strong><br />' + $('<div/>').text(feedback).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '<h4 class="font-weight-bold text-dark mb-1">' + $('<div/>').text(name).html() + '</h4>';
+        if (address) {
+            html += '<div class="text-muted small mb-3"><i class="fas fa-map-marker-alt text-danger mr-1"></i>' + $('<div/>').text(address).html() + '</div>';
+        }
+
+        html += '<div class="p-3 bg-light rounded border">';
+        html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-2"><i class="fas fa-comment-dots text-primary mr-1"></i>Customer Feedback</h6>';
+        html += '<p class="text-secondary mb-0 font-italic" style="line-height: 1.6;">"' + $('<div/>').text(feedback).html().replace(/\n/g, '<br/>') + '"</p>';
+        html += '</div>';
+
         html += '</div>';
         html += '</div>';
 
-        $('#modal-getbyid .lbl-module').text('Review');
+        $('#modal-getbyid .lbl-module').text('Review Details');
         $('#modal-getbyid #modal-body').html(html);
         $('#modal-getbyid').modal('show');
     }

@@ -1,4 +1,4 @@
-﻿@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.Common.Responses
 @using TravoRides.Application.DTOs.Common
 @using TravoRides.Application.DTOs.LatestThinking
 
@@ -54,52 +54,83 @@
 </script>
 
 <script>
-    function showReviewDetails(btn) {
+    function showLatestThinkingDetails(btn) {
         var $btn = $(btn);
         var id = $btn.data('id');
         var title = $btn.data('title') || '';
         var subtitle = $btn.data('subtitle') || '';
         var author = $btn.data('author') || '';
-        var metaTitle = $btn.data('metaTitle') || '';
-                var metaDescription = $btn.data('metaDescription') || '';
-
-                          var summary = $btn.data('summary') || '';
-              var takeAways = $btn.data('takeAways') || '';
-
-                                var slug = $btn.data('slug') || '';
-
-                                        var altImage = $btn.data('altImage') || '';
-
-                                                var canonicalUrl = $btn.data('canonicalUrl') || '';
-
+        var metaTitle = $btn.data('metatitle') || '';
+        var metaDescription = $btn.data('metadescription') || '';
+        var summary = $btn.data('summary') || '';
+        var takeAways = $btn.data('takeaways') || '';
+        var slug = $btn.data('slug') || '';
+        var altImage = $btn.data('altimage') || '';
+        var canonicalUrl = $btn.data('canonicalurl') || '';
         var description = $btn.data('description') || '';
-        var image = $btn.data('image') || '';
+        var imageurl = $btn.data('imageurl') || $btn.data('image') || '';
 
-        var html = '<div class="row">';
-        html += '<div class="col-md-4">';
-        if (image) {
-            html += '<img src="' + image + '" class="img-fluid" />';
+        var html = '<div class="row align-items-start">';
+        
+        // Image Column
+        html += '<div class="col-md-5 mb-3">';
+        if (imageurl) {
+            html += '<img src="' + imageurl + '" class="img-fluid rounded border shadow-sm w-100" style="max-height: 220px; object-fit: cover;" alt="' + $('<div/>').text(altImage || title).html() + '" onerror="this.onerror=null;this.src=\'/dist/img/200x100.png\';" />';
+        } else {
+            html += '<div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted shadow-sm" style="height: 180px;"><i class="fas fa-newspaper fa-4x"></i></div>';
+        }
+        
+        html += '<div class="mt-3 p-3 bg-light rounded border">';
+        if (author) {
+            html += '<div class="mb-2"><span class="text-muted small text-uppercase font-weight-bold">Author: </span><span class="font-weight-bold text-dark">' + $('<div/>').text(author).html() + '</span></div>';
+        }
+        if (slug) {
+            html += '<div class="mb-1"><span class="text-muted small text-uppercase font-weight-bold">Slug: </span><span class="text-secondary small font-italic">' + $('<div/>').text(slug).html() + '</span></div>';
+        }
+        if (canonicalUrl) {
+            html += '<div class="mb-0"><span class="text-muted small text-uppercase font-weight-bold">Canonical: </span><a href="' + canonicalUrl + '" target="_blank" class="small text-truncate d-inline-block" style="max-width: 100%;">' + $('<div/>').text(canonicalUrl).html() + '</a></div>';
         }
         html += '</div>';
-        html += '<div class="col-md-8">';
-        html += '<p><strong>Title:</strong> ' + $('<div/>').text(title).html() + '</p>';
-        html += '<p><strong>Subtitle:</strong> ' + $('<div/>').text(subtitle).html() + '</p>';
-        html += '<p><strong>Author:</strong> ' + $('<div/>').text(author).html() + '</p>';
-        html += '<p><strong>Slug:</strong> ' + $('<div/>').text(slug).html() + '</p>';
-                html += '<p><strong>CanonicalUrl:</strong> ' + $('<div/>').text(canonicalUrl).html() + '</p>';
-        html += '<p><strong>ImageText:</strong> ' + $('<div/>').text(altImage).html() + '</p>';
-        html += '<p><strong>MetaTitle:</strong> ' + $('<div/>').text(metaTitle).html() + '</p>';
-        html += '<p><strong>KeyTakeways:</strong> ' + $('<div/>').text(takeAways).html() + '</p>';
-                html += '<p><strong>MetaDescription:</strong><br />' + $('<div/>').text(metaDescription).html().replace(/\n/g, '<br/>') + '</p>';
-        html += '<p><strong>Summary:</strong><br />' + $('<div/>').text(summary).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '</div>';
 
-        html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+        // Details Column
+        html += '<div class="col-md-7">';
+        html += '<h4 class="font-weight-bold text-dark mb-1">' + $('<div/>').text(title).html() + '</h4>';
+        if (subtitle) {
+            html += '<h6 class="text-muted font-italic mb-3">' + $('<div/>').text(subtitle).html() + '</h6>';
+        }
+
+        if (summary) {
+            html += '<div class="mb-3 p-2 bg-light rounded border-left" style="border-left-width: 4px !important; border-left-color: #17a2b8 !important;">';
+            html += '<h6 class="font-weight-bold text-info small text-uppercase mb-1"><i class="fas fa-info-circle mr-1"></i>Summary</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(summary).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
+
+        if (takeAways) {
+            html += '<div class="mb-3">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1"><i class="fas fa-lightbulb text-warning mr-1"></i>Key Takeaways</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(takeAways).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
+
+        if (description) {
+            html += '<div class="mb-3">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1"><i class="fas fa-align-left text-primary mr-1"></i>Content</h6>';
+            html += '<div class="text-secondary small mb-0" style="line-height: 1.6; max-height: 250px; overflow-y: auto;">' + description + '</div>';
+            html += '</div>';
+        }
+
         html += '</div>';
         html += '</div>';
 
-        $('#modal-getbyid .lbl-module').text('LatestThinking');
+        $('#modal-getbyid .lbl-module').text('Article Details');
         $('#modal-getbyid #modal-body').html(html);
         $('#modal-getbyid').modal('show');
     }
-    </script>
+
+    function showReviewDetails(btn) {
+        showLatestThinkingDetails(btn);
+    }
+</script>
 <script src="~/js/managemodule.js"></script>

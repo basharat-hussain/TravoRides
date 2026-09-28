@@ -58,7 +58,7 @@ namespace TravoRides.CMS.Controllers
                 IsPersistent = model.RememberMe,
                 ExpiresUtc = model.RememberMe
                     ? DateTimeOffset.UtcNow.AddDays(30)
-                    : DateTimeOffset.UtcNow.AddHours(1),
+                    : DateTimeOffset.UtcNow.AddHours(8),
                 AllowRefresh = true
             };
 
@@ -66,21 +66,37 @@ namespace TravoRides.CMS.Controllers
             // access token, refresh token, and absolute expiry of the access token
             authProperties.StoreTokens(new[]
             {
-            new AuthenticationToken { Name = "access_token", Value = result.Data.AccessToken },
-            new AuthenticationToken { Name = "refresh_token", Value = result.Data.RefreshToken },
-            new AuthenticationToken { Name = "expires_at", Value = DateTime.SpecifyKind(result.Data.AccessTokenExpiresAt, DateTimeKind.Utc).ToString("O") }
-        });
+                new AuthenticationToken { Name = "access_token", Value = result.Data.AccessToken },
+                new AuthenticationToken { Name = "refresh_token", Value = result.Data.RefreshToken },
+                new AuthenticationToken { Name = "expires_at", Value = DateTime.SpecifyKind(result.Data.AccessTokenExpiresAt, DateTimeKind.Utc).ToString("O") }
+            });
 
-            await HttpContext.SignInAsync( CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+
+            // Store refresh token in dedicated HTTP-only cookie so that if the auth ticket/session expires,
+            // CMS can refresh the token and re-assign a new session without forcing re-login
+            var refreshCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(14) : (DateTimeOffset?)null
+            };
+            Response.Cookies.Append("MyApp.RefreshToken", result.Data.RefreshToken, refreshCookieOptions);
+
+            try
+            {
+                HttpContext.Session.SetString("SessionAssignedAt", DateTime.UtcNow.ToString("O"));
+            }
+            catch { }
 
             return Json(new[] { "True", "Login successful" });
         }
 
         public async Task<IActionResult> Logout()
         {
+            Response.Cookies.Delete("MyApp.RefreshToken");
             await _apiService.LogoutAsync();
-            // ApiService.LogoutAsync already calls SignOutAsync internally,
-            // but this is a safe no-op if it was already cleared.
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Login");
         }

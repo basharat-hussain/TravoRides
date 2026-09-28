@@ -1,4 +1,4 @@
-﻿@using TravoRides.Application.Common.Responses
+@using TravoRides.Application.Common.Responses
 @using TravoRides.Application.DTOs.Package
 @using TravoRides.Application.DTOs.Common
 @model ApiResponse<PagedResponse<PackageDTO>>
@@ -53,48 +53,84 @@
 </script>
 
 <script>
-    function showReviewDetails(btn) {
+    function showPackageDetails(btn) {
         var $btn = $(btn);
         var id = $btn.data('id');
-        var name = $btn.data('name') || '';
+        var name = $btn.data('name') || $btn.data('title') || '';
         var price = $btn.data('price') || '';
         var discount = $btn.data('discount') || '';
         var inclusions = $btn.data('inclusions') || '';
         var distance = $btn.data('distance') || '';
         var duration = $btn.data('duration') || '';
         var places = $btn.data('places') || '';
-            var itinerary = $btn.data('itinerary');
+        var itinerary = $btn.data('itinerary') || '';
         var route = $btn.data('route') || '';
-        var description = $btn.data('description')|| '';
+        var imageurl = $btn.data('imageurl') || $btn.data('image') || '';
 
-        var imageurl = $btn.data('imageurl') || '';
-
-        var html = '<div class="row">';
-        html += '<div class="col-md-4">';
+        var html = '<div class="row align-items-start">';
+        
+        // Image Column
+        html += '<div class="col-md-5 mb-3">';
         if (imageurl) {
-            html += '<img src="' + imageurl + '" class="img-fluid" />';
+            html += '<img src="' + imageurl + '" class="img-fluid rounded border shadow-sm w-100" style="max-height: 220px; object-fit: cover;" alt="' + $('<div/>').text(name).html() + '" onerror="this.onerror=null;this.src=\'/dist/img/200x100.png\';" />';
+        } else {
+            html += '<div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted shadow-sm" style="height: 180px;"><i class="fas fa-suitcase-rolling fa-4x"></i></div>';
+        }
+        html += '<div class="mt-3 p-3 bg-light rounded border text-center">';
+        html += '<div class="text-muted small text-uppercase font-weight-bold">Package Price</div>';
+        html += '<div class="text-success font-weight-bold h4 mb-0">' + $('<div/>').text(price).html() + '</div>';
+        if (discount && discount !== 'None' && discount !== '₹0') {
+            html += '<span class="badge badge-warning text-dark mt-1 font-weight-bold"><i class="fas fa-tag mr-1"></i>Discount: ' + $('<div/>').text(discount).html() + '</span>';
         }
         html += '</div>';
-        html += '<div class="col-md-8">';
-        html += '<p><strong>Name:</strong> ' + $('<div/>').text(name).html() + '</p>';
-        html += '<p><strong>Price:</strong> ' + $('<div/>').text(price).html() + '</p>';
-        html += '<p><strong>Discount:</strong> ' + $('<div/>').text(discount).html() + '</p>';
-        html += '<p><strong>Inclusions:</strong> ' + $('<div/>').text(inclusions).html() + '</p>';
-        html += '<p><strong>Itinerary:</strong> ' + $('<div/>').text(itinerary).html() + '</p>';
-        html += '<p><strong>Distance:</strong> ' + $('<div/>').text(distance).html() + '</p>';
-        html += '<p><strong>Duration:</strong> ' + $('<div/>').text(duration).html() + '</p>';
-        html += '<p><strong>Route:</strong> ' + $('<div/>').text(route).html() + '</p>';
 
-        html += '<p><strong>Places:</strong> ' + $('<div/>').text(places).html() + '</p>';
+        // Quick badges
+        html += '<div class="d-flex flex-wrap mt-2" style="gap: 6px;">';
+        if (duration) html += '<span class="badge badge-light border text-dark p-2 flex-fill text-center"><i class="fas fa-clock text-info mr-1"></i>' + $('<div/>').text(duration).html() + '</span>';
+        if (distance && distance !== 'N/A') html += '<span class="badge badge-light border text-dark p-2 flex-fill text-center"><i class="fas fa-road text-primary mr-1"></i>' + $('<div/>').text(distance).html() + '</span>';
+        html += '</div>';
 
-        html += '<p><strong>Description:</strong><br />' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+        html += '</div>';
+
+        // Details Column
+        html += '<div class="col-md-7">';
+        html += '<h4 class="font-weight-bold text-dark mb-2">' + $('<div/>').text(name).html() + '</h4>';
+
+        if (route) {
+            html += '<div class="mb-2"><span class="text-muted small text-uppercase font-weight-bold"><i class="fas fa-map-marked-alt text-danger mr-1"></i>Route: </span><span class="font-weight-bold text-dark">' + $('<div/>').text(route).html() + '</span></div>';
+        }
+
+        if (places) {
+            html += '<div class="mb-3">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1"><i class="fas fa-map-pin text-primary mr-1"></i>Places Covered</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(places).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
+
+        if (inclusions) {
+            html += '<div class="mb-3">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1"><i class="fas fa-check-circle text-success mr-1"></i>Inclusions</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(inclusions).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
+
+        if (itinerary) {
+            html += '<div class="mb-3">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1"><i class="fas fa-calendar-alt text-info mr-1"></i>Itinerary</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(itinerary).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
 
         html += '</div>';
         html += '</div>';
 
-        $('#modal-getbyid .lbl-module').text('Package');
+        $('#modal-getbyid .lbl-module').text('Package Details');
         $('#modal-getbyid #modal-body').html(html);
         $('#modal-getbyid').modal('show');
     }
-    </script>
+
+    function showReviewDetails(btn) {
+        showPackageDetails(btn);
+    }
+</script>
 <script src="~/js/managemodule.js"></script>

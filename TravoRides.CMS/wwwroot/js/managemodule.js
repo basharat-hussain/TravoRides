@@ -1,10 +1,16 @@
-﻿////$(document).ajaxSend(function (e, xhr, options) {
+////$(document).ajaxSend(function (e, xhr, options) {
 ////    debugger;
 ////    if (options.type.toUpperCase() == "POST") {
 ////        var token = $("input[name='__RequestVerificationToken']").val();
 ////        xhr.setRequestHeader("RequestVerificationToken", token);
 ////    }
 ////});
+
+$(document).ajaxError(function (event, jqXHR, settings, thrownError) {
+    if (jqXHR.status === 401) {
+        window.location.href = "/Login/Index";
+    }
+});
 
 if (typeof module !== "undefined") {
     $(".lbl-module").html(module ? module : "");
@@ -94,16 +100,17 @@ function onFailure(response) {
 var $rowToDelete = null; // module-level variable
 
 $("#data-grid").on("click", ".btn-delete", function () {
-    var parent = $(this).parent().parent();
-    var name = parent.find(".name").html();
-    var id = parent.find(".hdn-id").val();
+    var row = $(this).closest("tr");
+    var name = row.find(".name").text().trim() || row.find(".name").html();
+    var id = row.find(".hdn-id").val();
 
-    $rowToDelete = parent; // remember it
+    $rowToDelete = row; // remember it
 
     $(".lbl").html("<strong>'" + name + "'</strong>");
 
     $(".delete-btn-confirm")
         .attr("data-ajax-url", "/" + module + "/Delete/" + id)
+        .attr("href", "/" + module + "/Delete/" + id)
         .attr("data-ajax-method", "POST");
 });
 

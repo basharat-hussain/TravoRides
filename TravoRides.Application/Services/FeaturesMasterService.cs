@@ -100,6 +100,15 @@ namespace TravoRides.Application.Services
             featuresMaster.ModifiedAt = DateTime.UtcNow;
             featuresMaster.ModifiedBy = "System";
 
+            var cabFeatures = await _unitOfWork.CabFeatures.FindAsync(cf => cf.FeatureId == id && !cf.IsDeleted, cancellationToken);
+            foreach (var cf in cabFeatures)
+            {
+                cf.IsDeleted = true;
+                cf.ModifiedAt = DateTime.UtcNow;
+                cf.ModifiedBy = "System";
+                _unitOfWork.CabFeatures.Update(cf);
+            }
+
             _unitOfWork.FeatureMasters.Update(featuresMaster);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -93,6 +94,14 @@ namespace TravoRides.CMS.Services
 
                 if (string.IsNullOrWhiteSpace(refreshToken))
                 {
+                    if (httpContext.Request.Cookies.TryGetValue("MyApp.RefreshToken", out var cookieRf) && !string.IsNullOrWhiteSpace(cookieRf))
+                    {
+                        refreshToken = cookieRf;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(refreshToken))
+                {
                     _logger.LogWarning("RefreshTokenAsync called, but no refresh token was found.");
                     return null;
                 }
@@ -112,6 +121,7 @@ namespace TravoRides.CMS.Services
                     _logger.LogWarning("Refresh token API call failed with status code: {StatusCode}", response.StatusCode);
                     if (!httpContext.Response.HasStarted)
                     {
+                        httpContext.Response.Cookies.Delete("MyApp.RefreshToken");
                         await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                     }
                     return null;
@@ -124,6 +134,7 @@ namespace TravoRides.CMS.Services
                     _logger.LogWarning("Refresh token API response was unsuccessful or empty.");
                     if (!httpContext.Response.HasStarted)
                     {
+                        httpContext.Response.Cookies.Delete("MyApp.RefreshToken");
                         await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                     }
                     return null;
@@ -133,10 +144,53 @@ namespace TravoRides.CMS.Services
 
                 var authenticateResult = await httpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-                if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
+                ClaimsPrincipal? principal = authenticateResult.Succeeded ? authenticateResult.Principal : null;
+
+                // If existing session/cookie was expired, rebuild principal from the newly issued JWT token
+                if (principal == null)
+                {
+                    try
+                    {
+                        var handler = new JwtSecurityTokenHandler();
+                        if (handler.CanReadToken(refreshedData.AccessToken))
+                        {
+                            var jwt = handler.ReadJwtToken(refreshedData.AccessToken);
+                            var claims = new List<Claim>();
+
+                            var sub = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub || c.Type == ClaimTypes.NameIdentifier)?.Value;
+                            var email = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email || c.Type == ClaimTypes.Email)?.Value;
+                            var role = jwt.Claims.FirstOrDefault(c => c.Type == "role" || c.Type == ClaimTypes.Role)?.Value;
+
+                            if (!string.IsNullOrWhiteSpace(sub))
+                                claims.Add(new Claim(ClaimTypes.NameIdentifier, sub));
+                            if (!string.IsNullOrWhiteSpace(email))
+                                claims.Add(new Claim(ClaimTypes.Email, email));
+                            if (!string.IsNullOrWhiteSpace(role))
+                                claims.Add(new Claim(ClaimTypes.Role, role));
+
+                            if (claims.Any())
+                            {
+                                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                                principal = new ClaimsPrincipal(identity);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to parse claims from refreshed access token.");
+                    }
+                }
+
+                if (principal == null)
                     return null;
 
-                var authProperties = authenticateResult.Properties ?? new AuthenticationProperties();
+                var authProperties = authenticateResult.Properties ?? new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14),
+                    AllowRefresh = true
+                };
+
                 var formattedExpiresAt = DateTime.SpecifyKind(refreshedData.AccessTokenExpiresAt, DateTimeKind.Utc).ToString("O");
 
                 authProperties.StoreTokens(new[]
@@ -150,11 +204,35 @@ namespace TravoRides.CMS.Services
                 {
                     await httpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,
-                        authenticateResult.Principal,
+                        principal,
                         authProperties);
+
+                    // Re-issue / rotate dedicated refresh token cookie (14 days)
+                    var refreshCookieOptions = new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
+                        Expires = authProperties.IsPersistent ? DateTimeOffset.UtcNow.AddDays(14) : (DateTimeOffset?)null
+                    };
+                    httpContext.Response.Cookies.Append("MyApp.RefreshToken", refreshedData.RefreshToken, refreshCookieOptions);
+                }
+
+                // Touch/assign new ASP.NET session
+                try
+                {
+                    if (httpContext.Session != null)
+                    {
+                        httpContext.Session.SetString("SessionAssignedAt", DateTime.UtcNow.ToString("O"));
+                    }
+                }
+                catch
+                {
+                    // Ignore if session not enabled or unavailable
                 }
 
                 // Update in-memory items and feature so subsequent operations in this request see new tokens
+                httpContext.User = principal;
                 httpContext.Items["CurrentAccessToken"] = refreshedData.AccessToken;
                 httpContext.Items["CurrentRefreshToken"] = refreshedData.RefreshToken;
                 httpContext.Items["CurrentExpiresAt"] = formattedExpiresAt;
@@ -163,7 +241,7 @@ namespace TravoRides.CMS.Services
                 if (authFeature != null)
                 {
                     authFeature.AuthenticateResult = AuthenticateResult.Success(
-                        new AuthenticationTicket(authenticateResult.Principal, authProperties, CookieAuthenticationDefaults.AuthenticationScheme));
+                        new AuthenticationTicket(principal, authProperties, CookieAuthenticationDefaults.AuthenticationScheme));
                 }
 
                 return refreshedData;
@@ -188,10 +266,19 @@ namespace TravoRides.CMS.Services
                     ? sRf
                     : await httpContext.GetTokenAsync(CookieAuthenticationDefaults.AuthenticationScheme, "refresh_token"));
 
+            if (string.IsNullOrWhiteSpace(refreshToken) && httpContext != null)
+            {
+                httpContext.Request.Cookies.TryGetValue("MyApp.RefreshToken", out refreshToken);
+            }
+
+            if (httpContext != null && !httpContext.Response.HasStarted)
+            {
+                httpContext.Response.Cookies.Delete("MyApp.RefreshToken");
+                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
-                if (httpContext != null && !httpContext.Response.HasStarted)
-                    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return true;
             }
 
@@ -203,9 +290,6 @@ namespace TravoRides.CMS.Services
             logoutMessage.Headers.Authorization = null;
 
             var response = await _httpClient.SendAsync(logoutMessage);
-
-            if (httpContext != null && !httpContext.Response.HasStarted)
-                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return response.IsSuccessStatusCode;
         }

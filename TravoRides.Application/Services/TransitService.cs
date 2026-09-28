@@ -266,7 +266,7 @@ namespace TravoRides.Application.Services
 
 
             // 2. Handle optional Logo update
-            if (request.ImageUrl != null)
+            if (request.Image != null)
             {
                 var fileUploadRequest = new FileUploadRequest
                 {

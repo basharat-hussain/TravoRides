@@ -2,55 +2,58 @@
 @using TravoRides.Application.DTOs.Common
 @model PagedResponse<PackageDTO>
 
-
-@if (Model.Items.Count() > 0)
+@if (Model != null && Model.Items.Any())
 {
     <thead>
         <tr>
-            <th style="width: 10%">
-                S.No
-            </th>
-
-            <th style="width: 20%">
-                Title
-            </th>
-
-            <th style="width: 15%">
-                Price
-            </th>
-            <th style="width: 15%">
-                 Discount (₹)
-            </th>
-           <th style="width:20%">
-               Duration
-           </th>
-            <th style="width: 10%" class="text-center">
-                Actions
-            </th>
-           <th style="width: 10%" class="text-center">
-                View
-            </th>
+            <th style="width: 5%">#</th>
+            <th style="width: 10%" class="text-center">Thumbnail</th>
+            <th style="width: 20%">Title</th>
+            <th style="width: 15%">Route</th>
+            <th style="width: 12%">Price</th>
+            <th style="width: 10%">Discount (₹)</th>
+            <th style="width: 10%">Duration</th>
+            <th style="width: 10%" class="text-center">Actions</th>
+            <th style="width: 8%" class="text-center">View</th>
         </tr>
     </thead>
 
     <tbody>
-        @{ int count = 1;}
+        @{ int count = ((Model.PageNumber - 1) * Model.PageSize) + 1; }
         @foreach (var Package in Model.Items)
         {
             <tr>
                 <td>
                     @(count++)
                     <input type="hidden" class="hdn-id" value="@Package.Id" />
-
                 </td>
 
-                <td>@Package.Title</td>
+                <td class="text-center">
+                    @if (!string.IsNullOrWhiteSpace(Package.ImageUrl))
+                    {
+                        <img src="@Package.ImageUrl" alt="@Package.Title" class="rounded border shadow-sm" style="width: 54px; height: 38px; object-fit: cover;" onerror="this.onerror=null;this.src='/dist/img/200x80.png';" />
+                    }
+                    else
+                    {
+                        <div class="rounded border bg-light d-inline-flex align-items-center justify-content-center text-muted" style="width: 54px; height: 38px;">
+                            <i class="fas fa-suitcase-rolling"></i>
+                        </div>
+                    }
+                </td>
 
-                <td>₹@Package.Price</td>
+                <td class="name font-weight-bold text-dark">@Package.Title</td>
+                <td>
+                    <small class="text-muted"><i class="fas fa-map-marker-alt text-danger mr-1"></i>@(string.IsNullOrWhiteSpace(Package.Route) ? "N/A" : Package.Route)</small>
+                </td>
+
+                <td class="font-weight-bold text-success">₹@Package.Price.ToString("N0")</td>
                 <td>@(Package.Discount > 0 ? "₹" + Package.Discount.ToString("N0") : "₹0")</td>
-               <td>@Package.Duration</td>
+                <td>
+                    <span class="badge badge-light border text-dark font-weight-normal px-2 py-1">
+                        <i class="fas fa-clock text-info mr-1"></i>@Package.Duration
+                    </span>
+                </td>
                 <td class="project-actions text-center">
-
                     <a asp-controller="Package" asp-action="Edit" asp-route-id="@Package.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
                         <i class="fas fa-pencil-alt"></i>
                     </a>
@@ -58,32 +61,33 @@
                         <i class="fas fa-trash"></i>
                     </a>
                 </td>
-                  <td class="text-center">
-                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                <td class="text-center">
+                    <button type="button" class="btn btn-outline-info btn-sm btn-view" onclick="showPackageDetails(this)"
                             data-id="@Package.Id"
                             data-name="@Package.Title"
+                            data-title="@Package.Title"
                             data-itinerary="@Package.Itinerary"
-                            data-price="₹@Package.Price"
-                            data-discount="@(Package.Discount > 0 ? "₹" + Package.Discount.ToString("N0") : "₹0")"
-                            data-distance="@Package.Distance"
+                            data-price="₹@Package.Price.ToString("N0")"
+                            data-discount="@(Package.Discount > 0 ? "₹" + Package.Discount.ToString("N0") : "None")"
+                            data-distance="@(Package.Distance > 0 ? Package.Distance.ToString("N0") + " km" : "N/A")"
                             data-duration="@Package.Duration"
                             data-inclusions="@Package.Inclusions"
                             data-places="@Package.PlacesCovered"
                             data-route="@Package.Route"
-                            data-image="@Package.ImageUrl"
-                           >
-                        View
+                            data-imageurl="@Package.ImageUrl"
+                            data-image="@Package.ImageUrl">
+                        <i class="fas fa-eye mr-1"></i> View
                     </button>
-                    </td>
+                </td>
             </tr>
         }
-
-
-
     </tbody>
 }
 else
 {
-    <tr>
-        <td>Sorry! No Packages found</td>
-    </tr>}
+    <tbody>
+        <tr>
+            <td colspan="9" class="text-center py-4 text-muted">Sorry! No Packages found</td>
+        </tr>
+    </tbody>
+}

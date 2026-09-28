@@ -1,4 +1,4 @@
-﻿
+
 @model ApiResponse<PagedResponse<CabDTO>>
 @* Breadcrumb *@
 <section class="content-header">
@@ -51,31 +51,70 @@
 </script>
 
 <script>
-    function showReviewDetails(btn) {
+    function showSelfDriveDetails(btn) {
         var $btn = $(btn);
         var id = $btn.data('id');
-        var category = $btn.data('category')
+        var category = $btn.data('category') || '';
         var name = $btn.data('name') || '';
         var price = $btn.data('price') || '';
-       var discount = $btn.data('discount');
+        var discount = $btn.data('discount') || '';
+        var fuel = $btn.data('fuel') || '';
+        var transmission = $btn.data('transmission') || '';
+        var seating = $btn.data('seating') || '';
+        var luggage = $btn.data('luggage') || '';
+        var description = $btn.data('description') || '';
+        var imageurl = $btn.data('imageurl') || '';
 
-        var html = '<div class="row">';
-       
+        var html = '<div class="row align-items-start">';
+        
+        // Image Column
+        html += '<div class="col-md-5 mb-3">';
+        if (imageurl) {
+            html += '<img src="' + imageurl + '" class="img-fluid rounded border shadow-sm w-100" style="max-height: 220px; object-fit: cover;" alt="' + $('<div/>').text(name).html() + '" onerror="this.onerror=null;this.src=\'/dist/img/200x80.png\';" />';
+        } else {
+            html += '<div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted shadow-sm" style="height: 180px;"><i class="fas fa-car fa-4x"></i></div>';
+        }
+        html += '<div class="mt-3 p-3 bg-light rounded border text-center">';
+        html += '<div class="text-muted small text-uppercase font-weight-bold">Daily Rental</div>';
+        html += '<div class="text-success font-weight-bold h4 mb-0">' + $('<div/>').text(price).html() + '</div>';
+        if (discount && discount !== 'None' && discount !== '₹0') {
+            html += '<span class="badge badge-warning text-dark mt-1 font-weight-bold"><i class="fas fa-tag mr-1"></i>Discount: ' + $('<div/>').text(discount).html() + '</span>';
+        }
         html += '</div>';
-        html += '<div class="col-md-8">';
-        html += '<p><strong>Category:</strong> ' + $('<div/>').text(category).html() + '</p>';
+        html += '</div>';
 
-        html += '<p><strong>Cab:</strong> ' + $('<div/>').text(name).html() + '</p>';
-        html += '<p><strong>Price:</strong> ' + $('<div/>').text(price).html() + '</p>';
-        html += '<p><strong>Discount:</strong> ' + $('<div/>').text(discount).html() + '</p>';
-       
+        // Details Column
+        html += '<div class="col-md-7">';
+        if (category) {
+            html += '<span class="badge badge-primary px-2 py-1 font-weight-bold mb-2">' + $('<div/>').text(category).html() + '</span>';
+        }
+        html += '<h4 class="font-weight-bold text-dark mb-3">' + $('<div/>').text(name).html() + '</h4>';
+
+        // Specs
+        html += '<div class="d-flex flex-wrap mb-3" style="gap: 6px;">';
+        if (fuel) html += '<span class="badge badge-light border text-dark p-2"><i class="fas fa-gas-pump text-primary mr-1"></i> ' + $('<div/>').text(fuel).html() + '</span>';
+        if (transmission) html += '<span class="badge badge-light border text-dark p-2"><i class="fas fa-cogs text-info mr-1"></i> ' + $('<div/>').text(transmission).html() + '</span>';
+        if (seating) html += '<span class="badge badge-light border text-dark p-2"><i class="fas fa-users text-success mr-1"></i> ' + $('<div/>').text(seating).html() + ' Seats</span>';
+        if (luggage) html += '<span class="badge badge-light border text-dark p-2"><i class="fas fa-suitcase text-warning mr-1"></i> ' + $('<div/>').text(luggage).html() + ' Bags</span>';
+        html += '</div>';
+
+        if (description) {
+            html += '<div class="mb-3">';
+            html += '<h6 class="font-weight-bold text-muted small text-uppercase mb-1">Description</h6>';
+            html += '<p class="text-secondary small mb-0" style="line-height: 1.6;">' + $('<div/>').text(description).html().replace(/\n/g, '<br/>') + '</p>';
+            html += '</div>';
+        }
 
         html += '</div>';
         html += '</div>';
 
-        $('#modal-getbyid .lbl-module').text('SelfDrive');
+        $('#modal-getbyid .lbl-module').text('SelfDrive Details');
         $('#modal-getbyid #modal-body').html(html);
         $('#modal-getbyid').modal('show');
     }
-    </script>
+
+    function showReviewDetails(btn) {
+        showSelfDriveDetails(btn);
+    }
+</script>
 <script src="~/js/managemodule.js"></script>

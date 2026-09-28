@@ -41,7 +41,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [AllowAnonymous]
         [EnableRateLimiting("refresh-token-api")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
@@ -56,7 +56,7 @@ namespace TravoRides.API.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [AllowAnonymous]
         [EnableRateLimiting("login-api")]
         public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {

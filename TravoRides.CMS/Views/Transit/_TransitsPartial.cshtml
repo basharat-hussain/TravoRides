@@ -7,49 +7,59 @@
 {
     <thead>
         <tr>
-            <th style="width: 10%">
+            <th style="width: 6%">
                 S.No
             </th>
-
-            <th style="width: 20%">
+            <th style="width: 10%" class="text-center">
+                Thumbnail
+            </th>
+            <th style="width: 25%">
                 Title
             </th>
-
             <th style="width: 15%">
                 Price
             </th>
             <th style="width: 15%">
                  Discount (₹)
             </th>
-           
-            <th style="width: 10%" class="text-center">
+            <th style="width: 14%" class="text-center">
                 Actions
             </th>
-           <th style="width: 10%" class="text-center">
+            <th style="width: 15%" class="text-center">
                 View
             </th>
         </tr>
     </thead>
 
     <tbody>
-        @{ int count = 1;}
+        @{ int count = ((Model.PageNumber - 1) * Model.PageSize) + 1; }
         @foreach (var Transit in Model.Items)
         {
             <tr>
                 <td>
                     @(count++)
                     <input type="hidden" class="hdn-id" value="@Transit.Id" />
-
                 </td>
 
-                <td class="name">@Transit.Title</td>
+                <td class="text-center">
+                    @if (!string.IsNullOrWhiteSpace(Transit.ImageUrl))
+                    {
+                        <img src="@Transit.ImageUrl" alt="@Transit.Title" class="rounded border shadow-sm" style="width: 54px; height: 38px; object-fit: cover;" onerror="this.onerror=null;this.src='/dist/img/200x80.png';" />
+                    }
+                    else
+                    {
+                        <div class="rounded border bg-light d-inline-flex align-items-center justify-content-center text-muted" style="width: 54px; height: 38px;">
+                            <i class="fas fa-route"></i>
+                        </div>
+                    }
+                </td>
 
-                <td>₹@Transit.Price</td>
+                <td class="name font-weight-bold text-dark">@Transit.Title</td>
+
+                <td class="font-weight-bold text-success">₹@Transit.Price.ToString("N0")</td>
                 <td>@(Transit.Discount > 0 ? "₹" + Transit.Discount.ToString("N0") : "₹0")</td>
 
-
                 <td class="project-actions text-center">
-
                     <a asp-controller="Transit" asp-action="Edit" asp-route-id="@Transit.Id" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="Edit">
                         <i class="fas fa-pencil-alt"></i>
                     </a>
@@ -57,28 +67,26 @@
                         <i class="fas fa-trash"></i>
                     </a>
                 </td>
-                  <td class="text-center">
-                    <button type="button" class="btn btn-info btn-sm btn-view" onclick="showReviewDetails(this)"
+                <td class="text-center">
+                    <button type="button" class="btn btn-outline-info btn-sm btn-view" onclick="showTransitDetails(this)"
                             data-id="@Transit.Id"
                             data-title="@Transit.Title"
-                            data-price="₹@Transit.Price"
-                            data-discount="@(Transit.Discount > 0 ? "₹" + Transit.Discount.ToString("N0") : "₹0")"
-                           
+                            data-price="₹@Transit.Price.ToString("N0")"
+                            data-discount="@(Transit.Discount > 0 ? "₹" + Transit.Discount.ToString("N0") : "None")"
                             data-description="@Transit.Description"
-                            data-image="@Transit.ImageUrl"
-                           >
-                        View
+                            data-imageurl="@Transit.ImageUrl">
+                        <i class="fas fa-eye mr-1"></i> View
                     </button>
-                    </td>
+                </td>
             </tr>
         }
-
-
-
     </tbody>
 }
 else
 {
-    <tr>
-        <td>Sorry! No Transits found</td>
-    </tr>}
+    <tbody>
+        <tr>
+            <td colspan="7" class="text-center py-4 text-muted">Sorry! No Transits found</td>
+        </tr>
+    </tbody>
+}
