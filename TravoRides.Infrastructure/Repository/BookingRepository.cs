@@ -335,7 +335,7 @@ namespace TravoRides.Infrastructure.Repository
             };
         }
 
-        public new async Task<Booking?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Booking?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await context.Bookings
                 .Include(x => x.Cab)
@@ -343,6 +343,15 @@ namespace TravoRides.Infrastructure.Repository
                 .Include(x => x.Package)
                 .Include(x => x.Payments)
                 .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.Id == id &&
+                         !x.IsDeleted,
+                    cancellationToken);
+        }
+
+        public new async Task<Booking?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await context.Bookings
                 .FirstOrDefaultAsync(
                     x => x.Id == id &&
                          !x.IsDeleted,

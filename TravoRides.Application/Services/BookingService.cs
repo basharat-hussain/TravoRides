@@ -148,7 +148,7 @@ namespace TravoRides.Application.Services
         }
         public async Task<BookingDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var booking = await _unitOfWork.Bookings.GetByIdAsync(id, cancellationToken);
+            var booking = await _unitOfWork.Bookings.GetByIdWithDetailsAsync(id, cancellationToken);
             if (booking == null) return null;
             return _mapper.Map<BookingDTO>(booking);
         }
@@ -238,6 +238,10 @@ namespace TravoRides.Application.Services
             booking.Passengers = request.Passengers?.Trim();
             booking.Luggage = request.Luggage?.Trim();
             booking.SpecialRequirements = request.SpecialRequirements?.Trim();
+            booking.ModifiedAt = DateTime.UtcNow;
+
+            _unitOfWork.Bookings.Update(booking);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

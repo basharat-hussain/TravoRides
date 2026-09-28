@@ -26,7 +26,8 @@ namespace TravoRides.Infrastructure.Repository
         CancellationToken cancellationToken)
         {
             var query = context.Cabs
-                .Include(c=>c.SelfDrive)
+                .Include(c => c.CabFeatures)
+                .Include(c => c.SelfDrive)
                 .Where(c => !c.IsDeleted)
                 .Join(
                     context.SelfDrives,

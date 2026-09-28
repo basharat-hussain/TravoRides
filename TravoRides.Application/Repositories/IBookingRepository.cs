@@ -13,5 +13,6 @@ namespace TravoRides.Application.Repositories
         Task<PagedResponse<Booking>> GetAllSearchAsync(SearchBookingRequest request, CancellationToken cancellationToken = default);
         Task<BookingReportResponse> GetBookingReportAsync( int pageNumber, int pageSize, string? keyword, DateTime? fromDate,
                   DateTime? toDate,bool? isConfirmed, CancellationToken cancellationToken = default);
+        Task<Booking?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

@@ -30,6 +30,7 @@ namespace TravoRides.Infrastructure.Repository
         public async Task<Payment?> GetByGatewayTransactionIdAsync(string gatewayTransactionId, CancellationToken cancellationToken = default)
         {
             return await _context.Payments
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.GatewayTransactionId == gatewayTransactionId, cancellationToken);
         }
 
