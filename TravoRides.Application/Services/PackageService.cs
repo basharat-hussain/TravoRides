@@ -16,16 +16,13 @@ namespace TravoRides.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IFileStorageService _fileStorage;
         private readonly IFileUrlService _fileUrl;
 
-        public PackageService(IUnitOfWork unitOfWork, IMapper mapper, IFileStorageService fileStorage,
-            IFileUrlService fileUrl)
+        public PackageService(IUnitOfWork unitOfWork, IMapper mapper, IFileUrlService fileUrl)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileUrl = fileUrl;
-            _fileStorage = fileStorage;
         }
 
         //==================================== GET METHODS =======================================
@@ -135,12 +132,6 @@ namespace TravoRides.Application.Services
         //=========================================CREATE METHODS ==========================================
         public async Task<Guid> CreateAsync(CreatePackageRequest request, CancellationToken cancellationToken = default)
         {
-            if (request.Image == null)
-            {
-                throw new ValidationException("image is required");
-            }
-
-
             if (string.IsNullOrWhiteSpace(request.Title))
                 throw new ValidationException("Title is required.");
 
@@ -150,40 +141,21 @@ namespace TravoRides.Application.Services
             if (existingPackage.Any())
                 throw new ValidationException("Package with the same title already exists.");
 
-
-            var fileUploadRequest = new FileUploadRequest
-            {
-                ContentType = request.Image.ContentType,
-                FolderName = "Package",
-                FileName = request.Image.FileName,
-                Stream = request.Image.OpenReadStream(),
-            };
-
-
-
-            var result = await _fileStorage.UploadAsync(fileUploadRequest, cancellationToken);
-
-
-            if (result == null)
-                throw new ValidationException("File upload failed");
-
             var package = new Package
             {
                 Title = request.Title.Trim(),
-                Itinerary = request.Itinerary.Trim(),
-                ImageUrl = result.RelativePath,
-                Inclusions = request.Inclusions,
-                Route = request.Route,
+                Itinerary = request.Itinerary?.Trim() ?? string.Empty,
+                ImageUrl = string.Empty,
+                Inclusions = request.Inclusions ?? string.Empty,
+                Route = request.Route ?? string.Empty,
                 Discount = request.Discount,
                 Distance = request.Distance,
                 Price = request.Price,
-                Duration = request.Duration,
-                PlacesCovered = request.PlacesCovered
-
+                Duration = request.Duration ?? string.Empty,
+                PlacesCovered = request.PlacesCovered ?? string.Empty
             };
 
             await _unitOfWork.Packages.AddAsync(package, cancellationToken);
-
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return package.Id;
@@ -270,37 +242,17 @@ namespace TravoRides.Application.Services
             if (package == null)
                 throw new ResourceNotFoundException("Package not found.");
 
-
-            // 2. Handle optional Logo update
-            if (request.ImageUrl != null)
-            {
-                var fileUploadRequest = new FileUploadRequest
-                {
-                    ContentType = request.Image.ContentType,
-                    FolderName = "package",
-                    FileName = request.Image.FileName,
-                    Stream = request.Image.OpenReadStream(),
-                };
-
-                var result = await _fileStorage.UploadAsync(fileUploadRequest, cancellationToken);
-                if (result == null)
-                    throw new ValidationException("File upload failed");
-
-                // Optional: Call a service to delete the old file using client.LogoUrl here
-
-                package.ImageUrl = result.RelativePath;
-            }
-
-            // 3. Update remaining properties
+            // Update remaining properties
             package.Title = request.Title.Trim();
-            package.Itinerary = request.Itinerary.Trim();
-            package.Inclusions = request.Inclusions;
-            package.Route = request.Route;
+            package.Itinerary = request.Itinerary?.Trim() ?? string.Empty;
+            package.Inclusions = request.Inclusions ?? string.Empty;
+            package.Route = request.Route ?? string.Empty;
             package.Discount = request.Discount;
             package.Distance = request.Distance;
             package.Price = request.Price;
-            package.Duration = request.Duration;
-            package.PlacesCovered = request.PlacesCovered;
+            package.Duration = request.Duration ?? string.Empty;
+            package.PlacesCovered = request.PlacesCovered ?? string.Empty;
+
             _unitOfWork.Packages.Update(package);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

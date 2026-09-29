@@ -56,7 +56,6 @@
                     <div class="card-body">
 
                         <form id="editform"
-                              enctype="multipart/form-data"
                               asp-controller="Package"
                               asp-action="Edit"
                               asp-antiforgery="false"
@@ -150,7 +149,7 @@
                             <!-- Row 3 -->
                             <div class="row">
 
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Inclusions</label>
 
@@ -162,7 +161,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Places Covered</label>
 
@@ -173,23 +172,11 @@
                                               class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Image</label>
-
-                                        <input asp-for="UpdatePackage.Image"
-                                               class="form-control img-uploader"
-                                               accept=".png,.jpeg,.jpg" />
-
-                                        <span asp-validation-for="UpdatePackage.Image"
-                                              class="text-danger"></span>
-                                    </div>
-                                </div>
                             </div>
 
-                            <!-- Row 5 : Image -->
+                            <!-- Row 4 : Itinerary -->
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="form-group">
 
                                         <label>Itinerary</label>
@@ -202,16 +189,6 @@
 
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-
-                                        <img src="@Model.UpdatePackage.ImageUrl"
-                                             class="image-previewer"
-                                             style="height:100px;width:200px" />
-
-                                    </div>
-                                </div>
-
                             </div>
                             <!-- Package buttons -->
                             <div class="form-group">

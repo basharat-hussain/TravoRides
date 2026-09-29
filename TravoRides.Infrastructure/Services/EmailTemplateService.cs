@@ -43,13 +43,13 @@ namespace TravoRides.Infrastructure.Services
             var html = await File.ReadAllTextAsync(path);
 
             html = html.Replace("{{NAME}}", WebUtility.HtmlEncode(name))
-                       .Replace("{{SUBJECT}}",WebUtility.HtmlEncode(subject))
-                       .Replace("{{MESSAGE}}",WebUtility.HtmlEncode(message))
+                       .Replace("{{SUBJECT}}", WebUtility.HtmlEncode(subject))
+                       .Replace("{{MESSAGE}}", WebUtility.HtmlEncode(message))
                        .Replace("{{PHONE}}", WebUtility.HtmlEncode(phone));
 
             return html;
         }
-        public async Task<string> GetQuoteConfirmationTemplateAsync(string name,string phone,string passengers,DateTime startDate, DateTime endDate, string requirements)
+        public async Task<string> GetQuoteConfirmationTemplateAsync(string name, string phone, string passengers, DateTime startDate, DateTime endDate, string requirements)
         {
             var path = Path.Combine(GetFullTemplatePath("email"), "quote-confirmation-template.html");
 
@@ -69,12 +69,12 @@ namespace TravoRides.Infrastructure.Services
         {
             var path = Path.Combine(GetFullTemplatePath("email"), "BookingConfirmationTemplate.html");
             var html = await File.ReadAllTextAsync(path);
-            html = html.Replace("{{NAME}}",WebUtility.HtmlEncode(name))
+            html = html.Replace("{{NAME}}", WebUtility.HtmlEncode(name))
                        .Replace("{{BOOKING_ID}}", WebUtility.HtmlEncode(bookingId))
                        .Replace("{{BOOKING_DATE}}", bookingDate.ToString("f"))
                        .Replace("{{CAB_NAME}}", WebUtility.HtmlEncode(cabName))
                        .Replace("{{CAB_TYPE}}", WebUtility.HtmlEncode(cabType))
-                       .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString("C"));
+                       .Replace("{{TOTAL_AMOUNT}}", $"₹{totalAmount.ToString()}");
             return html;
         }
 
@@ -87,7 +87,7 @@ namespace TravoRides.Infrastructure.Services
                        .Replace("{{BOOKING_DATE}}", bookingDate.ToString("f"))
                        .Replace("{{CAB_NAME}}", WebUtility.HtmlEncode(cabName))
                        .Replace("{{CAB_TYPE}}", WebUtility.HtmlEncode(cabType))
-                       .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString("C"));
+                       .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString());
             return html;
         }
         public async Task<string> GetBookingCompletionTemplateAsync(string name, string bookingId, DateTime bookingDate, string cabName, string cabType, decimal totalAmount)
@@ -102,6 +102,6 @@ namespace TravoRides.Infrastructure.Services
                        .Replace("{{TOTAL_AMOUNT}}", totalAmount.ToString("C"));
             return html;
         }
-        
+
     }
 }
