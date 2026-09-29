@@ -68,15 +68,14 @@
                     @{ var fb = review.Feedback ?? string.Empty; }
                     @((fb.Length > 55) ? fb.Substring(0, 55) + "..." : fb)
                 </td>
-
+     
                 <td class="text-center">
                     <button type="button"
-                            class="btn btn-sm @(review.IsActive ? "btn-success" : "btn-danger")"
+                            class="btn btn-sm @(review.IsActive ? "btn-danger" : "btn-success")"
                             onclick="toggleReviewStatus('@review.Id', this)">
-                        @(review.IsActive ? "Approved" : "Unapproved")
+                        @(review.IsActive ? "Unapprove" : "Approve")
                     </button>
                 </td>
-
                 <td class="text-center">
                     <button type="button" class="btn btn-outline-info btn-sm btn-view" onclick="showReviewDetails(this)"
                             data-id="@review.Id"
