@@ -54,6 +54,8 @@ namespace TravoRides.API.Controllers
             });
         }
 
+        [RequestSizeLimit(20 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 20 * 1024 * 1024)]
         [HttpPost]
         [Authorize(Roles = nameof(UserRole.Admin))]
         [EnableRateLimiting("generic-api")]
@@ -69,6 +71,8 @@ namespace TravoRides.API.Controllers
             });
         }
 
+        [RequestSizeLimit(20 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 20 * 1024 * 1024)]
         [HttpPut("{id:guid}")]
         [Authorize(Roles = nameof(UserRole.Admin))]
         [EnableRateLimiting("generic-api")]

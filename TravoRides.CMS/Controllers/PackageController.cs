@@ -74,100 +74,31 @@ public class PackageController : Controller
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-            CreatePackageRequest model)
+        public async Task<IActionResult> Create(CreatePackageRequest model)
         {
-            var response = new string[] { };
-
             if (!ModelState.IsValid)
             {
-                response = new[]
-                {
-                "False",
-                "Validation Failed"
-            };
-
-                return Json(response);
+                return Json(new[] { "False", "Validation Failed" });
             }
 
-            using var formData =
-                new MultipartFormDataContent();
-
-            formData.Add(
-                new StringContent(
-                    model.Title ?? string.Empty),
-                nameof(model.Title));
-
-            formData.Add(
-                new StringContent(
-                    model.Price.ToString()),
-                nameof(model.Price));
-
-            formData.Add(
-                new StringContent(
-                    model.Discount.ToString() ?? string.Empty),
-                nameof(model.Discount));
-
-            formData.Add(
-                new StringContent(
-                    model.Itinerary ?? string.Empty),
-                nameof(model.Itinerary));
-
-            formData.Add(
-                new StringContent(
-                    model.Inclusions ?? string.Empty),
-                nameof(model.Inclusions));
-
-            formData.Add(
-                new StringContent(
-                    model.Distance.ToString()),
-                nameof(model.Distance));
-
-            formData.Add(
-                new StringContent(
-                    model.Route ?? string.Empty),
-                nameof(model.Route));
-
-            formData.Add(
-                new StringContent(
-                    model.PlacesCovered ?? string.Empty),
-                nameof(model.PlacesCovered));
-
-            formData.Add(
-                new StringContent(
-                    model.Duration ?? string.Empty),
-                nameof(model.Duration));
-
-
-            if (model.Image != null &&
-                model.Image.Length > 0)
-            {
-                var imageContent =
-                    new StreamContent(
-                        model.Image.OpenReadStream());
-
-                imageContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(
-                        model.Image.ContentType);
-
-                formData.Add(
-                    imageContent,
-                    nameof(model.Image),
-                    model.Image.FileName);
-            }
-
-
-            await _apiService.PostAsync<ApiResponse<object>>(
+            var apiResponse = await _apiService.PostAsync<CreatePackageRequest, ApiResponse<object>>(
                 "api/Package",
-                formData);
+                model);
 
-            response = new[]
+            if (apiResponse == null || !apiResponse.IsSuccess)
             {
-            "True",
-            "Created successfully."
-        };
+                return Json(new[]
+                {
+                    "False",
+                    apiResponse?.Message ?? "Package creation failed."
+                });
+            }
 
-            return Json(response);
+            return Json(new[]
+            {
+                "True",
+                apiResponse.Message ?? "Created successfully."
+            });
         }
 
 
@@ -273,86 +204,41 @@ public class PackageController : Controller
             {
                 return Json(new[]
                 {
-            "False",
-            "Package data is required."
-        });
+                    "False",
+                    "Package data is required."
+                });
             }
 
             if (!ModelState.IsValid)
             {
                 return Json(new[]
                 {
-            "False",
-            "Validation Failed"
-        });
+                    "False",
+                    "Validation Failed"
+                });
             }
 
             var package = model.UpdatePackage;
+            package.Id = id;
 
-            using var formData = new MultipartFormDataContent();
-
-            // Package fields
-            formData.Add(
-                new StringContent(package.Title ?? string.Empty),
-                nameof(package.Title));
-
-            formData.Add(
-                new StringContent(package.Price.ToString()),
-                nameof(package.Price));
-
-            formData.Add(
-                new StringContent(package.Discount.ToString() ?? string.Empty),
-                nameof(package.Discount));
-
-            formData.Add(
-                new StringContent(package.Itinerary ?? string.Empty),
-                nameof(package.Itinerary));
-
-            formData.Add(
-                new StringContent(package.Inclusions ?? string.Empty),
-                nameof(package.Inclusions));
-
-            formData.Add(
-                new StringContent(package.Distance.ToString()),
-                nameof(package.Distance));
-
-            formData.Add(
-                new StringContent(package.Route ?? string.Empty),
-                nameof(package.Route));
-
-            formData.Add(
-                new StringContent(package.PlacesCovered ?? string.Empty),
-                nameof(package.PlacesCovered));
-
-            formData.Add(
-                new StringContent(package.Duration ?? string.Empty),
-                nameof(package.Duration));
-
-            // Image
-            if (package.Image != null && package.Image.Length > 0)
-            {
-                var imageContent = new StreamContent(
-                    package.Image.OpenReadStream());
-
-                imageContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(package.Image.ContentType);
-
-                formData.Add(
-                    imageContent,
-                    nameof(package.Image),
-                    package.Image.FileName);
-            }
-
-            // Update package
-            await _apiService.PutAsync<ApiResponse<object>>(
+            var apiResponse = await _apiService.PutAsync<UpdatePackageRequest, ApiResponse<object>>(
                 $"api/Package/{id}",
-                formData);
+                package);
+
+            if (apiResponse == null || !apiResponse.IsSuccess)
+            {
+                return Json(new[]
+                {
+                    "False",
+                    apiResponse?.Message ?? "Package update failed."
+                });
+            }
 
             return Json(new[]
             {
-        "True",
-        "Updated successfully."
-    });
+                "True",
+                apiResponse.Message ?? "Updated successfully."
+            });
         }
 
 

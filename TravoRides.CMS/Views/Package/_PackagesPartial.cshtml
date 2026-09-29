@@ -7,12 +7,11 @@
     <thead>
         <tr>
             <th style="width: 5%">#</th>
-            <th style="width: 10%" class="text-center">Thumbnail</th>
-            <th style="width: 20%">Title</th>
-            <th style="width: 15%">Route</th>
+            <th style="width: 25%">Title</th>
+            <th style="width: 18%">Route</th>
             <th style="width: 12%">Price</th>
             <th style="width: 10%">Discount (₹)</th>
-            <th style="width: 10%">Duration</th>
+            <th style="width: 12%">Duration</th>
             <th style="width: 10%" class="text-center">Actions</th>
             <th style="width: 8%" class="text-center">View</th>
         </tr>
@@ -26,19 +25,6 @@
                 <td>
                     @(count++)
                     <input type="hidden" class="hdn-id" value="@Package.Id" />
-                </td>
-
-                <td class="text-center">
-                    @if (!string.IsNullOrWhiteSpace(Package.ImageUrl))
-                    {
-                        <img src="@Package.ImageUrl" alt="@Package.Title" class="rounded border shadow-sm" style="width: 54px; height: 38px; object-fit: cover;" onerror="this.onerror=null;this.src='/dist/img/200x80.png';" />
-                    }
-                    else
-                    {
-                        <div class="rounded border bg-light d-inline-flex align-items-center justify-content-center text-muted" style="width: 54px; height: 38px;">
-                            <i class="fas fa-suitcase-rolling"></i>
-                        </div>
-                    }
                 </td>
 
                 <td class="name font-weight-bold text-dark">@Package.Title</td>
@@ -87,7 +73,7 @@ else
 {
     <tbody>
         <tr>
-            <td colspan="9" class="text-center py-4 text-muted">Sorry! No Packages found</td>
+            <td colspan="8" class="text-center py-4 text-muted">Sorry! No Packages found</td>
         </tr>
     </tbody>
 }

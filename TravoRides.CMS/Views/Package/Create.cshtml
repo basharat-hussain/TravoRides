@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form id="addform" enctype="multipart/form-data" asp-controller="Package" asp-action="Create" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
+                    <form id="addform" asp-controller="Package" asp-action="Create" asp-antiforgery="false" data-ajax="true" data-ajax-method="post" data-ajax-success="onSuccess" data-ajax-failure="onFailure" data-ajax-begin="onBegin">
                        
                         <div class="row">
 
@@ -104,23 +104,6 @@
                                     <label>Duration</label>
                                     <input asp-for="Duration" class="form-control" rows="4" />
                                     <span asp-validation-for="Duration" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Logo</label>
-                                    <input asp-for="Image" class="form-control img-uploader" accept=".png, .jpeg, .jpg" />
-                                    <span asp-validation-for="Image" class="text-danger"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <img src="~/dist/img/200x80.png" class="image-previewer" style="height: 100px; width:200px" />
                                 </div>
                             </div>
 
